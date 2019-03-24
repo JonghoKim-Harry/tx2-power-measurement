@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$CAFFE_HOME/build/tools/caffe test -model $CAFFE_HOME/examples/mnist/lenet_train_test.prototxt -weights $CAFFE_HOME/examples/mnist/lenet_iter_10000.caffemodel -gpu all

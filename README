@@ -1,0 +1,60 @@
+JETSON TX2 POWER MEASUREMENT
+============
+
+
+OBJECTIVE
+
+   To measure Jetson TX2 power consumption
+
+
+HOW TO BUILD and SELFTEST
+
+    make                Build from source codes
+
+    make check          Selftest with CIFAR-10 and MNIST dataset
+                        Note that you should set variable CAFFE_HOME
+                        in Makefile
+
+    make debug          Build debug version binary and then do selftest with
+                        CIFAR-10 and MNIST dataset. It will print more
+                        messeages. Note that you should set variable CAFFE_HOME
+                        in Makefile
+
+
+HOW TO USE
+
+    -h                  Print help message
+
+    -c <component>      A component whose power consumption will be measured
+                         * Supported components: all, cpu, gpu, ddr, wifi, soc
+
+    -f <file name>      Path to statistics file. It will truncate content of
+                        the old file and create new one
+
+
+REFERENCE
+
+   https://github.com/horizon-research/tx2-power-consumption.git
+
+
+DESIGN PRINCIPLE
+
+   In order to minimize measurement overhead, I used a lot of system calls.
+
+      * time()
+      * clock_gettime()
+      * nanosleep()
+      * access()
+      * open()
+      * lseek()
+      * read()
+      * write()
+      * close()
+      * fork()
+      * waitpid()
+      * exit()
+
+
+SCRIPT USAGE EXAMPLE
+
+   sudo ./script/iterate_gpu_freq.sh CIFAR-10 script/run_cifar10.sh

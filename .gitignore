@@ -1,0 +1,15 @@
+tx2_power_measurement
+.*
+*.o
+*.txt
+*.bin
+*.png
+
+#
+# git files that we don't want to ignore even if they are dot-files
+#
+!.gitignore
+
+# cscope files
+cscope.*
+ncscope.*
