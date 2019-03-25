@@ -214,16 +214,16 @@ end_arg_processing:
     write(stat_fd, message, strlen(message));
     sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_GOVERNOR(0), "\n   * Governor: %s");
     sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_REGISTERED_CPUS(0), "\n   * Registered CPUs: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(0), "\n   * MIN Frequency: %skHZ");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(0), "\n   * MAX Frequency: %skHZ");
+    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(0), "\n   * MIN Frequency: %skHz");
+    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(0), "\n   * MAX Frequency: %skHz");
 
     // CPUFreq Group1 Informations
     message = "\n\nCPUFreq Group1";
     write(stat_fd, message, strlen(message));
     sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_GOVERNOR(1), "\n   * Governor: %s");
     sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_REGISTERED_CPUS(1), "\n   * Registered CPUs: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(1), "\n   * MIN Frequency: %skHZ");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(1), "\n   * MAX Frequency: %skHZ");
+    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(1), "\n   * MIN Frequency: %skHz");
+    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(1), "\n   * MAX Frequency: %skHz");
 
     // GPUFreq Informations
     message = "\n\nGPU Frequency Informations";
@@ -265,11 +265,13 @@ end_arg_processing:
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq", "%*skHz", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
 
+    /* TODO: Resolve too much measurement overhead
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU2-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(2), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(2), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU3-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(3), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(3), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU4-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(4), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(4), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU5-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(5), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(5), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    */
 #endif   // TRACE_CPU
 
 

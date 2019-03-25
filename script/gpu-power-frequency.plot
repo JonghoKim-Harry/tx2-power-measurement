@@ -27,8 +27,9 @@ set key outside above  # Set key (legend) places at the outside of the plot
 
 # x: Time
 set xlabel "Time"
-set xtics nomirror (2500000000.0, 5000000000.0)
+set xtics (1000000000)
 set format x "%.1tx10^{%T} ns"
+set autoscale x
 
 # y: GPU Power
 set ylabel "GPU Power"
