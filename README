@@ -57,4 +57,5 @@ DESIGN PRINCIPLE
 
 SCRIPT USAGE EXAMPLE
 
-   sudo ./script/iterate_gpu_freq.sh CIFAR-10 script/run_cifar10.sh
+   sudo bash script/iterate_gpu_freq.sh cifar-10 script/run_cifar10.sh
+   sudo bash script/iterate_gpu_freq.sh mnist script/run_mnist.sh
