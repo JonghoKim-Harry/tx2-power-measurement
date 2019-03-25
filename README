@@ -57,5 +57,13 @@ DESIGN PRINCIPLE
 
 SCRIPT USAGE EXAMPLE
 
+   # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
+   sudo ./script/fix_gpu_freq 1122000000
+
+   # Run experiments with all available GPU frequencies as fixed frequency
+   # and default governor setup with CIFAR-10 dataset
    sudo bash script/iterate_gpu_freq.sh cifar-10 script/run_cifar10.sh
+
+   # Run experiments with all available GPU frequencies as fixed frequency
+   # and default governor setup with MNIST dataset
    sudo bash script/iterate_gpu_freq.sh mnist script/run_mnist.sh

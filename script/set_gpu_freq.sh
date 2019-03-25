@@ -1,9 +1,29 @@
 #!/bin/bash
 
+#
+# This script set GPU frequency to be fixed to given frequency value.
+# 
+#     $1: Frequency
+#
+#   * Note that given frequency is not among available frequency,
+#     it will be denied with error message
+#
+#   * Note that if you run this script without sudo privilege,
+#     it will be denied with error message
+#
+
 FIXED_GPU_FREQ=$1
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
 
 FOUND=0
+
+#
+# You should run this script with sudoer privilege
+#
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root privilege"
+    exit
+fi
 
 for AVAILABLE_FREQ in $AVAILABLE_GPU_FREQ_LIST
 do
