@@ -73,3 +73,6 @@ SCRIPT USAGE EXAMPLE
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.txt \
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.png \
               cifar-10
+
+   # Draw GPU power and frequency plot for all .txt file in directory
+   ./script/draw_all_gpu-power-frequency_plot.sh test_result/cifar-10/ cifar-10
