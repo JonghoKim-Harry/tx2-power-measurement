@@ -74,11 +74,17 @@ SCRIPT USAGE EXAMPLE
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.png \
               cifar-10
 
-   # Draw GPU power and frequency plot for all .txt file in directory
-   ./script/draw_all_gpu-power-frequency_plot.sh test_result/cifar-10/ cifar-10
-
    # Draw CPU and GPU power and frequency plot
    gnuplot -c script/cpu-gpu-power.plot \
               test_result/mnist/mnist_gpu_1122000000Hz.txt \
               test_result/mnist/mnist_cpu_gpu_1122000000Hz.png \
               mnist
+
+   # Draw GPU power and frequency plot for all .txt file in directory
+   ./script/draw_all_plot.sh test_result/cifar-10/ script/gpu-power-frequency.plot gpu-power-frequency cifar-10
+
+   # Draw CPU and GPU power and frequency plot for all .txt file in directory for CIFAR-10 dataset
+   ./script/draw_all_plot.sh test_result/cifar-10/ script/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency cifar-10
+
+   # Draw CPU and GPU power and frequency plot for all .txt file in directory for MNIST dataset
+   ./script/draw_all_plot.sh test_result/mnist/ script/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency mnist
