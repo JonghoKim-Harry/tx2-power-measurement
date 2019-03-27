@@ -24,16 +24,18 @@ MAX="1122000000"
 DEFAULT_GOVERNOR=nvhost_podgov
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
 
-POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../)
+POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../..)
 POWER_MEASUREMENT_TOOL=$POWER_MEASUREMENT_HOME/tx2_power_measurement
 CAFFE_HOME=$(realpath "$HOME/caffe")
 HERE=$(realpath $(pwd))
 RESULT_DIR="$POWER_MEASUREMENT_HOME/test_result/$BENCHMARK_NAME"
 
+echo "HERE = $HERE"
 echo "CAFFE_COMMAND = $CAFFE_COMMAND"
 
 if [ ! -d $RESULT_DIR ]; then
     mkdir -p $RESULT_DIR
+    chown nvidia $RESULT_DIR
 fi
 
 cd $CAFFE_HOME
@@ -65,8 +67,11 @@ do
     sudo echo "$AVAILABLE_FREQ" > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
     echo "GPU frequency is set to $AVAILABLE_FREQ Hz"
 
+    STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.txt
+    LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.caffelog
+
     cd $HERE
-    $POWER_MEASUREMENT_TOOL -c gpu -f "$RESULT_DIR/$BENCHMARK_NAME"_gpu_"$AVAILABLE_FREQ"Hz.txt $CAFFE_COMMAND
+    $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $CAFFE_COMMAND 2>$LOG_FILE
 done;
 
 echo END
@@ -78,5 +83,8 @@ sudo echo $MIN > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
 sudo echo $MAX > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/max_freq
 sudo echo $DEFAULT_GOVERNOR > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/governor
 
+STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
+LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.caffelog
+
 cd $HERE
-$POWER_MEASUREMENT_TOOL -c gpu -f "$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt $CAFFE_COMMAND
+$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $CAFFE_COMMAND 2>$LOG_FILE

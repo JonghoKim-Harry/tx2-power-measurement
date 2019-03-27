@@ -58,9 +58,9 @@ check-mnist: $(TARGET)
 
 check-plot: check-cifar10 check-mnist
 	@echo "\n** Drawing a plot for selftesting result with CIFAR-10\n"
-	gnuplot -c script/draw_single.plot $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(TEST_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10
+	gnuplot -c script/plot/draw_single.plot $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(TEST_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10
 	@echo "\n** Drawing a plot for selftesting result with MNIST\n"
-	gnuplot -c script/draw_single.plot $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(TEST_RESULT_PATH_MNIST)/mnist_plot.png MNIST
+	gnuplot -c script/plot/draw_single.plot $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(TEST_RESULT_PATH_MNIST)/mnist_plot.png MNIST
 
 debug: CFLAGS += -DDEBUG
 debug: $(TARGET)

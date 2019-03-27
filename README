@@ -58,33 +58,33 @@ DESIGN PRINCIPLE
 SCRIPT USAGE EXAMPLE
 
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
-   sudo ./script/fix_gpu_freq 1122000000
+   sudo ./script/run/fix_gpu_freq 1122000000
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with CIFAR-10 dataset
-   sudo bash script/iterate_gpu_freq.sh cifar-10 script/run_cifar10.sh
+   sudo bash script/run/iterate_gpu_freq.sh cifar-10 script/run/run_cifar10.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset
-   sudo bash script/iterate_gpu_freq.sh mnist script/run_mnist.sh
+   sudo bash script/run/iterate_gpu_freq.sh mnist script/run/run_mnist.sh
 
    # Draw GPU power and frequency plot
-   gnuplot -c script/gpu-power-frequency.plot \
+   gnuplot -c script/plot/gpu-power-frequency.plot \
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.txt \
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.png \
               cifar-10
 
    # Draw CPU and GPU power and frequency plot
-   gnuplot -c script/cpu-gpu-power.plot \
+   gnuplot -c script/plot/cpu-gpu-power.plot \
               test_result/mnist/mnist_gpu_1122000000Hz.txt \
               test_result/mnist/mnist_cpu_gpu_1122000000Hz.png \
               mnist
 
    # Draw GPU power and frequency plot for all .txt file in directory
-   ./script/draw_all_plot.sh test_result/cifar-10/ script/gpu-power-frequency.plot gpu-power-frequency cifar-10
+   ./script/plot/draw_all_plot.sh test_result/cifar-10/ script/plot/gpu-power-frequency.plot gpu-power-frequency cifar-10
 
    # Draw CPU and GPU power and frequency plot for all .txt file in directory for CIFAR-10 dataset
-   ./script/draw_all_plot.sh test_result/cifar-10/ script/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency cifar-10
+   ./script/plot/draw_all_plot.sh test_result/cifar-10/ script/plot/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency cifar-10
 
    # Draw CPU and GPU power and frequency plot for all .txt file in directory for MNIST dataset
-   ./script/draw_all_plot.sh test_result/mnist/ script/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency mnist
+   ./script/plot/draw_all_plot.sh test_result/mnist/ script/plot/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency mnist
