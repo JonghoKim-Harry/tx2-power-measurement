@@ -368,7 +368,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     struct timespec prev_time, time;
     int64_t diff_time_ns;
     time_t time_sec;
-    int32_t time_ns;
+    int64_t time_ns;
     int32_t gpu_energy;         // mW x ns
     int64_t gpu_energy_pWh;     // pWh (10^-12 Wh)
     int32_t gpu_energy_Wh;      // Wh
@@ -411,9 +411,9 @@ void calculate_2ndstat(const struct measurement_info info) {
 
         // TIME
         if(time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9dns", " ", time_ns);
+            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", time_ns);
         else
-            buff_len = snprintf(buff, 256, "%19ld%09dns", time_sec, time_ns);
+            buff_len = snprintf(buff, 256, "%19ld%09ldns", time_sec, time_ns);
         write(stat_fd, buff, buff_len);
 
 
@@ -455,7 +455,7 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
-    buff_len = snprintf(buff, 256, "\nTOTAL EXECUTION TIME: %19ld.%09d second", time_sec, time_ns); // 59
+    buff_len = snprintf(buff, 256, "\nTOTAL EXECUTION TIME: %19ld.%09ld second", time_sec, time_ns); // 59
     write(stat_fd, buff, buff_len);
 
     buff_len = snprintf(buff, 256, "\nTOTAL GPU ENERGY: %9d.%012ld Wh", gpu_energy_Wh, gpu_energy_pWh); // 44
