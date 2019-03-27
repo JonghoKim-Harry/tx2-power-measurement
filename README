@@ -62,11 +62,11 @@ SCRIPT USAGE EXAMPLE
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with CIFAR-10 dataset
-   sudo bash script/run/iterate_gpu_freq.sh cifar-10 script/run/run_cifar10.sh
+   sudo ./script/run/iterate_gpu_freq.sh cifar-10 ./script/run/run_cifar10.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset
-   sudo bash script/run/iterate_gpu_freq.sh mnist script/run/run_mnist.sh
+   sudo ./script/run/iterate_gpu_freq.sh mnist ./script/run/run_mnist.sh
 
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
