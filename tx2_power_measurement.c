@@ -403,11 +403,13 @@ void calculate_2ndstat(const struct measurement_info info) {
 
         time_sec = time.tv_sec - info.start_time.tv_sec;
         time_ns = time.tv_nsec - info.start_time.tv_nsec;
+
         if(time_ns < 0) {
         
-            ++ time_sec;
+            -- time_sec;
             time_ns += SECOND_TO_NANOSECOND;
         }
+
 
         // TIME
         if(time_sec == 0)
