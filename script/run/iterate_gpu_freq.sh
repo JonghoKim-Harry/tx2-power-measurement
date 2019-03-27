@@ -16,7 +16,7 @@ help() {
     echo -e "Note that you should run this script with root privilege"
 }
 
-CUSTOM_USER=nvidia
+CUSTOM_USER=nvidia:nvidia
 
 BENCHMARK_NAME=$1
 CAFFE_COMMAND="${@:2}"
