@@ -16,6 +16,8 @@ help() {
     echo -e "Note that you should run this script with root privilege"
 }
 
+CUSTOM_USER=nvidia
+
 BENCHMARK_NAME=$1
 CAFFE_COMMAND="${@:2}"
 
@@ -35,7 +37,6 @@ echo "CAFFE_COMMAND = $CAFFE_COMMAND"
 
 if [ ! -d $RESULT_DIR ]; then
     mkdir -p $RESULT_DIR
-    chown nvidia $RESULT_DIR
 fi
 
 cd $CAFFE_HOME
@@ -88,3 +89,8 @@ LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.caffelog
 
 cd $HERE
 $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $CAFFE_COMMAND 2>$LOG_FILE
+
+#
+# Change owner
+#
+chown -R $CUSTOM_USER $RESULT_DIR
