@@ -20,13 +20,9 @@ $(TARGET): $(TARGET).o sysfs_to_stat.o
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# TODO: FIX THIS
-$(DEBUG_TARGET): $(TARGET).c $(TARGET_DEVICE)_sysfs_power.h
-	$(CC) $(CFLAGS) -DDEBUG -o $@ $< $(LIBS)
-
 .PHONY: clean
 clean: FORCE
-	-rm $(TARGET) $(DEBUG_TARGET) *.o *.txt
+	-rm $(TARGET) *.o *.txt
 
 .PHONY: check check-intro check-cifar10 check-mnist
 check: $(TARGET) check-intro check-cifar10 check-mnist
@@ -66,16 +62,16 @@ check-plot: check-cifar10 check-mnist
 	@echo "\n** Drawing a plot for selftesting result with MNIST\n"
 	gnuplot -c script/draw_single.plot $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(TEST_RESULT_PATH_MNIST)/mnist_plot.png MNIST
 
-# TODO: TO FIX THIS
-debug: $(DEBUG_TARGET)
+debug: CFLAGS += -DDEBUG
+debug: $(TARGET)
 	@echo "\nSTART DEBUGGING"
 	@echo "\n** Start selftesting with CIFAR-10 with DEBUG VERSION\n"
 	@if [ ! -d $(TEST_RESULT_PATH_CIFAR10) ]; then mkdir -p $(TEST_RESULT_PATH_CIFAR10); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(DEBUG_TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.debug.txt $(CAFFE_COMMAND_CIFAR10) 1> $(TEST_RESULT_PATH_CIFAR10)/cifar10_powerlog.debug.txt 2> $(TEST_RESULT_PATH_CIFAR10)/cifar10_caffelog.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.debug.txt $(CAFFE_COMMAND_CIFAR10) 1> $(TEST_RESULT_PATH_CIFAR10)/cifar10_powerlog.debug.txt 2> $(TEST_RESULT_PATH_CIFAR10)/cifar10_caffelog.txt
 	@echo "\n** Finish selftesting with CIFAR-10 with DEBUG VERSION\n"
 	@echo "\n** Start selftesting with MNIST with DEBUG VERSION\n"
 	@if [ ! -d $(TEST_RESULT_PATH_MNIST) ]; then mkdir -p $(TEST_RESULT_PATH_MNIST); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(DEBUG_TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.debug.txt $(CAFFE_COMMAND_MNIST) 1> $(TEST_RESULT_PATH_MNIST)/mnist_powerlog.debug.txt 2> $(TEST_RESULT_PATH_MNIST)/mnist_caffelog.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.debug.txt $(CAFFE_COMMAND_MNIST) 1> $(TEST_RESULT_PATH_MNIST)/mnist_powerlog.debug.txt 2> $(TEST_RESULT_PATH_MNIST)/mnist_caffelog.txt
 	@echo "\n** Finish selftesting with MNIST with DEBUG VERSION\n"
 	@echo "\nFINISH DEBUGGING"
 
