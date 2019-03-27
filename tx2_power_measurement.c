@@ -338,7 +338,6 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
             write(info.rawdata_fd, " ", 1);
         write(info.rawdata_fd, gpu_power_str, (num_read_bytes-1));
 
-        // TODO
         for(i=0; i<info.num_sysfs_data; i++) {
             stat_info = info.stat_info[i];
             stat_info.read_sysfs_func(stat_info, info.rawdata_fd);
@@ -351,8 +350,6 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
     close(info.gpu_power_fd);
     close(info.rawdata_fd);
-
-    // TODO
     close_sysfs(info);
 }
 
@@ -409,7 +406,7 @@ void calculate_2ndstat(const struct measurement_info info) {
         if(time_ns < 0) {
         
             ++ time_sec;
-            time_ns += 1000000000;
+            time_ns += SECOND_TO_NANOSECOND;
         }
 
         // TIME
@@ -427,7 +424,6 @@ void calculate_2ndstat(const struct measurement_info info) {
         buff_len = snprintf(buff, 256, "%4s%*smW  ", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);
         write(stat_fd, buff, buff_len);
 
-        // TODO
         for(i=0; i<info.num_sysfs_data; i++) {
             stat_info = info.stat_info[i];
             read_result = stat_info.rawdata_to_stat_func(stat_info, rawdata_fd, stat_fd);
@@ -494,7 +490,7 @@ int main(int argc, char *argv[]) {
         // Child Process
         system(info.child_cmd);
 #ifdef DEBUG
-        printf("\nEnd of child process");
+        printf("\nEnd of child process\n");
 #endif   // DEBUG
         exit(0);
     }
@@ -503,7 +499,7 @@ int main(int argc, char *argv[]) {
         measure_rawdata(pid, info);
         calculate_2ndstat(info);
 #ifdef DEBUG
-        printf("\nEnd of parent process");
+        printf("\nEnd of parent process\n");
 #endif   // DEBUG
     }
     return 0;
