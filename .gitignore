@@ -4,6 +4,7 @@ tx2_power_measurement
 *.txt
 *.bin
 *.png
+*.caffelog
 
 #
 # git files that we don't want to ignore even if they are dot-files
