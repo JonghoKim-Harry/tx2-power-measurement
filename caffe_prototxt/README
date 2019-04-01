@@ -1,0 +1,3 @@
+This directory contains Caffe prototxt files with absolute path.
+Caffe typically use relative path;
+however, using relative path requires change to CAFFE ROOT directory
