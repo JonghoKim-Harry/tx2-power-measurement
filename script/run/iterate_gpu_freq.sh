@@ -5,7 +5,7 @@
 # then run a default governor
 #
 # $1: Benchmark Name
-# $2~Last Argument: Caffe Command
+# $2~Last Argument: Shell Command
 #
 
 help() {
@@ -19,21 +19,15 @@ help() {
 CUSTOM_USER=nvidia:nvidia
 
 BENCHMARK_NAME=$1
-CAFFE_COMMAND="${@:2}"
+SHELL_COMMAND="${@:2}"
 
 MIN="140250000"
 MAX="1122000000"
-DEFAULT_GOVERNOR=nvhost_podgov
+DEFAULT_GPU_GOVERNOR=nvhost_podgov
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
 
 POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../..)
 POWER_MEASUREMENT_TOOL=$POWER_MEASUREMENT_HOME/tx2_power_measurement
-CAFFE_HOME=$(realpath "$HOME/caffe")
-HERE=$(realpath $(pwd))
-RESULT_DIR="$POWER_MEASUREMENT_HOME/test_result/$BENCHMARK_NAME"
-
-echo "HERE = $HERE"
-echo "CAFFE_COMMAND = $CAFFE_COMMAND"
 
 if [ ! -d $RESULT_DIR ]; then
     mkdir -p $RESULT_DIR
@@ -69,10 +63,9 @@ do
     echo "GPU frequency is set to $AVAILABLE_FREQ Hz"
 
     STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.txt
-    LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.caffelog
+    LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.caffelog.txt
 
-    cd $HERE
-    $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $CAFFE_COMMAND 2>$LOG_FILE
+    POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
 done;
 
 echo END
@@ -82,13 +75,13 @@ echo END
 #
 sudo echo $MIN > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
 sudo echo $MAX > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/max_freq
-sudo echo $DEFAULT_GOVERNOR > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/governor
+sudo echo $DEFAULT_GPU_GOVERNOR > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/governor
+echo "GPU frequency is recovered to default setting"
 
 STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
-LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.caffelog
+LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.caffelog.txt
 
-cd $HERE
-$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $CAFFE_COMMAND 2>$LOG_FILE
+$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND 2>$LOG_FILE
 
 #
 # Change owner
