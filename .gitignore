@@ -6,11 +6,13 @@ tx2_power_measurement
 *.png
 *.caffelog
 *.csv
+*.prototxt
 
 #
 # git files that we don't want to ignore even if they are dot-files
 #
 !.gitignore
+!caffe_prototxt/*
 
 # cscope files
 cscope.*
