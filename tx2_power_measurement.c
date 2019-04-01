@@ -284,7 +284,7 @@ end_arg_processing:
     info->gpu_power_fd = gpu_power_fd;
 
     // Time information
-    clock_gettime(CLOCK_MONOTONIC_RAW, &info->start_time);
+    clock_gettime(CLOCK_REALTIME, &info->start_time);
 
     // Raw data file informations
     strcpy(info->rawdata_filename, rawdata_filename);
@@ -321,7 +321,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
         // Sleep, wakeup, and then check time
         if(nanosleep(&sleep_request, &sleep_remain) == -1) continue;
-        if(clock_gettime(CLOCK_MONOTONIC_RAW, &curr_time) == -1) continue;
+        if(clock_gettime(CLOCK_REALTIME, &curr_time) == -1) continue;
 
         write(info.rawdata_fd, &curr_time, sizeof(struct timespec));
 
@@ -363,9 +363,10 @@ void calculate_2ndstat(const struct measurement_info info) {
     ssize_t read_result;
     int rawdata_fd;
     int stat_fd;
-    char buff[256], gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
+    char time_buff[256], buff[256], gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int buff_len;
     struct timespec prev_time, time;
+    struct tm *caffe_format_time;
     int64_t diff_time_ns;
     time_t time_sec;
     int64_t time_ns;
@@ -400,6 +401,12 @@ void calculate_2ndstat(const struct measurement_info info) {
 
         read_result = read(rawdata_fd, &time, sizeof(struct timespec));
         if(read_result <= 0) break;
+
+        // Caffe time format
+        caffe_format_time = localtime(&time.tv_sec);
+        strftime(time_buff, 256, "%Y-%m-%d %H:%M:%S", caffe_format_time);
+        buff_len = snprintf(buff, 256, "%s.%06ld", time_buff, time.tv_nsec);
+        write(stat_fd, buff, buff_len);
 
         time_sec = time.tv_sec - info.start_time.tv_sec;
         time_ns = time.tv_nsec - info.start_time.tv_nsec;
