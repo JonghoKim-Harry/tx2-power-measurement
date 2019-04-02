@@ -59,7 +59,7 @@ void *prepare_measurement(void *data) {
 
     char raw_power_filename[128];
 
-    char buff[64], filename_buff[64], gmt_buff[256], korea_time_buff[256];
+    char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
     size_t gmt_buff_len, korea_time_buff_len;
     int rawdata_fd;
     int stat_fd;
@@ -260,7 +260,11 @@ end_arg_processing:
      */
     info->num_sysfs_data = 0;
     info->rawdata_linesize = 0;
-    strcpy(info->header_raw, "\n                          TIME  GPU-Power  ");
+    snprintf(buff, 256, "%*s%*s%*s",
+            18, "GMT-Time-Stamp",
+            30, "TIME",
+            11, "GPU-Power");
+    strcpy(info->header_raw, buff);
     strcpy(info->rawdata_print_format, "");
     strcpy(info->rawdata_scan_format, "");
 
@@ -407,8 +411,9 @@ void calculate_2ndstat(const struct measurement_info info) {
     gpu_energy_Wh = 0;
 
     printf("\nSTART calculating 2nd stats\n");
+    write(stat_fd, "\n________________________________________________________________________________________________________________\n", 114);
     write(stat_fd, info.header_raw, strlen(info.header_raw));
-    write(stat_fd, "\n____________________________________________________________________________________________________\n", 102);
+    write(stat_fd, "\n----------------------------------------------------------------------------------------------------------------", 113);
 
     while(1) {
         prev_time = time;
@@ -418,10 +423,10 @@ void calculate_2ndstat(const struct measurement_info info) {
         read_result = read(rawdata_fd, &time, sizeof(struct timespec));
         if(read_result <= 0) break;
 
-        // Caffe time format
+        // Time stamp in order to compare with Caffe time stamp
         caffe_format_time = localtime(&time.tv_sec);
-        strftime(time_buff, 256, "%Y-%m-%d %H:%M:%S", caffe_format_time);
-        buff_len = snprintf(buff, 256, "%s.%06ld", time_buff, time.tv_nsec);
+        strftime(time_buff, 256, "%H:%M:%S", caffe_format_time);
+        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, time.tv_nsec);
         write(stat_fd, buff, buff_len);
 
         time_sec = time.tv_sec - info.start_time.tv_sec;
@@ -433,7 +438,6 @@ void calculate_2ndstat(const struct measurement_info info) {
             time_ns += SECOND_TO_NANOSECOND;
         }
 
-
         // TIME
         if(time_sec == 0)
             buff_len = snprintf(buff, 256, "%19s%9ldns", " ", time_ns);
@@ -441,12 +445,11 @@ void calculate_2ndstat(const struct measurement_info info) {
             buff_len = snprintf(buff, 256, "%19ld%09ldns", time_sec, time_ns);
         write(stat_fd, buff, buff_len);
 
-
         // GPU POWER
         read_result = read(rawdata_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
         if(read_result <= 0) break;
         gpu_power_str[read_result] = '\0';
-        buff_len = snprintf(buff, 256, "%4s%*smW  ", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);
+        buff_len = snprintf(buff, 256, "%4s%*smW", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);
         write(stat_fd, buff, buff_len);
 
         for(i=0; i<info.num_sysfs_data; i++) {

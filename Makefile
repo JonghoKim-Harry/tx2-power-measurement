@@ -29,6 +29,7 @@ check: $(TARGET) check-intro check-cifar10 check-mnist
 	@echo "Finished ALL Selftesting"
 
 check-intro: FORCE
+	@echo "\n"
 	@echo "Start Selftesting with:   * CIFAR-10"
 	@echo "                          * MNIST"
 
