@@ -55,15 +55,15 @@ void *prepare_measurement(void *data) {
     int len = 0;
 
     char raw_power_filename[128];
-    char tmp_str[64];
 
+    char buff[64], filename_buff[64], time_buff[256];
+    size_t time_buff_len;
     int rawdata_fd;
     int stat_fd;
     int gpu_power_fd;
     time_t raw_time;
-    struct tm walltime_info;
-    char walltime_str[128];
-    int walltime_strlen;
+    struct timeval walltime;
+    struct tm *walltime_detailed;
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   START");
@@ -169,13 +169,19 @@ end_arg_processing:
         exit(-1);
     }
 
-    if(!localtime_r(&raw_time, &walltime_info)) {
-        perror("localtime_r() call error");
+    if(gettimeofday(&walltime, NULL) == -1) {
+        perror("gettimeofday() call error");
         exit(-1);
     }
 
-    walltime_strlen = snprintf(walltime_str, 128, "\n\nSTART at %s", asctime(&walltime_info));
+    walltime_detailed = localtime(&walltime.tv_sec);
+    if(!walltime_detailed) {
+        perror("localtime() call error");
+        exit(-1);
+    }
 
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_detailed);
+    time_buff_len = snprintf(time_buff, 256, "Start measurement at %s", buff);
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
     printf("\nCommand: %s\n", cmd);
@@ -185,8 +191,8 @@ end_arg_processing:
     printf("\nCreated statistic file: %s", stat_filename);
 
     //
-    strcpy(tmp_str, stat_filename);
-    strcpy(rawdata_filename, dirname(tmp_str));
+    strcpy(filename_buff, stat_filename);
+    strcpy(rawdata_filename, dirname(filename_buff));
     strcat(rawdata_filename, "/rawdata.bin");
     rawdata_fd = open(rawdata_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
@@ -234,7 +240,7 @@ end_arg_processing:
 
     // Walltime
     write(stat_fd, "\n\n", 2);
-    write(stat_fd, walltime_str, walltime_strlen);
+    write(stat_fd, time_buff, time_buff_len);
 
     // Raw data format: Column name of the statistics table
     write(stat_fd, "\n", 1);

@@ -42,6 +42,7 @@ DESIGN PRINCIPLE
    In order to minimize measurement overhead, I used a lot of system calls.
 
       * time()
+      * gettimeofday()
       * clock_gettime()
       * nanosleep()
       * access()
