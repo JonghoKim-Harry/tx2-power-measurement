@@ -25,6 +25,9 @@
 #define HOUR_TO_SECOND 3600
 #define WATTHOUR_TO_PICOWATTHOUR 1000000000000
 
+// 9 hours = 540 minutes = 32400 seconds
+#define GMT_TO_KOREA_TIME 32400
+
 void help() {
 
     printf("\nJetson TX2 Power Measurement Script");
@@ -56,12 +59,11 @@ void *prepare_measurement(void *data) {
 
     char raw_power_filename[128];
 
-    char buff[64], filename_buff[64], time_buff[256];
-    size_t time_buff_len;
+    char buff[64], filename_buff[64], gmt_buff[256], korea_time_buff[256];
+    size_t gmt_buff_len, korea_time_buff_len;
     int rawdata_fd;
     int stat_fd;
     int gpu_power_fd;
-    time_t raw_time;
     struct timeval walltime;
     struct tm *walltime_detailed;
 
@@ -162,13 +164,7 @@ end_arg_processing:
 
     info->child_cmd = cmd;
 
-    raw_time = time(NULL);
-
-    if(raw_time == -1) {
-        perror("time() call error");
-        exit(-1);
-    }
-
+    // GMT (Greenwich Mean Time)
     if(gettimeofday(&walltime, NULL) == -1) {
         perror("gettimeofday() call error");
         exit(-1);
@@ -179,9 +175,22 @@ end_arg_processing:
         perror("localtime() call error");
         exit(-1);
     }
-
+   
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_detailed);
-    time_buff_len = snprintf(time_buff, 256, "Start measurement at %s", buff);
+    gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
+
+    // Korea Time
+    walltime.tv_sec += GMT_TO_KOREA_TIME;
+    walltime_detailed = localtime(&walltime.tv_sec);
+    if(!walltime_detailed) {
+        perror("localtime() call error");
+        exit(-1);
+    }
+   
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_detailed);
+    korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
+
+
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
     printf("\nCommand: %s\n", cmd);
@@ -240,7 +249,8 @@ end_arg_processing:
 
     // Walltime
     write(stat_fd, "\n\n", 2);
-    write(stat_fd, time_buff, time_buff_len);
+    write(stat_fd, gmt_buff, gmt_buff_len);
+    write(stat_fd, korea_time_buff, korea_time_buff_len);
 
     // Raw data format: Column name of the statistics table
     write(stat_fd, "\n", 1);
