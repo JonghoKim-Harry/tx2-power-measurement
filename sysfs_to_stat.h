@@ -40,8 +40,11 @@ struct measurement_info {
     int argc;
     char **argv;
 
-    /* Informations used by main() */
-    char *child_cmd;
+    /*
+     *  I will use execve() to run child command.
+     *  Therefore, the child_cmd is an NULL-terminated array of arguments
+     */
+    char **child_cmd;
 
     /* Informations used by measure_rawdata() */
     struct timespec start_time;

@@ -52,6 +52,7 @@ DESIGN PRINCIPLE
       * write()
       * close()
       * fork()
+      * execve()
       * waitpid()
       * exit()
 

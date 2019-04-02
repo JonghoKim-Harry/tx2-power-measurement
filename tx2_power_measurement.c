@@ -54,8 +54,7 @@ void *prepare_measurement(void *data) {
     int cflag = 0, fflag = 0;
     char component_str[16];
     char rawdata_filename[128], stat_filename[128];
-    char *cmd;
-    int len = 0;
+    char **cmd, cmd_str[256];
 
     char raw_power_filename[128];
 
@@ -150,17 +149,17 @@ end_arg_processing:
         exit(-1);
     }
 
-    len = 0;
-    for(index=optind;index<argc;index++){
-        len++;
-        len += strlen(argv[index]);
+    cmd = (char **)malloc(sizeof(char *) * (argc-optind+1));
+
+    for(index=0; index < (argc-optind); index++){
+        cmd[index] = (char *)malloc(sizeof(char) * strlen(argv[index + optind]));
+        strcpy(cmd[index], argv[index+optind]);
+        strcat(cmd_str, cmd[index]);
+        if(index != (argc-optind-1))
+            strcat(cmd_str, " ");
     }
 
-    cmd = (char *)malloc(len);
-    for(index=optind;index<argc;index++){
-        strcat(cmd, " ");
-        strcat(cmd, argv[index]);
-    }
+    cmd[argc-optind] = NULL;
 
     info->child_cmd = cmd;
 
@@ -193,7 +192,7 @@ end_arg_processing:
 
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
-    printf("\nCommand: %s\n", cmd);
+    printf("\nCommand: %s\n", cmd_str);
 
     //
     stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
@@ -214,7 +213,7 @@ end_arg_processing:
     // Command
     message = "\n   * Running:   ";
     write(stat_fd, message, strlen(message));
-    write(stat_fd, cmd, len);
+    write(stat_fd, cmd_str, strlen(cmd_str));
 
     // Component
     message = "\n   * Component: ";
@@ -518,19 +517,14 @@ int main(int argc, char *argv[]) {
 
     if(pid == 0) {
         // Child Process
-        system(info.child_cmd);
-#ifdef DEBUG
-        printf("\nEnd of child process\n");
-#endif   // DEBUG
-        exit(0);
+        execve(info.child_cmd[0], info.child_cmd, NULL);
+        // If error, execve() returns -1. Otherwise, execve() does not return value
+        perror("\nexecve() error");
     }
     else {
         // Parent Process
         measure_rawdata(pid, info);
         calculate_2ndstat(info);
-#ifdef DEBUG
-        printf("\nEnd of parent process\n");
-#endif   // DEBUG
     }
     return 0;
 }
