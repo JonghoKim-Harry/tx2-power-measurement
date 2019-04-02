@@ -479,7 +479,9 @@ void calculate_2ndstat(const struct measurement_info info) {
     printf("\ncalculate_2ndstat() does NOT have infinite loop");
 #endif   // DEBUG
 
+    // Close and remove rawdata.bin file
     close(rawdata_fd);
+    remove(info.rawdata_filename);
 
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
