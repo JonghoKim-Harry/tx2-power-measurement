@@ -8,7 +8,6 @@
 #include <errno.h>      // strerror(errno)
 
 // POSIX Headers Files
-#include <pthread.h>
 #include <unistd.h>     // access(), read(), write(), close(), getopt(), extern char *optarg, extern int optind, extern int optopt
 #include <fcntl.h>      // open()
 #include <sys/types.h>
@@ -42,11 +41,7 @@ void help() {
     printf("\n");
 }
 
-void *prepare_measurement(void *data) {
-
-    struct measurement_info *info = (struct measurement_info *)data;
-    const int argc = info->argc;
-    char **argv = info->argv;
+void prepare_measurement(const int argc, char *argv[], struct measurement_info *info) {
 
     //
     const char *message;
@@ -313,7 +308,7 @@ end_arg_processing:
     printf("\nprepare_measurement()   FINISHED");
 #endif   // DEBUG
 
-    return (void *)info;
+    return;
 }
 
 void measure_rawdata(const int pid, const struct measurement_info info) {
@@ -498,8 +493,6 @@ void calculate_2ndstat(const struct measurement_info info) {
 
 int main(int argc, char *argv[]) {
 
-    pthread_t thread;
-    int thread_status;
     int pid;
     struct measurement_info info;
 
@@ -507,10 +500,7 @@ int main(int argc, char *argv[]) {
     printf("\nYou are running debug mode");
 #endif   // DEBUG
 
-    info.argc = argc;
-    info.argv = argv;
-    pthread_create(&thread, NULL, prepare_measurement, &info);
-    pthread_join(thread, (void **)&thread_status);
+    prepare_measurement(argc, argv, &info);
 
     // Run
     pid = fork();
