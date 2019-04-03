@@ -40,22 +40,8 @@ REFERENCE
 DESIGN PRINCIPLE
 
    In order to minimize measurement overhead, I used a lot of system calls.
-
-      * time()
-      * gettimeofday()
-      * clock_gettime()
-      * nanosleep()
-      * access()
-      * open()
-      * lseek()
-      * read()
-      * write()
-      * dup2()
-      * close()
-      * fork()
-      * execve()
-      * waitpid()
-      * exit()
+   I only C standard-compatible or POSIX-compatible system calls.
+   I did NOT used any of Linux-specific system calls
 
 
 SCRIPT USAGE EXAMPLE

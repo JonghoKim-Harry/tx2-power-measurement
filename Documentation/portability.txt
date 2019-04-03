@@ -1,0 +1,22 @@
+For portability, I used:
+
+   * Standard C Library-compatible Linux System Calls:
+
+        - clock_gettime()    in <time.h>
+        - nanosleep()        in <time.h>
+        - exit()             in <stdlib.h>
+
+
+   * POSIX-compatible Linux System Calls:
+
+        - gettimeofday()     in <sys/time.h>
+        - access()           in <unistd.h>
+        - open()             in <fcntl.h>
+        - lseek()            in <unistd.h>
+        - read()             in <unistd.h>
+        - write()            in <unistd.h>
+        - dup2()             in <unistd.h>
+        - close()            in <unistd.h>
+        - fork()             in <unistd.h>
+        - execve()           in <unistd.h>
+        - waitpid()          in <sys/wait.h>
