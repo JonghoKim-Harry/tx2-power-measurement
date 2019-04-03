@@ -1,0 +1,31 @@
+PARENT PROCESS
+      |
+      v
+prepare_measurement()
+      |
+      v
+system call: fork() ----------------------> CHILD PROCESS
+      |                                          |
+      v                                          v
+measure_rawdata()                           system call: execve()
+
+   * Write human-unreadable timestamp,         * Can run any shell command
+     power, frequency to 'rawdata.bin'           independently with parent
+
+    * Parallel execution with                  * We typically execute
+      child process                              CNN inference
+
+      |                                             |
+      v                                             v
+calculate_2ndstat() <------------------------- CHILD PROCESS COMPLETE
+
+   * Read data from 'rawdata.bin',
+     then write human-readable timestamp,
+     power, frequency to 'stats.txt'
+
+   * Calculate elapsed time from timestamp,
+     energy from time and power, then write
+     them to 'stats.txt'
+
+   * When all writes to 'stats.txt' is done,
+     then remove 'rawdata.bin'

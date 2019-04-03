@@ -1,0 +1,7 @@
+* In stats.txt, the timestamp which points when we start measurement
+  are written in both GMT and Korea timestamp
+
+* Time stamps are written in GMT, becuase Caffe uses GMT based time stamp
+
+
+
