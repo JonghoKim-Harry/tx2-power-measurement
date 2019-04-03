@@ -2,6 +2,14 @@ PARENT PROCESS
       |
       v
 prepare_measurement()
+
+   * Process arguments: For example, takes statistics file name
+     'OOO_stats.txt' as an argument
+
+   * Prepare log, stat file, column formats
+
+   * Open files and prepare list of file descriptors
+
       |
       v
 system call: fork() ----------------------> CHILD PROCESS
@@ -12,20 +20,30 @@ measure_rawdata()                           system call: execve()
    * Write human-unreadable timestamp,         * Can run any shell command
      power, frequency to 'rawdata.bin'           independently with parent
 
-    * Parallel execution with                  * We typically execute
-      child process                              CNN inference
-
-      |                                             |
-      v                                             v
-calculate_2ndstat() <------------------------- CHILD PROCESS COMPLETE
+    * Parallel execution with                  * We typically execute CNN 
+      child process                              inference with Caffe,
+                                                 redirecting stderr to
+      |                                          'OOO.caffelog.txt'
+      |
+      |                                          |
+      v                                          v
+calculate_2ndstat() <---------------------- CHILD PROCESS COMPLETE
 
    * Read data from 'rawdata.bin',
      then write human-readable timestamp,
-     power, frequency to 'stats.txt'
+     power, frequency to 'OOO_stats.txt'
 
    * Calculate elapsed time from timestamp,
      energy from time and power, then write
-     them to 'stats.txt'
+     them to 'ooo_stats.txt'
 
-   * When all writes to 'stats.txt' is done,
+   * When all writes to 'ooo_stats.txt' is done,
      then remove 'rawdata.bin'
+
+     |
+     v
+RESULT
+
+   * 'OOO_stats.txt'
+   * 'OOO.caffelog.txt'
+   * 'OOO.powerlog' if C flag '-DDEBUG' is set
