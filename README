@@ -50,6 +50,7 @@ DESIGN PRINCIPLE
       * lseek()
       * read()
       * write()
+      * dup2()
       * close()
       * fork()
       * execve()

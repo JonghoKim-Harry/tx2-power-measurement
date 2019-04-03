@@ -48,15 +48,16 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     int option, index;
     int cflag = 0, fflag = 0;
     char component_str[16];
-    char rawdata_filename[128], stat_filename[128];
+    char given_dirname[128], filename_prefix[128], rawdata_filename[128], caffelog_filename[128], stat_filename_buff[128];
+    int rawdata_fd, caffelog_fd, stat_fd;
+    const char *stat_filename, *basename_ptr;
+    char token[128], *next_token;
     char **cmd, cmd_str[256];
 
     char raw_power_filename[128];
 
     char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
     size_t gmt_buff_len, korea_time_buff_len;
-    int rawdata_fd;
-    int stat_fd;
     int gpu_power_fd;
     struct timeval walltime;
     struct tm *walltime_detailed;
@@ -95,7 +96,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
 
         case 'f':
             // Process option -f
-            strcpy(stat_filename, optarg);
+            strcpy(stat_filename_buff, optarg);
             fflag = 1;
             break;
 
@@ -127,7 +128,7 @@ end_arg_processing:
     if(!fflag) {
 
         printf("\nYou did not specify statistics file name; thus, the file name is set to the default name, stats.txt");
-        strcpy(stat_filename, "stats.txt");
+        strcpy(stat_filename_buff, "stats.txt");
     }
 
     if(!cflag) {
@@ -189,15 +190,34 @@ end_arg_processing:
 
     printf("\nCommand: %s\n", cmd_str);
 
-    //
+    // OOO_stats.txt
+    stat_filename = stat_filename_buff;
     stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     printf("\nCreated statistic file: %s", stat_filename);
 
-    //
+    // Extract dirname and basename from the given stat file name
+    //    * Note that dirname(), basename(), token_r()  may modify argument,
+    //      thus, we use copied argument
     strcpy(filename_buff, stat_filename);
-    strcpy(rawdata_filename, dirname(filename_buff));
-    strcat(rawdata_filename, "/rawdata.bin");
+    strcpy(given_dirname, dirname(filename_buff));
+    basename_ptr = stat_filename + strlen(given_dirname) + 1;
+    strcpy(token, basename_ptr);
+    strtok_r(token, ".", &next_token);
+    strcpy(filename_prefix, token);
+
+    // OOO.rawdata.bin
+    strcpy(rawdata_filename, given_dirname);
+    strcat(rawdata_filename, "/");
+    strcat(rawdata_filename, filename_prefix);
+    strcat(rawdata_filename, ".rawdata.bin");
     rawdata_fd = open(rawdata_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+
+    // OOO.caffelog.txt
+    strcpy(caffelog_filename, given_dirname);
+    strcat(caffelog_filename, "/");
+    strcat(caffelog_filename, filename_prefix);
+    strcat(caffelog_filename, ".caffelog.txt");
+    caffelog_fd = open(caffelog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
     // Start logging
     write(stat_fd, "            JETSON TX2 POWER MEASUREMENT STATS\n", 47);
@@ -303,6 +323,10 @@ end_arg_processing:
     // Raw data file informations
     strcpy(info->rawdata_filename, rawdata_filename);
     info->rawdata_fd = rawdata_fd;
+
+    // Caffelog file informations
+    strcpy(info->caffelog_filename, caffelog_filename);
+    info->caffelog_fd = caffelog_fd;
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -507,7 +531,9 @@ int main(int argc, char *argv[]) {
 
     if(pid == 0) {
         // Child Process
+        dup2(info.caffelog_fd, STDERR_FILENO);
         execve(info.child_cmd[0], info.child_cmd, NULL);
+
         // If error, execve() returns -1. Otherwise, execve() does not return value
         perror("\nexecve() error");
     }

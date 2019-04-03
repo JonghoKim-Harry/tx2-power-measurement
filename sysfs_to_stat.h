@@ -20,16 +20,16 @@ struct measurement_info;
 struct sysfs_stat_info {
 
 #ifdef DEBUG
-    char column_name[128];
+    char column_name[256];
 #endif   // DEBUG
 
-    /**/
+    //
     ssize_t (*read_sysfs_func)(const struct sysfs_stat_info stat_info, const int rawdata_fd);
     int num_sysfs_fd;
     int max_strlen[MAX_NUM_SYSFS_FD];
     int sysfs_fd[MAX_NUM_SYSFS_FD];
 
-    /**/
+    //
     ssize_t (*rawdata_to_stat_func)(const struct sysfs_stat_info info, const int rawdata_fd, const int stat_fd);
     int column_width;
     char stat_format[64];
@@ -42,9 +42,13 @@ struct measurement_info {
 
     /*
      *  I will use execve() to run child command.
-     *  Therefore, the child_cmd is an NULL-terminated array of arguments
+     *  Therefore, the child_cmd is an NULL-terminated array of arguments.
+     *  Child will redirect its stderr message to caffelog file;
+     *  thus, we store caffelog file name and fd
      */
     char **child_cmd;
+    char caffelog_filename[128];
+    int caffelog_fd;
 
     /* Informations used by measure_rawdata() */
     struct timespec start_time;
