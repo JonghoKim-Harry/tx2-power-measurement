@@ -1,5 +1,16 @@
+#
+# Ignore build result
+#
 tx2_power_measurement
+
+#
+# Ignore dot files
+#
 .*
+
+#
+# Typically ignored files
+#
 *.o
 *.txt
 *.bin
@@ -9,16 +20,27 @@ tx2_power_measurement
 *.prototxt
 
 #
+# Track all files in the directory Documentation/
+#
+!Documentation/**
+
+#
 # Ignore my TODO list
 #
 TODO
 
 #
-# git files that we don't want to ignore even if they are dot-files
+# Track .gitignore file although it is dot-file
 #
 !.gitignore
-!caffe_prototxt/*
 
-# cscope files
+#
+# Track all files in the directory caffe_prototxt
+#
+!caffe_prototxt/**
+
+#
+# Ignore cscope files
+#
 cscope.*
 ncscope.*
