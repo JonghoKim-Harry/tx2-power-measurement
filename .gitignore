@@ -9,6 +9,11 @@ tx2_power_measurement
 *.prototxt
 
 #
+# Ignore my TODO list
+#
+TODO
+
+#
 # git files that we don't want to ignore even if they are dot-files
 #
 !.gitignore
