@@ -48,9 +48,15 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     int option, index;
     int cflag = 0, fflag = 0;
     char component_str[16];
-    char given_dirname[128], filename_prefix[128], rawdata_filename[128], caffelog_filename[128], stat_filename_buff[128];
-    int rawdata_fd, caffelog_fd, stat_fd;
+    char given_dirname[128], filename_prefix[128], stat_filename_buff[128];
     const char *stat_filename, *basename_ptr;
+    int stat_fd;
+    char rawdata_filename[128];
+    int rawdata_fd;
+    char caffelog_filename[128];
+    int caffelog_fd;
+    char powerlog_filename[128];
+    int powerlog_fd;
     char token[128], *next_token;
     char **cmd, cmd_str[256];
 
@@ -212,6 +218,13 @@ end_arg_processing:
     strcat(rawdata_filename, ".rawdata.bin");
     rawdata_fd = open(rawdata_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
+    // OOO.powerlog.txt
+    strcpy(powerlog_filename, given_dirname);
+    strcat(powerlog_filename, "/");
+    strcat(powerlog_filename, filename_prefix);
+    strcat(powerlog_filename, ".powerlog.txt");
+    powerlog_fd = open(powerlog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+
     // OOO.caffelog.txt
     strcpy(caffelog_filename, given_dirname);
     strcat(caffelog_filename, "/");
@@ -324,9 +337,16 @@ end_arg_processing:
     strcpy(info->rawdata_filename, rawdata_filename);
     info->rawdata_fd = rawdata_fd;
 
+    // Powerlog file informations
+    strcpy(info->powerlog_filename, powerlog_filename);
+    info->powerlog_fd = powerlog_fd;
+
     // Caffelog file informations
     strcpy(info->caffelog_filename, caffelog_filename);
     info->caffelog_fd = caffelog_fd;
+
+    dup2(powerlog_fd, STDERR_FILENO);
+    dup2(powerlog_fd, STDOUT_FILENO);
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");

@@ -42,7 +42,7 @@ TEST_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/test_result/cifar-10
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
 	@if [ ! -d $(TEST_RESULT_PATH_CIFAR10) ]; then mkdir -p $(TEST_RESULT_PATH_CIFAR10); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10) 1> $(TEST_RESULT_PATH_CIFAR10)/cifar10_powerlog.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
@@ -54,7 +54,7 @@ TEST_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/test_result/mnist
 check-mnist: $(TARGET)
 	@echo "\n** Start selftesting with MNIST\n"
 	@if [ ! -d $(TEST_RESULT_PATH_MNIST) ]; then mkdir -p $(TEST_RESULT_PATH_MNIST); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST) 1> $(TEST_RESULT_PATH_MNIST)/mnist_powerlog.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST\n"
 
 check-plot: check-cifar10 check-mnist
@@ -68,11 +68,11 @@ debug: $(TARGET)
 	@echo "\nSTART DEBUGGING"
 	@echo "\n** Start selftesting with CIFAR-10 with DEBUG VERSION\n"
 	@if [ ! -d $(TEST_RESULT_PATH_CIFAR10) ]; then mkdir -p $(TEST_RESULT_PATH_CIFAR10); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10) 1> $(TEST_RESULT_PATH_CIFAR10)/cifar10_powerlog-debug.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10 with DEBUG VERSION\n"
 	@echo "\n** Start selftesting with MNIST with DEBUG VERSION\n"
 	@if [ ! -d $(TEST_RESULT_PATH_MNIST) ]; then mkdir -p $(TEST_RESULT_PATH_MNIST); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power-debug.txt $(CAFFE_COMMAND_MNIST) 1> $(TEST_RESULT_PATH_MNIST)/mnist_powerlog-debug.txt
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power-debug.txt $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST with DEBUG VERSION\n"
 	@echo "\nFINISH DEBUGGING"
 

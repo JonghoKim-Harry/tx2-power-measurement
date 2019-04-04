@@ -37,8 +37,9 @@ struct sysfs_stat_info {
 
 struct measurement_info {
 
-    int argc;
-    char **argv;
+    //
+    char powerlog_filename[128];
+    int powerlog_fd;
 
     /*
      *  I will use execve() to run child command.
