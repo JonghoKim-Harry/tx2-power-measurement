@@ -1,5 +1,7 @@
-This directory contains Caffe prototxt files with absolute path.
-Caffe typically use relative path;
-however, using relative path requires change to CAFFE ROOT directory
+* This directory contains Caffe prototxt files with absolute path.
+  Caffe typically use relative path; however, using relative path requires
+  change to CAFFE ROOT directory
 
-Note that Caffe prototxt can not get shell variables such as $CAFFE_ROOT
+* Note that Caffe prototxt can NOT get shell variables such as $CAFFE_ROOT
+
+* deploy.txt does NOT include any path informations
