@@ -39,9 +39,11 @@ REFERENCE
 
 DESIGN PRINCIPLE
 
-   In order to minimize measurement overhead, I used a lot of system calls.
-   I only C standard-compatible or POSIX-compatible system calls.
-   I did NOT used any of Linux-specific system calls
+   * In order to minimize measurement overhead, I used a lot of system calls.
+   
+   * For portability, I used only C standard-compatible or POSIX-compatible
+     Linux system calls. I did NOT used any of Linux-specific system calls.
+     See: Documentation/portability
 
 
 SCRIPT USAGE EXAMPLE
