@@ -562,5 +562,8 @@ int main(int argc, char *argv[]) {
         measure_rawdata(pid, info);
         calculate_2ndstat(info);
     }
+
+    close(info.caffelog_fd);
+
     return 0;
 }
