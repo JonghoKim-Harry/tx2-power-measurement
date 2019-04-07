@@ -15,7 +15,7 @@
 #include <libgen.h>     // dirname()
 
 // Custom Header Files
-#include "sysfs_to_stat.h"
+#include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
@@ -364,7 +364,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int child_status;
     int num_read_bytes;
-    struct sysfs_stat_info stat_info;
+    struct sysfs_stat stat_info;
 
 #ifdef TRACE_DDR
     int mem_freq_fd;
@@ -433,7 +433,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     int32_t gpu_energy_Wh;      // Wh
     int32_t prev_gpu_power, gpu_power, avg_gpu_power;   // mW
 
-    struct sysfs_stat_info stat_info;
+    struct sysfs_stat stat_info;
 
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);

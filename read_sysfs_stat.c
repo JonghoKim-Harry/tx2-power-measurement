@@ -3,7 +3,7 @@
 #include <unistd.h>   // close()
 #include <string.h>
 #include <errno.h>
-#include "sysfs_to_stat.h"
+#include "read_sysfs_stat.h"
 
 #define WHITESPACE   "                                                       "
 
@@ -19,7 +19,7 @@ void print_info(const struct measurement_info info) {
     return;
 }
 
-void print_stat_info(const struct sysfs_stat_info stat_info) {
+void print_stat_info(const struct sysfs_stat stat_info) {
 
     int i;
 
@@ -36,14 +36,14 @@ void print_stat_info(const struct sysfs_stat_info stat_info) {
 
 void register_sysfs
     (struct measurement_info *info,
-     ssize_t (*read_sysfs_func)(const struct sysfs_stat_info stat_info, const int rawdata_fd),
-     ssize_t (*rawdata_to_stat_func)(const struct sysfs_stat_info stat_info, const int rawdata_fd, const int stat_fd),
+     ssize_t (*read_sysfs_func)(const struct sysfs_stat stat_info, const int rawdata_fd),
+     ssize_t (*rawdata_to_stat_func)(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd),
      const char *column_name,
      const char *stat_format,
      const int num_sysfs_file, ...) {
 
     const int index = info->num_sysfs_data;
-    struct sysfs_stat_info *stat_info = &info->stat_info[index];
+    struct sysfs_stat *stat_info = &info->stat_info[index];
     va_list sysfs_list;
     int i;
     char buff[128], column_header[128];
@@ -128,7 +128,7 @@ void register_sysfs
 void close_sysfs(struct measurement_info info) {
 
     int i, j;
-    struct sysfs_stat_info *target;
+    struct sysfs_stat *target;
     int num1, num2;
 
 #ifdef DEBUG
@@ -175,7 +175,7 @@ ssize_t sysfs_to_stat(const int stat_fd, const char *sysfs_filename, const char 
     return num_read_bytes;
 }
 
-ssize_t read_sysfs_1(const struct sysfs_stat_info stat_info, const int rawdata_fd) {
+ssize_t read_sysfs_1(const struct sysfs_stat stat_info, const int rawdata_fd) {
 
     ssize_t num_read_bytes;
     const int max_strlen = stat_info.max_strlen[0];
@@ -215,7 +215,7 @@ ssize_t read_sysfs_1(const struct sysfs_stat_info stat_info, const int rawdata_f
     return num_read_bytes;
 }
 
-ssize_t read_sysfs_2(const struct sysfs_stat_info stat_info, const int rawdata_fd) {
+ssize_t read_sysfs_2(const struct sysfs_stat stat_info, const int rawdata_fd) {
 
     ssize_t num_read_bytes;
     const int max_strlen1 = stat_info.max_strlen[0];
@@ -275,7 +275,7 @@ ssize_t read_sysfs_2(const struct sysfs_stat_info stat_info, const int rawdata_f
     return num_read_bytes;
 }
 
-ssize_t rawdata_to_stat_1(const struct sysfs_stat_info stat_info, const int rawdata_fd, const int stat_fd) {
+ssize_t rawdata_to_stat_1(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd) {
 
     ssize_t num_read_bytes;
     const char *stat_format = stat_info.stat_format;
@@ -307,7 +307,7 @@ ssize_t rawdata_to_stat_1(const struct sysfs_stat_info stat_info, const int rawd
     return num_read_bytes;
 }
 
-ssize_t rawdata_to_stat_2(const struct sysfs_stat_info stat_info, const int rawdata_fd, const int stat_fd) {
+ssize_t rawdata_to_stat_2(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd) {
 
     ssize_t num_read_bytes;
     const char *stat_format = stat_info.stat_format;
