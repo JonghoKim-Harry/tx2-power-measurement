@@ -18,6 +18,7 @@ tx2_power_measurement
 *.caffelog
 *.csv
 *.prototxt
+*.backup
 
 #
 # Track all files in the directory Documentation/
