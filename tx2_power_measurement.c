@@ -535,6 +535,12 @@ void calculate_2ndstat(const struct measurement_info info) {
     return;
 }
 
+void endup_measurement(struct measurement_info *info) {
+
+    close(info->powerlog_fd);
+    close(info->caffelog_fd);
+}
+
 int main(int argc, char *argv[]) {
 
     int pid;
@@ -557,13 +563,11 @@ int main(int argc, char *argv[]) {
         // If error, execve() returns -1. Otherwise, execve() does not return value
         perror("\nexecve() error");
     }
-    else {
-        // Parent Process
-        measure_rawdata(pid, info);
-        calculate_2ndstat(info);
-    }
 
-    close(info.caffelog_fd);
+    // Parent Process
+    measure_rawdata(pid, info);
+    calculate_2ndstat(info);
+    endup_measurement(&info);
 
     return 0;
 }
