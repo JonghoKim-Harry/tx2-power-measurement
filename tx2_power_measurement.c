@@ -529,16 +529,11 @@ void calculate_2ndstat(const struct measurement_info info) {
     buff_len = snprintf(buff, 256, "\nTOTAL GPU ENERGY: %9d.%012ld Wh", gpu_energy_Wh, gpu_energy_pWh); // 44
     write(stat_fd, buff, buff_len);
 
-    close(stat_fd);
     printf("\nEnd Jetson TX2 power measurement\n");
-
+    close(stat_fd);
+    close(info.powerlog_fd);
+    close(info.caffelog_fd);
     return;
-}
-
-void endup_measurement(struct measurement_info *info) {
-
-    close(info->powerlog_fd);
-    close(info->caffelog_fd);
 }
 
 int main(int argc, char *argv[]) {
@@ -567,7 +562,6 @@ int main(int argc, char *argv[]) {
     // Parent Process
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
-    endup_measurement(&info);
 
     return 0;
 }
