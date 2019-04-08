@@ -352,6 +352,7 @@ end_arg_processing:
     // TODO: regcomp()
     // Produce special data structure for fast regex execution
     regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}", REG_NOSUB);
+    //regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}", REG_NOSUB);
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -552,8 +553,8 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     printf("\nEnd Jetson TX2 power measurement\n");
     close(stat_fd);
+    close(caffelog_fd);   // Reopened caffelog's fd
     close(info.powerlog_fd);
-    close(info.caffelog_fd);
 
     return;
 }
