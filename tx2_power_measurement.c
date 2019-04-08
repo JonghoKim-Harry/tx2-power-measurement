@@ -351,7 +351,7 @@ end_arg_processing:
 
     // TODO: regcomp()
     // Produce special data structure for fast regex execution
-    regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}", REG_NOSUB);
+    regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}", REG_NOSUB);
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -480,7 +480,7 @@ void calculate_2ndstat(const struct measurement_info info) {
         if(read_result <= 0) break;
 
         // TODO: parse_caffelog()
-        parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
+        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
 
         // Time stamp in order to compare with Caffe time stamp
         caffe_format_time = localtime(&time.tv_sec);
