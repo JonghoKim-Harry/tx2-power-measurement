@@ -34,7 +34,8 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
         return -1;
     }
 
-    read_bytes = pread(caffelog_fd, buff, 256, offset);
+read_a_line:
+    read_bytes = pread(caffelog_fd, buff, 256, new_offset);
 
     if(read_bytes <= 0) {
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
@@ -55,13 +56,21 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
 
     regexec(&timestamp_pattern, buff, num_timestamp, timestamp, NO_REGEX_EFLAGS);
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   1st match's rm_so: %d", timestamp[0].rm_so);
+    printf("\nparse_caffelog()   1st match's rm_so: %u", timestamp[0].rm_so);
+    printf("\nparse_caffelog()   1st match's rm_eo: %u", timestamp[0].rm_eo);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
+    if(timestamp[0].rm_so >= timestamp[0].rm_eo) {
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
+    printf("\nparse_caffelog()   No Match");
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
+        goto read_a_line;
+    }
+
     // Hour
-    start_ptr = buff + timestamp[0].rm_so;
+    start_ptr = buff + timestamp[0].rm_so + 1;
     strncpy(timebuff, start_ptr, 2);
-    timebuff[3] = '\0';
+    timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
@@ -70,7 +79,7 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     // Minute
     start_ptr += 3;
     strncpy(timebuff, start_ptr, 2);
-    timebuff[3] = '\0';
+    timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff min: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
@@ -79,21 +88,23 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     // Second
     start_ptr += 3;
     strncpy(timebuff, start_ptr, 2);
-    timebuff[3] = '\0';
+    timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     date_timestamp.tm_sec = atoi(timebuff);
     (&event->gmt_timestamp)->tv_sec = mktime(&date_timestamp);
 
+
     // Nanosecond
     start_ptr += 3;
     strncpy(timebuff, start_ptr, 6);
-    timebuff[7] = '\0';
+    timebuff[6] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff ns: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     (&event->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
+
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   FINISHED");

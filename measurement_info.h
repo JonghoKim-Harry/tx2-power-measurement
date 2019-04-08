@@ -56,7 +56,6 @@ struct measurement_info {
     char **child_cmd;
     char caffelog_filename[128];
     int caffelog_fd;
-    // TODO
     regex_t timestamp_pattern;
 
     /* Informations used by measure_rawdata() */

@@ -17,7 +17,6 @@
 // Custom Header Files
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
-// TODO
 #include "parse_caffelog.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
@@ -349,10 +348,8 @@ end_arg_processing:
     */
 #endif   // TRACE_CPU
 
-    // TODO: regcomp()
     // Produce special data structure for fast regex execution
-    regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}", REG_NOSUB);
-    //regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}", REG_NOSUB);
+    regcomp(&info->timestamp_pattern, "[a-zA-Z_ \t\r\n\f]*([0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6})[a-zA-Z_ \t\r\n\f]*", REG_EXTENDED);
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -414,14 +411,12 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
     close(info.gpu_power_fd);
     close(info.rawdata_fd);
-    // TODO: close
     close(info.caffelog_fd);
     close_sysfs(info);
 }
 
 void calculate_2ndstat(const struct measurement_info info) {
 
-    // TODO
     // Caffelog
     int caffelog_fd;
     off_t offset;
@@ -480,7 +475,6 @@ void calculate_2ndstat(const struct measurement_info info) {
         read_result = read(rawdata_fd, &time, sizeof(struct timespec));
         if(read_result <= 0) break;
 
-        // TODO: parse_caffelog()
         offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
 
         // Time stamp in order to compare with Caffe time stamp
@@ -585,7 +579,6 @@ int main(int argc, char *argv[]) {
     // Parent Process
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
-    // TODO: regfree()
     regfree(&info.timestamp_pattern);
 
     return 0;
