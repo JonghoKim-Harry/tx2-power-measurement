@@ -18,7 +18,7 @@
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
 // TODO
-//#include "parse_caffelog.h"
+#include "parse_caffelog.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
 
@@ -350,6 +350,8 @@ end_arg_processing:
 #endif   // TRACE_CPU
 
     // TODO: regcomp()
+    // Produce special data structure for fast regex execution
+    regcomp(&info->timestamp_pattern, "[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}", REG_NOSUB);
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -411,10 +413,18 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
     close(info.gpu_power_fd);
     close(info.rawdata_fd);
+    // TODO: close
+    close(info.caffelog_fd);
     close_sysfs(info);
 }
 
 void calculate_2ndstat(const struct measurement_info info) {
+
+    // TODO
+    // Caffelog
+    int caffelog_fd;
+    off_t offset;
+    struct caffe_event event;
 
     /*
      *  This function get file name of statistics file.
@@ -438,6 +448,11 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     struct sysfs_stat stat_info;
 
+    // Caffelog
+    offset = 0;
+    caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
+
+    // Rawdata
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
     stat_fd = open(info.stat_filename, O_WRONLY);
@@ -465,6 +480,7 @@ void calculate_2ndstat(const struct measurement_info info) {
         if(read_result <= 0) break;
 
         // TODO: parse_caffelog()
+        parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
 
         // Time stamp in order to compare with Caffe time stamp
         caffe_format_time = localtime(&time.tv_sec);
@@ -539,6 +555,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     close(info.powerlog_fd);
     close(info.caffelog_fd);
     // TODO: regfree()
+    regfree(&info.timestamp_pattern);
 
     return;
 }

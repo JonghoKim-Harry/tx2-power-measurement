@@ -4,6 +4,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
+#include <regex.h>
 
 #define MAX_NUM_SYSFS_FD    8
 #define ONE_SYSFS_FILE      1
@@ -55,6 +56,8 @@ struct measurement_info {
     char **child_cmd;
     char caffelog_filename[128];
     int caffelog_fd;
+    // TODO
+    regex_t timestamp_pattern;
 
     /* Informations used by measure_rawdata() */
     struct timespec start_time;
