@@ -67,7 +67,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     size_t gmt_buff_len, korea_time_buff_len;
     int gpu_power_fd;
     struct timeval walltime;
-    struct tm *walltime_detailed;
+    struct tm *walltime_callendar;
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   START");
@@ -172,24 +172,24 @@ end_arg_processing:
         exit(-1);
     }
 
-    walltime_detailed = localtime(&walltime.tv_sec);
-    if(!walltime_detailed) {
+    walltime_callendar = localtime(&walltime.tv_sec);
+    if(!walltime_callendar) {
         perror("localtime() call error");
         exit(-1);
     }
    
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_detailed);
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_callendar);
     gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
     // Korea Time
     walltime.tv_sec += GMT_TO_KOREA_TIME;
-    walltime_detailed = localtime(&walltime.tv_sec);
-    if(!walltime_detailed) {
+    walltime_callendar = localtime(&walltime.tv_sec);
+    if(!walltime_callendar) {
         perror("localtime() call error");
         exit(-1);
     }
    
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_detailed);
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_callendar);
     korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
 
 
@@ -476,6 +476,8 @@ void calculate_2ndstat(const struct measurement_info info) {
         if(read_result <= 0) break;
 
         offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
+        if(offset > 0)
+            printf("\nCaffelog Timestamp: %ld.%ld", event.gmt_timestamp.tv_sec, event.gmt_timestamp.tv_nsec);
 
         // Time stamp in order to compare with Caffe time stamp
         caffe_format_time = localtime(&time.tv_sec);
