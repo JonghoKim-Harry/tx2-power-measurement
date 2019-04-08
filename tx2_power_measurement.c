@@ -17,6 +17,8 @@
 // Custom Header Files
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
+// TODO
+//#include "parse_caffelog.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
 
@@ -312,7 +314,7 @@ end_arg_processing:
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq", "%*skHz", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
 
-    /* TODO: Resolve too much measurement overhead
+    /* We should resolve too much measurement overhead
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU2-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(2), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(2), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU3-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(3), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(3), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
@@ -347,6 +349,8 @@ end_arg_processing:
 
     dup2(powerlog_fd, STDERR_FILENO);
     dup2(powerlog_fd, STDOUT_FILENO);
+
+    // TODO: regcomp()
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -461,6 +465,8 @@ void calculate_2ndstat(const struct measurement_info info) {
         read_result = read(rawdata_fd, &time, sizeof(struct timespec));
         if(read_result <= 0) break;
 
+        // TODO: parse_caffelog()
+
         // Time stamp in order to compare with Caffe time stamp
         caffe_format_time = localtime(&time.tv_sec);
         strftime(time_buff, 256, "%H:%M:%S", caffe_format_time);
@@ -533,6 +539,8 @@ void calculate_2ndstat(const struct measurement_info info) {
     close(stat_fd);
     close(info.powerlog_fd);
     close(info.caffelog_fd);
+    // TODO: regfree()
+
     return;
 }
 
