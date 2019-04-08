@@ -25,10 +25,21 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     printf("\nparse_caffelog()   START");
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
+    if(offset < 0) {
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
+    printf("\nparse_caffelog()   FINISHED: Maybe end of file reached");
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
+
+        return -1;
+    }
+
     read_bytes = pread(caffelog_fd, buff, 256, offset);
 
     if(read_bytes <= 0) {
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
         perror("pread() FAIL");
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
+
         return -1;
     }
 
@@ -38,17 +49,20 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     new_offset += (eol-buff+1);
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nLine: %s", buff);
+    printf("\nparse_caffelog()   Line: %s", buff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     regexec(&timestamp_pattern, buff, num_timestamp, timestamp, 0);
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
+    printf("\nparse_caffelog()   1st match's rm_so: %d", timestamp[0].rm_so);
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     // Hour
     start_ptr = buff + timestamp[0].rm_so;
     strncpy(timebuff, start_ptr, 2);
     timebuff[3] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\ntimebuff hour: %s", timebuff);
+    printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     date_timestamp.tm_hour = atoi(timebuff);
 
@@ -57,7 +71,7 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     strncpy(timebuff, start_ptr, 2);
     timebuff[3] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\ntimebuff min: %s", timebuff);
+    printf("\nparse_caffelog()   timebuff min: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     date_timestamp.tm_min = atoi(timebuff);
 
@@ -66,7 +80,7 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     strncpy(timebuff, start_ptr, 2);
     timebuff[3] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\ntimebuff sec: %s", timebuff);
+    printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     date_timestamp.tm_sec = atoi(timebuff);
     (&event->gmt_timestamp)->tv_sec = mktime(&date_timestamp);
@@ -76,9 +90,12 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     strncpy(timebuff, start_ptr, 6);
     timebuff[7] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\ntimebuff ns: %s", timebuff);
+    printf("\nparse_caffelog()   timebuff ns: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     (&event->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
 
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
+    printf("\nparse_caffelog()   FINISHED");
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     return new_offset;
 }

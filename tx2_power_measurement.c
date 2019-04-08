@@ -554,8 +554,6 @@ void calculate_2ndstat(const struct measurement_info info) {
     close(stat_fd);
     close(info.powerlog_fd);
     close(info.caffelog_fd);
-    // TODO: regfree()
-    regfree(&info.timestamp_pattern);
 
     return;
 }
@@ -586,6 +584,8 @@ int main(int argc, char *argv[]) {
     // Parent Process
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
+    // TODO: regfree()
+    regfree(&info.timestamp_pattern);
 
     return 0;
 }
