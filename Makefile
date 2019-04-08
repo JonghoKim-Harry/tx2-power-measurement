@@ -14,7 +14,7 @@ DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
 
-$(TARGET): $(TARGET).o read_sysfs_stat.o parse_caffelog.o
+$(TARGET): $(TARGET).o read_sysfs_stat.o parse_caffelog.o measurement_info.o
 	$(CC) $(CFLAGS) $? -o $@ $(LIBS)
 
 %.o: %.c

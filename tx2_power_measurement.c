@@ -308,22 +308,6 @@ end_arg_processing:
         strcpy(info->rawdata_scan_format, "\n%28ldns");
     }
 
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq", "%*sHz", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
-
-#ifdef TRACE_CPU
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq", "%*skHz", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-
-    /* We should resolve too much measurement overhead
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU2-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(2), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(2), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU3-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(3), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(3), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU4-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(4), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(4), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU5-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(5), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(5), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    */
-#endif   // TRACE_CPU
-
-
     // Write column names in the first raw of the statistics file
     info->offset_2ndstat = lseek(stat_fd, 0, SEEK_CUR);
     close(stat_fd);
@@ -349,6 +333,21 @@ end_arg_processing:
 
     dup2(powerlog_fd, STDERR_FILENO);
     dup2(powerlog_fd, STDOUT_FILENO);
+
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq", "%*sHz", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
+
+#ifdef TRACE_CPU
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq", "%*skHz", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+
+    /* We should resolve too much measurement overhead
+    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU2-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(2), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(2), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU3-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(3), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(3), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU4-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(4), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(4), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU5-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(5), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(5), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    */
+#endif   // TRACE_CPU
 
     // TODO: regcomp()
 
