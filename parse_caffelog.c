@@ -3,7 +3,8 @@
 #include <string.h>
 #include "parse_caffelog.h"
 
-#define MICROSECOND_TO_NANOSECOND 1000
+#define MICROSECOND_TO_NANOSECOND   1000
+#define NO_REGEX_EFLAGS   0
 
 off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, struct caffe_event *event) {
 
@@ -52,7 +53,7 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     printf("\nparse_caffelog()   Line: %s", buff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
-    regexec(&timestamp_pattern, buff, num_timestamp, timestamp, 0);
+    regexec(&timestamp_pattern, buff, num_timestamp, timestamp, NO_REGEX_EFLAGS);
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   1st match's rm_so: %d", timestamp[0].rm_so);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
