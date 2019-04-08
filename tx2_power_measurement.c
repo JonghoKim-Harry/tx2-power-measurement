@@ -348,8 +348,19 @@ end_arg_processing:
     */
 #endif   // TRACE_CPU
 
+
+    /*
+     *   Ignore the compilation warning message: 
+     *
+     *      warning: unknown escape sequence: '\]'
+     *
+     *   REG_EXTENDED supports the escape sequence '\]', thus just ignore it
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
     // Produce special data structure for fast regex execution
-    regcomp(&info->timestamp_pattern, "[a-zA-Z_ \t\r\n\f]*([0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6})[a-zA-Z_ \t\r\n\f]*", REG_EXTENDED);
+    regcomp(&info->timestamp_pattern, "[a-zA-Z_ \t\r\n\f]*([0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6})[^\]]*\][ \t\r\n\f]*([^ \t\r\n\f].*)", REG_EXTENDED);
+#pragma GCC diagnostic pop
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -421,6 +432,8 @@ void calculate_2ndstat(const struct measurement_info info) {
     int caffelog_fd;
     off_t offset;
     struct caffe_event event;
+    int64_t caffelog_powerlog_hms_diff_ns;
+    int caffelog_powerlog_diff;
 
     /*
      *  This function get file name of statistics file.
@@ -432,11 +445,11 @@ void calculate_2ndstat(const struct measurement_info info) {
     int stat_fd;
     char time_buff[256], buff[256], gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int buff_len;
-    struct timespec prev_time, time;
-    struct tm *caffe_format_time;
+    struct timespec prev_powerlog_timestamp, powerlog_timestamp;
+    struct tm *powerlog_callendar_timestamp;
+    time_t elapsed_time_sec;
+    int64_t elapsed_time_ns;
     int64_t diff_time_ns;
-    time_t time_sec;
-    int64_t time_ns;
     int32_t gpu_energy;         // mW x ns
     int64_t gpu_energy_pWh;     // pWh (10^-12 Wh)
     int32_t gpu_energy_Wh;      // Wh
@@ -446,6 +459,7 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     // Caffelog
     offset = 0;
+    event.offset = 0;
     caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
 
     // Rawdata
@@ -468,37 +482,72 @@ void calculate_2ndstat(const struct measurement_info info) {
     write(stat_fd, "\n----------------------------------------------------------------------------------------------------------------", 113);
 
     while(1) {
-        prev_time = time;
+        prev_powerlog_timestamp = powerlog_timestamp;
         prev_gpu_power = gpu_power;
         write(stat_fd, "\n", 1);
 
-        read_result = read(rawdata_fd, &time, sizeof(struct timespec));
+        read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
         if(read_result <= 0) break;
 
-        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
-        if(offset > 0)
-            printf("\nCaffelog Timestamp: %ld.%ld", event.gmt_timestamp.tv_sec, event.gmt_timestamp.tv_nsec);
-
         // Time stamp in order to compare with Caffe time stamp
-        caffe_format_time = localtime(&time.tv_sec);
-        strftime(time_buff, 256, "%H:%M:%S", caffe_format_time);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, time.tv_nsec);
+        powerlog_callendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
+
+        // TODO
+get_a_caffelog_event:
+        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
+        printf("\nCaffelog Timestamp: %ld.%ld", event.gmt_timestamp.tv_sec, event.gmt_timestamp.tv_nsec);
+        printf("\nCaffelog Event: %s", event.event);
+
+        caffelog_powerlog_hms_diff_ns
+        = compare_timestamp_hms(event.gmt_date_hms, *powerlog_callendar_timestamp);
+
+        printf("\ncaffelog_powerlog_hms_diff_ns: %ld ns", caffelog_powerlog_hms_diff_ns);
+
+        if(caffelog_powerlog_hms_diff_ns > 0)
+            caffelog_powerlog_diff = 1;
+        else if(caffelog_powerlog_hms_diff_ns < 0)
+            caffelog_powerlog_diff = -1;
+        else if(event.gmt_timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
+            caffelog_powerlog_diff = 1;
+        else if(event.gmt_timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
+            caffelog_powerlog_diff = -1;
+        else
+            caffelog_powerlog_diff = 0;
+
+        if((caffelog_powerlog_diff < 0)  && (offset >= 0)) {
+
+            // TODO: Log a caffelog event
+            strftime(time_buff, 256, "%H:%M:%S", &event.gmt_date_hms);
+            buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, event.gmt_timestamp.tv_nsec);
+            write(stat_fd, buff, buff_len);
+
+            // TODO
+            buff_len = snprintf(buff, 256, "%s", event.event);
+            write(stat_fd, buff, buff_len);
+
+            goto get_a_caffelog_event;
+        }
+// get_a_caffelog_event
+
+        // Powerlog Timestamp
+        strftime(time_buff, 256, "%H:%M:%S", powerlog_callendar_timestamp);
+        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
-        time_sec = time.tv_sec - info.start_time.tv_sec;
-        time_ns = time.tv_nsec - info.start_time.tv_nsec;
+        elapsed_time_sec = powerlog_timestamp.tv_sec - info.start_time.tv_sec;
+        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.start_time.tv_nsec;
 
-        if(time_ns < 0) {
+        if(elapsed_time_ns < 0) {
         
-            -- time_sec;
-            time_ns += SECOND_TO_NANOSECOND;
+            -- elapsed_time_sec;
+            elapsed_time_ns += SECOND_TO_NANOSECOND;
         }
 
         // TIME
-        if(time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", time_ns);
+        if(elapsed_time_sec == 0)
+            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", elapsed_time_ns);
         else
-            buff_len = snprintf(buff, 256, "%19ld%09ldns", time_sec, time_ns);
+            buff_len = snprintf(buff, 256, "%19ld%09ldns", elapsed_time_sec, elapsed_time_ns);
         write(stat_fd, buff, buff_len);
 
         // GPU POWER
@@ -516,7 +565,8 @@ void calculate_2ndstat(const struct measurement_info info) {
 
         gpu_power = atoi(gpu_power_str);
         avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
-        diff_time_ns = SECOND_TO_NANOSECOND * (time.tv_sec - prev_time.tv_sec) + time.tv_nsec - prev_time.tv_nsec;
+        diff_time_ns = SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
+                      + (powerlog_timestamp.tv_nsec - prev_powerlog_timestamp.tv_nsec);
 
         gpu_energy += avg_gpu_power * diff_time_ns;
 
@@ -541,7 +591,7 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
-    buff_len = snprintf(buff, 256, "\nTOTAL EXECUTION TIME: %19ld.%09ld second", time_sec, time_ns); // 59
+    buff_len = snprintf(buff, 256, "\nTOTAL EXECUTION TIME: %19ld.%09ld second", elapsed_time_sec, elapsed_time_ns); // 59
     write(stat_fd, buff, buff_len);
 
     buff_len = snprintf(buff, 256, "\nTOTAL GPU ENERGY: %9d.%012ld Wh", gpu_energy_Wh, gpu_energy_pWh); // 44
