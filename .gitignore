@@ -1,5 +1,8 @@
 #
-# Ignore build result
+# NOTE: If there are generated files in  specific subdirectory,
+#       add them in the ".gitignore" file in that subdirectory
+#
+# Generated Files
 #
 tx2_power_measurement
 
