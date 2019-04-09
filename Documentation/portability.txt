@@ -13,7 +13,11 @@ For portability with mere measurement overhead, I used:
         - int32_t                      in <stdint.h>
         - int64_t                      in <stdint.h>
         - struct timespec              in <time.h>
-        - struct tm
+        - struct tm                    in <time.h>
+        - va_list                      in <stdarg.h>
+        - va_start()                   in <stdarg.h>
+        - va_arg()                     in <stdarg.h>
+        - va_end()                     in <stdarg.h>
 
 
    * POSIX-compatible Linux System Calls:
@@ -34,8 +38,12 @@ For portability with mere measurement overhead, I used:
 
 For portability, I used:
 
-   * C Standard Library Functions:
+   * C Standard Library Variables and Functions:
 
+        - snprintf()                   in <stdio.h>
+        - strcpy()                     in <string.h>
+        - extern int errno             in <errno.h>
+        - strerror()                   in <errno.h>
         - atoi()                       in <stdlib.h>
         - localtime()                  in <time.h>
 
