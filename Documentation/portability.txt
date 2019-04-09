@@ -1,4 +1,4 @@
-For portability, I used:
+For portability with mere measurement overhead, I used:
 
    * Standard C Library-compatible Linux System Calls:
 
@@ -7,6 +7,10 @@ For portability, I used:
         - exit()             in <stdlib.h>
 
 
+   * Standard C Library Macros:
+
+        - assert()           in <assert.h>
+
    * POSIX-compatible Linux System Calls:
 
         - gettimeofday()     in <sys/time.h>
@@ -14,6 +18,7 @@ For portability, I used:
         - open()             in <fcntl.h>
         - lseek()            in <unistd.h>
         - read()             in <unistd.h>
+        - pread()            in <unistd.h>
         - write()            in <unistd.h>
         - dup2()             in <unistd.h>
         - close()            in <unistd.h>
