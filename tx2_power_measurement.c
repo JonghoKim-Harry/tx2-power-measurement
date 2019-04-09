@@ -610,7 +610,7 @@ write_a_caffelog:
         strftime(time_buff, 256, "%H:%M:%S", &event.gmt_date_hms);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, event.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
-        buff_len = snprintf(buff, 256, "%6s[Caffe Event]%6s%s", "      ", "      ", event.event);
+        buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", event.event);
         write(stat_fd, buff, buff_len);
         goto get_a_caffelog;
 // end write_a_caffelog
