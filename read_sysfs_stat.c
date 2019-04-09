@@ -257,6 +257,10 @@ ssize_t rawdata_to_stat_1(const struct sysfs_stat stat_info, const int rawdata_f
     char rawdata_buff[256], stat_buff[256];
     int buff_len;
 
+#ifdef DEBUG
+    printf("\nrawdata_to_stat_1()   START");
+#endif   // DEBUG
+
     num_read_bytes = read(rawdata_fd, rawdata_buff, max_strlen);
 
     /* Two whitespace between columns */
