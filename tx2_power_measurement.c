@@ -492,10 +492,10 @@ void calculate_2ndstat(const struct measurement_info info) {
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
 #endif   // DEBUG
 
+        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
         if(offset < 0)    
             goto write_a_powerlog;
 
-        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
         caffelog_buffered = 1;   // Set a flag
 
         if(powerlog_buffered)
