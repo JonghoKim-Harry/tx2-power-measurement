@@ -147,11 +147,13 @@ read_a_line:
 
     // Event
     strcpy(event->event, buff + matched_regex[2].rm_so);
-
-
+#if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
+    printf("\nparse_caffelog()   event: %s", event->event);
+#endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   FINISHED");
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
+
     return new_offset;
 }
