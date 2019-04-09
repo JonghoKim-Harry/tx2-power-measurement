@@ -6,6 +6,7 @@
 #include <stdint.h>     // int32_t, int64_t
 #include <time.h>       // struct timespec, localtime_r(), nanosleep()
 #include <errno.h>      // strerror(errno)
+#include <assert.h>
 
 // POSIX Headers Files
 #include <unistd.h>     // access(), read(), write(), close(), getopt(), extern char *optarg, extern int optind, extern int optopt
@@ -434,6 +435,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     struct caffe_event event;
     int64_t caffelog_powerlog_hms_diff_ns;
     int caffelog_powerlog_comparison;
+    int caffelog_buffered;   // flag
 
     /*
      *  This function get file name of statistics file.
@@ -472,6 +474,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     /* Empty space for summary at the top of stat file */
     lseek(stat_fd, 103, SEEK_CUR);
 
+    caffelog_buffered = 0;
     powerlog_buffered = 0;
     gpu_power = 0;
     gpu_energy = 0;
@@ -485,16 +488,16 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     while(1) {
 
-get_a_caffelog:
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
 #endif   // DEBUG
 
-        if(offset < 0)
+        if(offset < 0)    
             goto write_a_powerlog;
 
-        // Get a caffelog
         offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
+        caffelog_buffered = 1;   // Set a flag
+
         if(powerlog_buffered)
             goto compare_timestamp;
 
@@ -503,16 +506,20 @@ get_a_powerlog:
         printf("\ncalculate_2ndstat()   BB: get powerlog timestamp");
 #endif   // DEBUG
 
-        powerlog_buffered = 1;   // Set a flag
-
         // Get a powerlog timestamp
         prev_powerlog_timestamp = powerlog_timestamp;
         read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
         if(read_result <= 0) break;
         powerlog_callendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
+        powerlog_buffered = 1;   // Set a flag
+
+        if(!caffelog_buffered)
+            goto write_a_powerlog;
 
 compare_timestamp:
-        // TODO: Compare Timestmaps
+        assert(caffelog_buffered == 1);
+        assert(powerlog_buffered == 1);
+
         caffelog_powerlog_hms_diff_ns
         = compare_timestamp_hms(event.gmt_date_hms, *powerlog_callendar_timestamp);
 
@@ -534,10 +541,8 @@ compare_timestamp:
         printf("\ncalculate_2ndstat()   caffelog_powerlog_comparison: %d", caffelog_powerlog_comparison);
 #endif   // DEBUG
 
-        // TODO: Decide
         if(caffelog_powerlog_comparison < 0)
             goto write_a_caffelog;
-// end get_a_caffelog
 
 write_a_powerlog:
 #ifdef DEBUG
@@ -605,16 +610,18 @@ write_a_caffelog:
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: write a caffelog");
 #endif   // DEBUG
-        // TODO: Write caffelog
+
+        assert(caffelog_buffered == 1);
+        caffelog_buffered = 0;   // Reset a flag
+
+        // Write caffelog
         write(stat_fd, "\n", 1);
         strftime(time_buff, 256, "%H:%M:%S", &event.gmt_date_hms);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, event.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
         buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", event.event);
         write(stat_fd, buff, buff_len);
-        goto get_a_caffelog;
-// end write_a_caffelog
-    }
+    }   // while(1)
 
 #ifdef DEBUG
     printf("\ncalculate_2ndstat() does NOT have infinite loop");
