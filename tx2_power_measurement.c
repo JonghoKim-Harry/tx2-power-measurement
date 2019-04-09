@@ -1,19 +1,17 @@
 // Standard C Header Files
 #include <stdio.h>
-#include <stdlib.h>     // exit(), atol(), system()
-#include <stdarg.h>     // va_list, va_start, va_arg, va_end, va_copy
+#include <stdlib.h>
 #include <string.h>
-#include <stdint.h>     // int32_t, int64_t
-#include <time.h>       // struct timespec, localtime_r(), nanosleep()
-#include <errno.h>      // strerror(errno)
+#include <stdint.h>
+#include <time.h>
 #include <assert.h>
 
 // POSIX Headers Files
-#include <unistd.h>     // access(), read(), write(), close(), getopt(), extern char *optarg, extern int optind, extern int optopt
-#include <fcntl.h>      // open()
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <libgen.h>     // dirname()
+#include <libgen.h>
 
 // Custom Header Files
 #include "read_sysfs_stat.h"

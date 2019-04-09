@@ -43,6 +43,10 @@ int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timest
 
 off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, struct caffe_event *event) {
 
+    /*
+     *  This function returns end of line of parsed caffelog.
+     *  If -1 is returned, the result should be ignored
+     */
     off_t new_offset = offset;
 
     // Timestamp

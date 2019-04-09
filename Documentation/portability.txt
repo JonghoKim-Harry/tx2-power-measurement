@@ -1,27 +1,49 @@
 For portability with mere measurement overhead, I used:
 
-   * Standard C Library-compatible Linux System Calls:
+   * C Standard-compatible Linux System Calls:
 
-        - clock_gettime()    in <time.h>
-        - nanosleep()        in <time.h>
-        - exit()             in <stdlib.h>
+        - clock_gettime()              in <time.h>
+        - nanosleep()                  in <time.h>
+        - exit()                       in <stdlib.h>
 
 
-   * Standard C Library Macros:
+   * C Standard Macros and Data Types:
 
-        - assert()           in <assert.h>
+        - assert()                     in <assert.h>
+        - int32_t                      in <stdint.h>
+        - int64_t                      in <stdint.h>
+        - struct timespec              in <time.h>
+        - struct tm
+
 
    * POSIX-compatible Linux System Calls:
 
-        - gettimeofday()     in <sys/time.h>
-        - access()           in <unistd.h>
-        - open()             in <fcntl.h>
-        - lseek()            in <unistd.h>
-        - read()             in <unistd.h>
-        - pread()            in <unistd.h>
-        - write()            in <unistd.h>
-        - dup2()             in <unistd.h>
-        - close()            in <unistd.h>
-        - fork()             in <unistd.h>
-        - execve()           in <unistd.h>
-        - waitpid()          in <sys/wait.h>
+        - gettimeofday()               in <sys/time.h>
+        - access()                     in <unistd.h>
+        - open()                       in <fcntl.h>
+        - lseek()                      in <unistd.h>
+        - read()                       in <unistd.h>
+        - pread()                      in <unistd.h>
+        - write()                      in <unistd.h>
+        - dup2()                       in <unistd.h>
+        - close()                      in <unistd.h>
+        - fork()                       in <unistd.h>
+        - execve()                     in <unistd.h>
+        - waitpid()                    in <sys/wait.h>
+
+
+For portability, I used:
+
+   * C Standard Library Functions:
+
+        - atoi()                       in <stdlib.h>
+        - localtime()                  in <time.h>
+
+
+   * POSIX Library Variables and Functions:
+
+        - extern char * optarg         in <unistd.h>
+        - extern int optind            in <unistd.h>
+        - extern int optopt            in <unistd.h>
+        - getopt()                     in <unistd.h>
+        - dirname()                    in <libgen.h>
