@@ -36,6 +36,13 @@ For portability with mere measurement overhead, I used:
         - waitpid()                    in <sys/wait.h>
 
 
+   * POSIX Data Types:
+
+        - regex_t                      in <regex.h>
+        - regmatch_t                   in <regex.h>
+        - off_t                        in <sys/types.h>
+
+
 For portability, I used:
 
    * C Standard Library Variables and Functions:
@@ -55,3 +62,6 @@ For portability, I used:
         - extern int optopt            in <unistd.h>
         - getopt()                     in <unistd.h>
         - dirname()                    in <libgen.h>
+        - regcomp()                    in <regex.h>
+        - regexec()                    in <regex.h>
+        - regfree()                    in <regex.h>
