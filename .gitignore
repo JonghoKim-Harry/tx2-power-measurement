@@ -41,7 +41,7 @@ TODO
 #
 # Track all files in the directory caffe_prototxt
 #
-!caffe_prototxt/**
+!Caffe_prototxt/**
 
 #
 # Ignore cscope files
