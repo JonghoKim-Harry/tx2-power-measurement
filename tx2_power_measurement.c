@@ -16,7 +16,7 @@
 // Custom Header Files
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
-#include "parse_caffelog.h"
+#include "caffelog.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
 

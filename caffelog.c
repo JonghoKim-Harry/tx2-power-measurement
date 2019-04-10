@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parse_caffelog.h"
+#include "caffelog.h"
 
 #define SECOND_TO_NANOSECOND        1000000000
 #define MICROSECOND_TO_NANOSECOND   1000
