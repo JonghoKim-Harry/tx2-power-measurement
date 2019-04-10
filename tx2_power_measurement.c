@@ -612,11 +612,13 @@ write_a_caffelog:
         assert(caffelog_buffered == 1);
         caffelog_buffered = 0;   // Reset a flag
 
-        // Write caffelog
+        // Write a caffelog: Timestamp
         write(stat_fd, "\n", 1);
         strftime(time_buff, 256, "%H:%M:%S", &event.gmt_date_hms);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, event.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
+
+        // Write a caffelog: Event
         buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", event.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
