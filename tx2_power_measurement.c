@@ -430,7 +430,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     // Caffelog
     int caffelog_fd;
     off_t offset;
-    struct caffe_event event;
+    struct caffelog_struct caffelog;
     int64_t caffelog_powerlog_hms_diff_ns;
     int caffelog_powerlog_comparison;
     int caffelog_buffered;   // flag
@@ -460,7 +460,6 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     // Caffelog
     offset = 0;
-    event.offset = 0;
     caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
 
     // Rawdata
@@ -490,7 +489,7 @@ void calculate_2ndstat(const struct measurement_info info) {
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
 #endif   // DEBUG
 
-        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &event);
+        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &caffelog);
         if(offset < 0)    
             goto write_a_powerlog;
 
@@ -519,22 +518,22 @@ compare_timestamp:
         assert(powerlog_buffered == 1);
 
         caffelog_powerlog_hms_diff_ns
-        = compare_timestamp_hms(event.gmt_date_hms, *powerlog_callendar_timestamp);
+        = compare_timestamp_hms(caffelog.gmt_date_hms, *powerlog_callendar_timestamp);
 
         if(caffelog_powerlog_hms_diff_ns > 0)
             caffelog_powerlog_comparison = 1;
         else if(caffelog_powerlog_hms_diff_ns < 0)
             caffelog_powerlog_comparison = -1;
-        else if(event.gmt_timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
+        else if(caffelog.gmt_timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
             caffelog_powerlog_comparison = 1;
-        else if(event.gmt_timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
+        else if(caffelog.gmt_timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
             caffelog_powerlog_comparison = -1;
         else
             caffelog_powerlog_comparison = 0;
 
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   caffelog_powerlog_hms_diff_ns: %ld", caffelog_powerlog_hms_diff_ns);
-        printf("\ncalculate_2ndstat()   caffelog tv_nsec: %ld", event.gmt_timestamp.tv_nsec);
+        printf("\ncalculate_2ndstat()   caffelog tv_nsec: %ld", caffelog.gmt_timestamp.tv_nsec);
         printf("\ncalculate_2ndstat()   powerlog tv_nsec: %ld", powerlog_timestamp.tv_nsec);
         printf("\ncalculate_2ndstat()   caffelog_powerlog_comparison: %d", caffelog_powerlog_comparison);
 #endif   // DEBUG
@@ -614,12 +613,12 @@ write_a_caffelog:
 
         // Write a caffelog: Timestamp
         write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, "%H:%M:%S", &event.gmt_date_hms);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, event.gmt_timestamp.tv_nsec);
+        strftime(time_buff, 256, "%H:%M:%S", &caffelog.gmt_date_hms);
+        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
         // Write a caffelog: Event
-        buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", event.event);
+        buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", caffelog.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
 

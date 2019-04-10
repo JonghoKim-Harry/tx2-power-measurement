@@ -41,7 +41,7 @@ int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timest
     return diff_ns;
 }
 
-off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, struct caffe_event *event) {
+off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, struct caffelog_struct *caffelog) {
 
     /*
      *  This function returns end of line of parsed caffelog.
@@ -118,7 +118,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    event->gmt_date_hms.tm_hour = atoi(timebuff);
+    caffelog->gmt_date_hms.tm_hour = atoi(timebuff);
 
     // Minute
     start_ptr += 3;
@@ -127,7 +127,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff min: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    event->gmt_date_hms.tm_min = atoi(timebuff);
+    caffelog->gmt_date_hms.tm_min = atoi(timebuff);
 
     // Second
     start_ptr += 3;
@@ -136,8 +136,8 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    event->gmt_date_hms.tm_sec = atoi(timebuff);
-    (&event->gmt_timestamp)->tv_sec = mktime(&event->gmt_date_hms);
+    caffelog->gmt_date_hms.tm_sec = atoi(timebuff);
+    (&caffelog->gmt_timestamp)->tv_sec = mktime(&caffelog->gmt_date_hms);
 
 
     // Nanosecond
@@ -147,12 +147,12 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff ns: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    (&event->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
+    (&caffelog->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
 
     // Event
-    strcpy(event->event, buff + matched_regex[2].rm_so);
+    strcpy(caffelog->event, buff + matched_regex[2].rm_so);
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   event: %s", event->event);
+    printf("\nparse_caffelog()   event: %s", caffelog->event);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
