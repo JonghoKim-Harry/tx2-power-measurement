@@ -16,7 +16,7 @@ struct caffelog_struct {
      *  Note that year, month, day are ignored to be 0
      */
     struct tm gmt_date_hms;
-    char event[64];
+    char event[128];
 };
 
 int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timestamp2);
