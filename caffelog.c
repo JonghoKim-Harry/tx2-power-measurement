@@ -150,7 +150,11 @@ read_a_line:
     (&caffelog->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
 
     // Event
-    strcpy(caffelog->event, buff + matched_regex[2].rm_so);
+    // Note that putting caffelog message in " " makes MS Excel to recognize
+    // it as a single string
+    strcpy(caffelog->event, "\"");
+    strcpy(caffelog->event + 1, buff + matched_regex[2].rm_so);
+    strcpy(caffelog->event + (matched_regex[2].rm_eo - matched_regex[2].rm_so + 1), "\"");
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   event: %s", caffelog->event);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
