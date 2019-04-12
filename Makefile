@@ -5,7 +5,6 @@ export CAFFE_HOME = $(HOME)/caffe
 export POWER_MEASUREMENT_HOME = $(shell pwd)
 export POWER_MEASUREMENT_SCRIPT_HOME = $(POWER_MEASUREMENT_HOME)/script
 export CFLAGS := -Wall -DTRACE_CPU
-export LIBS := -lpthread
 
 TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
@@ -14,7 +13,8 @@ DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
 
-$(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o
+$(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o \
+	       mkdir_p.o
 	$(CC) $(CFLAGS) $? -o $@ $(LIBS)
 
 %.o: %.c
@@ -41,7 +41,6 @@ TEST_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/test_result/cifar-10
 
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
-	@if [ ! -d $(TEST_RESULT_PATH_CIFAR10) ]; then mkdir -p $(TEST_RESULT_PATH_CIFAR10); fi;
 	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
@@ -53,7 +52,6 @@ TEST_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/test_result/mnist
 
 check-mnist: $(TARGET)
 	@echo "\n** Start selftesting with MNIST\n"
-	@if [ ! -d $(TEST_RESULT_PATH_MNIST) ]; then mkdir -p $(TEST_RESULT_PATH_MNIST); fi;
 	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST\n"
 

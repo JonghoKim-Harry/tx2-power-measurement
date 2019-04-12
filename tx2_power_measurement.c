@@ -17,6 +17,7 @@
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
 #include "caffelog.h"
+#include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
 
@@ -196,20 +197,24 @@ end_arg_processing:
 
     printf("\nCommand: %s\n", cmd_str);
 
-    // OOO_stats.txt
-    stat_filename = stat_filename_buff;
-    stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-    printf("\nCreated statistic file: %s", stat_filename);
 
     // Extract dirname and basename from the given stat file name
     //    * Note that dirname(), basename(), token_r()  may modify argument,
     //      thus, we use copied argument
+    stat_filename = stat_filename_buff;
     strcpy(filename_buff, stat_filename);
     strcpy(given_dirname, dirname(filename_buff));
     basename_ptr = stat_filename + strlen(given_dirname) + 1;
     strcpy(token, basename_ptr);
     strtok_r(token, ".", &next_token);
     strcpy(filename_prefix, token);
+
+    // mkdir -p
+    mkdir_p(given_dirname, 0755);
+
+    // OOO_stats.txt
+    stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    printf("\nCreated statistic file: %s", stat_filename);
 
     // OOO.rawdata.bin
     strcpy(rawdata_filename, given_dirname);
@@ -681,6 +686,8 @@ int main(int argc, char *argv[]) {
     if(pid == 0) {
         // Child Process
         dup2(info.caffelog_fd, STDERR_FILENO);
+
+        // NOTE: Only works with absolute path
         execve(info.child_cmd[0], info.child_cmd, NULL);
 
         // If error, execve() returns -1. Otherwise, execve() does not return value
