@@ -176,7 +176,7 @@ end_arg_processing:
         perror("localtime() call error");
         exit(-1);
     }
-   
+
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
@@ -315,7 +315,8 @@ end_arg_processing:
     info->gpu_power_fd = gpu_power_fd;
 
     // Time information
-    clock_gettime(CLOCK_REALTIME, &info->start_time);
+    clock_gettime(CLOCK_REALTIME, &info->gmt_start_time);
+    info->gmt_calendar_start_time = localtime(&info->gmt_start_time.tv_sec);
 
     // Raw data file informations
     strcpy(info->rawdata_filename, rawdata_filename);
@@ -471,6 +472,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     /* Empty space for summary at the top of stat file */
     lseek(stat_fd, 103, SEEK_CUR);
 
+    caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
     caffelog_buffered = 0;
     powerlog_buffered = 0;
     gpu_power = 0;
@@ -555,8 +557,8 @@ write_a_powerlog:
         write(stat_fd, buff, buff_len);
 
         // Calculate and write powerlog: ELAPSED TIME
-        elapsed_time_sec = powerlog_timestamp.tv_sec - info.start_time.tv_sec;
-        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.start_time.tv_nsec;
+        elapsed_time_sec = powerlog_timestamp.tv_sec - info.gmt_start_time.tv_sec;
+        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
 
         if(elapsed_time_ns < 0) {
         
@@ -615,6 +617,22 @@ write_a_caffelog:
         write(stat_fd, "\n", 1);
         strftime(time_buff, 256, "%H:%M:%S", &caffelog.gmt_date_hms);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.gmt_timestamp.tv_nsec);
+        write(stat_fd, buff, buff_len);
+
+        // Calculate and write caffelog: ELAPSED TIME
+        elapsed_time_sec = caffelog.gmt_timestamp.tv_sec - info.gmt_start_time.tv_sec;
+        elapsed_time_ns = caffelog.gmt_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
+
+        if(elapsed_time_ns < 0) {
+        
+            -- elapsed_time_sec;
+            elapsed_time_ns += SECOND_TO_NANOSECOND;
+        }
+
+        if(elapsed_time_sec == 0)
+            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", elapsed_time_ns);
+        else
+            buff_len = snprintf(buff, 256, "%19ld%09ldns", elapsed_time_sec, elapsed_time_ns);
         write(stat_fd, buff, buff_len);
 
         // Write a caffelog: Event

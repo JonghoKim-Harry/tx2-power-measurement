@@ -59,7 +59,8 @@ struct measurement_info {
     regex_t timestamp_pattern;
 
     /* Informations used by measure_rawdata() */
-    struct timespec start_time;
+    struct tm *gmt_calendar_start_time;
+    struct timespec gmt_start_time;
     int rawdata_fd;
     int gpu_power_fd;
 
