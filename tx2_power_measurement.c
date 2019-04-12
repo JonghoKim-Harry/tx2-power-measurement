@@ -636,7 +636,7 @@ write_a_caffelog:
         write(stat_fd, buff, buff_len);
 
         // Write a caffelog: Event
-        buff_len = snprintf(buff, 256, "%6s[Caffe]%6s%s", "      ", "      ", caffelog.event);
+        buff_len = snprintf(buff, 256, "%6s%s", "      ", caffelog.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
 

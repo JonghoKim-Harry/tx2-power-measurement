@@ -152,7 +152,7 @@ read_a_line:
     // Event
     // Note that putting caffelog message in " " makes MS Excel to recognize
     // it as a single string
-    strcpy(caffelog->event, "\"");
+    strcpy(caffelog->event, "\"[Caffe] ");
     strcat(caffelog->event, buff + matched_regex[2].rm_so);
     strcat(caffelog->event, "\"");
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
