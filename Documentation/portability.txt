@@ -24,6 +24,7 @@ For portability with mere measurement overhead, I used:
 
         - gettimeofday()               in <sys/time.h>
         - access()                     in <unistd.h>
+        - mkdir()                      in <sys/stat.h>
         - open()                       in <fcntl.h>
         - lseek()                      in <unistd.h>
         - read()                       in <unistd.h>
