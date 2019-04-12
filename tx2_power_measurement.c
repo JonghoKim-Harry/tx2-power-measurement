@@ -66,7 +66,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     size_t gmt_buff_len, korea_time_buff_len;
     int gpu_power_fd;
     struct timeval walltime;
-    struct tm *walltime_callendar;
+    struct tm *walltime_calendar;
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   START");
@@ -171,24 +171,24 @@ end_arg_processing:
         exit(-1);
     }
 
-    walltime_callendar = localtime(&walltime.tv_sec);
-    if(!walltime_callendar) {
+    walltime_calendar = localtime(&walltime.tv_sec);
+    if(!walltime_calendar) {
         perror("localtime() call error");
         exit(-1);
     }
    
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_callendar);
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
     // Korea Time
     walltime.tv_sec += GMT_TO_KOREA_TIME;
-    walltime_callendar = localtime(&walltime.tv_sec);
-    if(!walltime_callendar) {
+    walltime_calendar = localtime(&walltime.tv_sec);
+    if(!walltime_calendar) {
         perror("localtime() call error");
         exit(-1);
     }
    
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_callendar);
+    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
 
 
@@ -446,7 +446,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     char time_buff[256], buff[256], gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
-    struct tm *powerlog_callendar_timestamp;
+    struct tm *powerlog_calendar_timestamp;
     time_t elapsed_time_sec;
     int64_t elapsed_time_ns;
     int64_t diff_time_ns;
@@ -507,7 +507,7 @@ get_a_powerlog:
         prev_powerlog_timestamp = powerlog_timestamp;
         read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
         if(read_result <= 0) break;
-        powerlog_callendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
+        powerlog_calendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
         powerlog_buffered = 1;   // Set a flag
 
         if(!caffelog_buffered)
@@ -518,7 +518,7 @@ compare_timestamp:
         assert(powerlog_buffered == 1);
 
         caffelog_powerlog_hms_diff_ns
-        = compare_timestamp_hms(caffelog.gmt_date_hms, *powerlog_callendar_timestamp);
+        = compare_timestamp_hms(caffelog.gmt_date_hms, *powerlog_calendar_timestamp);
 
         if(caffelog_powerlog_hms_diff_ns > 0)
             caffelog_powerlog_comparison = 1;
@@ -550,7 +550,7 @@ write_a_powerlog:
 
         // Write powerlog: POWERLOG TIMESTAMP
         write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, "%H:%M:%S", powerlog_callendar_timestamp);
+        strftime(time_buff, 256, "%H:%M:%S", powerlog_calendar_timestamp);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
