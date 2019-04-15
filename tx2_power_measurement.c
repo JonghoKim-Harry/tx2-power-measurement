@@ -436,7 +436,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     // Caffelog
     int caffelog_fd;
     off_t offset;
-    struct caffelog_struct caffelog;
+    caffelog_struct caffelog;
     int64_t caffelog_powerlog_hms_diff_ns;
     int caffelog_powerlog_comparison;
     int caffelog_buffered;   // flag
