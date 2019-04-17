@@ -338,7 +338,8 @@ end_arg_processing:
     dup2(powerlog_fd, STDERR_FILENO);
     dup2(powerlog_fd, STDOUT_FILENO);
 
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq", "%*sHz", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq(Hz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
 
 #ifdef TRACE_CPU
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);

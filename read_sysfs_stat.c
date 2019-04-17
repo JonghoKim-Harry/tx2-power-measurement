@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>    // open()
 #include <unistd.h>   // close()
 #include <string.h>
@@ -282,6 +283,51 @@ ssize_t rawdata_to_stat_1(const struct sysfs_stat stat_info, const int rawdata_f
 #endif   // DEBUG
 
     return num_read_bytes;
+}
+
+ssize_t rawdata_to_stat_util(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd) {
+
+    ssize_t num_read_bytes;
+    const int max_strlen = stat_info.max_strlen[0];
+
+    char rawdata_buff[256], rawdata_buff2[2], stat_buff[256];
+    int buff_len;
+    int percentage_int;
+
+#ifdef DEBUG
+    printf("\nrawdata_to_stat_util()   START");
+#endif   // DEBUG
+
+    num_read_bytes = read(rawdata_fd, rawdata_buff, max_strlen);
+
+    /* Two whitespace between columns */
+    write(stat_fd, "  ", 2);
+
+    if(num_read_bytes > 0) {
+        rawdata_buff[num_read_bytes] = '\0';
+        strcpy(rawdata_buff2, &rawdata_buff[num_read_bytes-1]);
+        rawdata_buff[num_read_bytes-1] = '\0';
+
+        percentage_int = atoi(rawdata_buff);
+
+        if(percentage_int == 100)
+            buff_len = snprintf(stat_buff, 256, "100");
+        else
+            buff_len = snprintf(stat_buff, 256, "%02d.%s", percentage_int, rawdata_buff2);
+        write(stat_fd, WHITESPACE, stat_info.column_width - buff_len);
+        write(stat_fd, stat_buff, buff_len);
+    }
+
+#ifdef DEBUG
+    printf("\nrawdata_to_stat_util()   rawdata_fd: %d", rawdata_fd);
+    if(num_read_bytes == -1) {
+        printf("\nERROR in rawdata_to_stat_util(): %s", strerror(errno));
+    }
+    printf("\nrawdata_to_stat_util()   FINISHED");
+#endif   // DEBUG
+
+    return num_read_bytes;
+
 }
 
 ssize_t rawdata_to_stat_2(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd) {
