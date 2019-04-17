@@ -48,6 +48,6 @@ set y2tics (0, 140250000, 229500000, 318750000, 408000000, 497250000, 586500000,
 set y2tics add ("Freq_{GPU MIN} (140.3 MHz)" 140250000, "Freq_{GPU MAX} (1.1 GHz)" 1122000000)
 set format y2 "%.1s %cHz"
 
-plot ARG1 using 1:2 title "Power_{GPU}" axes x1y1, ARG1 using 1:3 title "Freq_{GPU}" axes x1y2
+plot ARG1 using 2:3 title "Power_{GPU}" axes x1y1, ARG1 using 2:4 title "Freq_{GPU}" axes x1y2
 
 exit
