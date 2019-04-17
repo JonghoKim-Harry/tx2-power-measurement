@@ -66,5 +66,7 @@
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/max_freq"
 #define TX2_SYSFS_GPU_FREQ    \
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/cur_freq"
+#define TX2_SYSFS_GPU_UTIL   \
+    TX2_SYSFS_GPU "/load"
 
 #endif   // TX2_SYSFS_POWER_H
