@@ -16,24 +16,26 @@ help() {
     echo -e "Note that you should run this script with root privilege"
 }
 
-CUSTOM_USER=nvidia:nvidia
+CUSTOM_USER="nvidia:nvidia"
 
 BENCHMARK_NAME=$1
 SHELL_COMMAND="${@:2}"
 
 MIN="140250000"
 MAX="1122000000"
-DEFAULT_GPU_GOVERNOR=nvhost_podgov
+DEFAULT_GPU_GOVERNOR="nvhost_podgov"
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
 
 POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../..)
-POWER_MEASUREMENT_TOOL=$POWER_MEASUREMENT_HOME/tx2_power_measurement
+POWER_MEASUREMENT_TOOL="$POWER_MEASUREMENT_HOME/tx2_power_measurement"
+RESULT_DIR="$POWER_MEASUREMENT_HOME/test_result/$BENCHMARK_NAME"
 
-if [ ! -d $RESULT_DIR ]; then
+if [ ! -d "$RESULT_DIR" ]; then
     mkdir -p $RESULT_DIR
-fi
 
-cd $CAFFE_HOME
+    # Change owner
+    sudo chown -R $CUSTOM_USER $RESULT_DIR
+fi
 
 if [ "$#" -lt 2 ]; then
     help
@@ -63,9 +65,8 @@ do
     echo "GPU frequency is set to $AVAILABLE_FREQ Hz"
 
     STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.txt
-    LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.caffelog.txt
 
-    POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
+    "$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND"
 done;
 
 echo END
@@ -79,11 +80,5 @@ sudo echo $DEFAULT_GPU_GOVERNOR > /sys/devices/17000000.gp10b/devfreq/17000000.g
 echo "GPU frequency is recovered to default setting"
 
 STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
-LOG_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.caffelog.txt
 
-$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND 2>$LOG_FILE
-
-#
-# Change owner
-#
-chown -R $CUSTOM_USER $RESULT_DIR
+"$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND"
