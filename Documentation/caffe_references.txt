@@ -1,0 +1,8 @@
+Using a Trained Network: Deploy
+   https://github.com/BVLC/caffe/wiki/Using-a-Trained-Network:-Deploy
+
+Image Format: BGR not RGB
+   https://github.com/BVLC/caffe/wiki/Image-Format:-BGR-not-RGB
+
+Reshape Layer
+   http://caffe.berkeleyvision.org/tutorial/layers/reshape.html
