@@ -294,8 +294,8 @@ end_arg_processing:
     info->rawdata_linesize = 0;
     snprintf(buff, 256, "%*s%*s%*s",
             18, "GMT-Time-Stamp",
-            30, "TIME",
-            11, "GPU-Power");
+            28, "TIME(ns)",
+            15, "GPU-Power(mW)");
     strcpy(info->header_raw, buff);
     strcpy(info->rawdata_print_format, "");
     strcpy(info->rawdata_scan_format, "");
@@ -342,8 +342,8 @@ end_arg_processing:
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
 
 #ifdef TRACE_CPU
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power", "%*smW", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq", "%*skHz", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power(mW)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq(kHz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
 
     /* We should resolve too much measurement overhead
     register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
@@ -562,7 +562,7 @@ write_a_powerlog:
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
-        // Calculate and write powerlog: ELAPSED TIME
+        // Calculate and write powerlog: ELAPSED TIME (ns)
         elapsed_time_sec = powerlog_timestamp.tv_sec - info.gmt_start_time.tv_sec;
         elapsed_time_ns = powerlog_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
 
@@ -573,16 +573,16 @@ write_a_powerlog:
         }
 
         if(elapsed_time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", elapsed_time_ns);
+            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
         else
-            buff_len = snprintf(buff, 256, "%19ld%09ldns", elapsed_time_sec, elapsed_time_ns);
+            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
         write(stat_fd, buff, buff_len);
 
-        // Read and write powerlog: GPU POWER
+        // Read and write powerlog: GPU POWER (mW)
         read_result = read(rawdata_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
         if(read_result <= 0) break;
         gpu_power_str[read_result] = '\0';
-        buff_len = snprintf(buff, 256, "%4s%*smW", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);
+        buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
         write(stat_fd, buff, buff_len);
 
         // Calculate powerlog: GPU ENERGY PARTIAL SUM
@@ -625,7 +625,7 @@ write_a_caffelog:
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
-        // Calculate and write caffelog: ELAPSED TIME
+        // Calculate and write caffelog: ELAPSED TIME (ns)
         elapsed_time_sec = caffelog.gmt_timestamp.tv_sec - info.gmt_start_time.tv_sec;
         elapsed_time_ns = caffelog.gmt_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
 
@@ -636,13 +636,13 @@ write_a_caffelog:
         }
 
         if(elapsed_time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ldns", " ", elapsed_time_ns);
+            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
         else
-            buff_len = snprintf(buff, 256, "%19ld%09ldns", elapsed_time_sec, elapsed_time_ns);
+            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
         write(stat_fd, buff, buff_len);
 
         // Write a caffelog: Event
-        buff_len = snprintf(buff, 256, "%6s%s", "      ", caffelog.event);
+        buff_len = snprintf(buff, 256, "%10s%s", "          ", caffelog.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
 
