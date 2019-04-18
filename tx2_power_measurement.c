@@ -20,7 +20,7 @@
 #include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
-
+#define TWO_MILLISECOND_TO_NANOSECOND 2000000
 #define SECOND_TO_NANOSECOND 1000000000
 #define HOUR_TO_SECOND 3600
 #define WATTHOUR_TO_PICOWATTHOUR 1000000000000
@@ -378,7 +378,7 @@ end_arg_processing:
 void measure_rawdata(const int pid, const struct measurement_info info) {
 
     int i;
-    const struct timespec sleep_request = {.tv_sec = 0, .tv_nsec = 4000};
+    const struct timespec sleep_request = {.tv_sec = 0, .tv_nsec = TWO_MILLISECOND_TO_NANOSECOND};
     struct timespec sleep_remain;
     struct timespec curr_time;
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
