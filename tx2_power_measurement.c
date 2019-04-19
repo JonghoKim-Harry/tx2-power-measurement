@@ -293,7 +293,7 @@ end_arg_processing:
     info->num_sysfs_data = 0;
     info->rawdata_linesize = 0;
     snprintf(buff, 256, "%*s%*s%*s",
-            18, "__GMT-Time-Stamp__",
+            19, "GMT-Time-Stamp",
             28, "TIME(ns)",
             15, "GPU-Power(mW)");
     strcpy(info->header_raw, buff);
@@ -558,7 +558,7 @@ write_a_powerlog:
 
         // Write powerlog: POWERLOG TIMESTAMP
         write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, "%H:%M:%S", powerlog_calendar_timestamp);
+        strftime(time_buff, 256, " %H:%M:%S", powerlog_calendar_timestamp);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
@@ -621,7 +621,7 @@ write_a_caffelog:
 
         // Write a caffelog: Timestamp
         write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, "%H:%M:%S", &caffelog.gmt_date_hms);
+        strftime(time_buff, 256, " %H:%M:%S", &caffelog.gmt_date_hms);
         buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.gmt_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
