@@ -293,7 +293,7 @@ end_arg_processing:
     info->num_sysfs_data = 0;
     info->rawdata_linesize = 0;
     snprintf(buff, 256, "%*s%*s%*s",
-            18, "GMT-Time-Stamp",
+            18, "__GMT-Time-Stamp__",
             28, "TIME(ns)",
             15, "GPU-Power(mW)");
     strcpy(info->header_raw, buff);
@@ -641,8 +641,17 @@ write_a_caffelog:
             buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
         write(stat_fd, buff, buff_len);
 
+        // Put #N/A values for MS Excel
+        buff_len = snprintf(buff, 256, "%15s", "#N/A");
+        write(stat_fd, buff, buff_len);
+        for(i=0; i<info.num_sysfs_data; i++) {
+
+            buff_len = snprintf(buff, 256, "%*s", info.stat_info[i].column_width + 2, "#N/A");
+            write(stat_fd, buff, buff_len);
+        }
+
         // Write a caffelog: Event
-        buff_len = snprintf(buff, 256, "%10s%s", "          ", caffelog.event);
+        buff_len = snprintf(buff, 256, "%2s%s", "  ", caffelog.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
 
