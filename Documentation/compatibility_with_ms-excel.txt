@@ -1,0 +1,6 @@
+        Compatibility with MS Excel
+
+* MS Excel is dumb. It only reads numbers.
+  If units are attached, MS Excel will NOT draw graph correctly
+
+* I put #N/A values to Caffelog in order to be compatible with MS Excel
