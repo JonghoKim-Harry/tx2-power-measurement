@@ -1,6 +1,10 @@
         Compatibility with MS Excel
 
-* MS Excel is dumb. It only reads numbers.
+* Units should be omitted. MS Excel is dumb, thus it only reads numbers.
   If units are attached, MS Excel will NOT draw graph correctly
 
 * I put #N/A values to Caffelog in order to be compatible with MS Excel
+
+* I set the first column header's name as  __GMT-Time-Stamp__, in order to
+  remove any whitespace before first column header,
+  because MS Excel recognizes whitespace as a delimiter
