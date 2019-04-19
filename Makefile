@@ -37,40 +37,40 @@ check-intro: FORCE
 # Check with CIFAR-10 dataset
 #
 CAFFE_COMMAND_CIFAR10 := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/cifar10/cifar10_full_train_test.prototxt -weights $(CAFFE_HOME)/examples/cifar10/cifar10_full_iter_70000.caffemodel.h5 -gpu all
-TEST_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/test_result/cifar-10
+EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar-10
 
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
 # Check with MNIST dataset and LeNet network
 #
 CAFFE_COMMAND_MNIST := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/mnist/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/mnist/lenet_iter_10000.caffemodel -gpu all
-TEST_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/test_result/mnist
+EXP_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/exp_result/mnist
 
 check-mnist: $(TARGET)
 	@echo "\n** Start selftesting with MNIST\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST\n"
 
 check-plot: check-cifar10 check-mnist
 	@echo "\n** Drawing a plot for selftesting result with CIFAR-10\n"
-	gnuplot -c script/plot/draw_single.plot $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(TEST_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10
+	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(EXP_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10
 	@echo "\n** Drawing a plot for selftesting result with MNIST\n"
-	gnuplot -c script/plot/draw_single.plot $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(TEST_RESULT_PATH_MNIST)/mnist_plot.png MNIST
+	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(EXP_RESULT_PATH_MNIST)/mnist_plot.png MNIST
 
 debug: CFLAGS += -DDEBUG
 debug: $(TARGET)
 	@echo "\nSTART DEBUGGING"
 	@echo "\n** Start selftesting with CIFAR-10 with DEBUG VERSION\n"
-	@if [ ! -d $(TEST_RESULT_PATH_CIFAR10) ]; then mkdir -p $(TEST_RESULT_PATH_CIFAR10); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10)
+	@if [ ! -d $(EXP_RESULT_PATH_CIFAR10) ]; then mkdir -p $(EXP_RESULT_PATH_CIFAR10); fi;
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10 with DEBUG VERSION\n"
 	@echo "\n** Start selftesting with MNIST with DEBUG VERSION\n"
-	@if [ ! -d $(TEST_RESULT_PATH_MNIST) ]; then mkdir -p $(TEST_RESULT_PATH_MNIST); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(TEST_RESULT_PATH_MNIST)/mnist_gpu_power-debug.txt $(CAFFE_COMMAND_MNIST)
+	@if [ ! -d $(EXP_RESULT_PATH_MNIST) ]; then mkdir -p $(EXP_RESULT_PATH_MNIST); fi;
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power-debug.txt $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST with DEBUG VERSION\n"
 	@echo "\nFINISH DEBUGGING"
 
