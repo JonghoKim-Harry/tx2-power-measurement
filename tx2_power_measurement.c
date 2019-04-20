@@ -365,7 +365,7 @@ end_arg_processing:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall"
     // Produce special data structure for fast regex execution
-    regcomp(&info->timestamp_pattern, "[a-zA-Z_ \t\r\n\f]*([0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6})[^\]]*\][ \t\r\n\f]*([^ \t\r\n\f].*)", REG_EXTENDED);
+    regcomp(&info->timestamp_pattern, "[[:alpha:][:space:]]*([[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}[.][[:digit:]]{6})[^\]]*\][[:space:]]*([^[:space:]].*)", REG_EXTENDED);
 #pragma GCC diagnostic pop
 
 #ifdef DEBUG
