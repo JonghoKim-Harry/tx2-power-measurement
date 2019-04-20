@@ -8,6 +8,15 @@
 
 #include "read_sysfs_stat.h"
 
+// match[0]: the whole match. Do not care about it
+// match[1]: caffelog timestamp
+// match[2]: caffelog event
+#define CAFFELOG_PATTERN                                                 \
+    "[[:alpha:][:space:]]*"                                              \
+    "([[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}[.][[:digit:]]{6})"    \
+    "[^\]]*\][[:space:]]*"                                               \
+    "([^[:space:]].*)"
+
 typedef struct caffelog_struct {
     struct timespec gmt_timestamp;
 

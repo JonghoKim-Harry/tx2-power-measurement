@@ -365,7 +365,7 @@ end_arg_processing:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall"
     // Produce special data structure for fast regex execution
-    regcomp(&info->timestamp_pattern, "[[:alpha:][:space:]]*([[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}[.][[:digit:]]{6})[^\]]*\][[:space:]]*([^[:space:]].*)", REG_EXTENDED);
+    regcomp(&info->caffelog_pattern, CAFFELOG_PATTERN, REG_EXTENDED);
 #pragma GCC diagnostic pop
 
 #ifdef DEBUG
@@ -497,7 +497,7 @@ void calculate_2ndstat(const struct measurement_info info) {
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
 #endif   // DEBUG
 
-        offset = parse_caffelog(caffelog_fd, info.timestamp_pattern, offset, &caffelog);
+        offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, offset, &caffelog);
         if(offset < 0)    
             goto write_a_powerlog;
 
@@ -707,7 +707,7 @@ int main(int argc, char *argv[]) {
     // Parent Process
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
-    regfree(&info.timestamp_pattern);
+    regfree(&info.caffelog_pattern);
 
     return 0;
 }
