@@ -290,6 +290,7 @@ end_arg_processing:
     write(stat_fd, "\n", 1);
 
     /*
+     *  Prefix of header raw.
      *  Note that 'TIME' and 'GPU-Power' should NOT be counted
      */
     info->num_sysfs_data = 0;
@@ -356,6 +357,13 @@ end_arg_processing:
     */
 #endif   // TRACE_CPU
 
+    /*
+     *  Suffix of header row.
+     *  Caffe event should be the right-most column,
+     *  in order to be freindly with MS Excel
+     */
+    snprintf(buff, 256, "  Caffe-event");
+    strcat(info->header_raw, buff);
 
     /*
      *   Ignore the compilation warning message: 
@@ -479,7 +487,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
-    const char separation_line[256] = "\n\n________________________________________________________________________________________________________________________________\n";
+    const char separation_line[256] = "\n\n_____________________________________________________________________________________________________________________________________________\n";
     time_t elapsed_time_sec;
     int64_t elapsed_time_ns;
     int64_t diff_time_ns;
@@ -610,13 +618,19 @@ write_a_powerlog:
         buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
         write(stat_fd, buff, buff_len);
 
-        // Calculate powerlog: GPU ENERGY PARTIAL SUM
+        // Write sysfs data: GPU frequency, GPU utilization, CPU infos, etc.
         for(i=0; i<info.num_sysfs_data; i++) {
             stat_info = info.stat_info[i];
             read_result = stat_info.rawdata_to_stat_func(stat_info, rawdata_fd, stat_fd);
             if (read_result <= 0) break;
         }
 
+        // Write #N/A value to last column (Caffe-event),
+        // in order to be friendly with MS Excel
+        buff_len = snprintf(buff, 256, "%13s", "#N/A");
+        write(stat_fd, buff, buff_len);
+
+        // Calculate powerlog: GPU ENERGY PARTIAL SUM
         prev_gpu_power = gpu_power;
         gpu_power = atoi(gpu_power_str);
         avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
