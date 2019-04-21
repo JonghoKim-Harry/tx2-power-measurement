@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CAFFE_HOME=$HOME/caffe
+export CAFFE_ROOT=/home/nvidia/caffe
+cd $CAFFE_ROOT
 
-cd $CAFFE_HOME
-
-$CAFFE_HOME/build/tools/caffe test -model $CAFFE_HOME/examples/mnist/lenet_train_test.prototxt -weights $CAFFE_HOME/examples/mnist/lenet_iter_10000.caffemodel -gpu all
+$CAFFE_ROOT/build/tools/caffe test -model $CAFFE_ROOT/examples/mnist/lenet_train_test.prototxt -weights $CAFFE_ROOT/examples/mnist/lenet_iter_10000.caffemodel -gpu all
