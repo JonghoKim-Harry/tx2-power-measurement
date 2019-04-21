@@ -479,6 +479,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
+    const char separation_line[256] = "\n\n________________________________________________________________________________________________________________________________\n";
     time_t elapsed_time_sec;
     int64_t elapsed_time_ns;
     int64_t diff_time_ns;
@@ -501,7 +502,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
     /* Empty space for summary at the top of stat file */
-    lseek(stat_fd, 103, SEEK_CUR);
+    lseek(stat_fd, 105, SEEK_CUR);
 
     caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
     caffelog_buffered = 0;
@@ -512,9 +513,8 @@ void calculate_2ndstat(const struct measurement_info info) {
     gpu_energy_Wh = 0;
 
     printf("\nSTART calculating 2nd stats\n");
-    write(stat_fd, "\n________________________________________________________________________________________________________________\n", 114);
+    write(stat_fd, separation_line, strlen(separation_line));
     write(stat_fd, info.header_raw, strlen(info.header_raw));
-    write(stat_fd, "\n----------------------------------------------------------------------------------------------------------------", 113);
 
     while(1) {
 
@@ -690,7 +690,7 @@ write_a_caffelog:
 
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
-    buff_len = snprintf(buff, 256, "\nTOTAL EXECUTION TIME: %19ld.%09ld second", elapsed_time_sec, elapsed_time_ns); // 59
+    buff_len = snprintf(buff, 256, "\nTOTAL MEASUREMENT TIME: %19ld.%09ld second", elapsed_time_sec, elapsed_time_ns); // 59
     write(stat_fd, buff, buff_len);
 
     buff_len = snprintf(buff, 256, "\nTOTAL GPU ENERGY: %9d.%012ld Wh", gpu_energy_Wh, gpu_energy_pWh); // 44
