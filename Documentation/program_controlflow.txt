@@ -14,20 +14,34 @@ prepare_measurement()
       v
 system call: fork() ----------------------> CHILD PROCESS
       |                                          |
+      |                                          v
+      |                                     SLEEP ENOUGH FOR COLD START
+      |
+      |                                        * Child process should start
+      |                                          without the effect of the
+      |                                          previous processes
+      |
+      |                                          |
       v                                          v
 measure_rawdata()                           system call: execve()
 
    * Write human-unreadable timestamp,         * Can run any shell command
      power, frequency to 'rawdata.bin'           independently with parent
 
-    * Parallel execution with                  * We typically execute CNN 
-      child process                              inference with Caffe,
+   * Parallel execution with                   * We typically execute CNN
+     child process                               inference with Caffe,
                                                  redirecting stderr to
       |                                          'OOO.caffelog.txt'
       |
       |                                          |
-      v                                          v
-calculate_2ndstat() <---------------------- CHILD PROCESS COMPLETE
+      |                                          v
+      |                                     CHILD PROCESS FINISH
+      v                                          |
+   * Continue power measurement until <----------|
+     the effect of child process ends up
+      |
+      v
+calculate_2ndstat()
 
    * Read data from 'rawdata.bin',
      then write human-readable timestamp,

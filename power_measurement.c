@@ -442,10 +442,9 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
             stat_info.read_sysfs_func(stat_info, info.rawdata_fd);
         }
 
-sleep_enough:
         // Sleep enough
-        if(nanosleep(&sleep_request, &sleep_remain) == -1)
-            goto sleep_enough;
+        while(nanosleep(&sleep_request, &sleep_remain) == -1)
+            nanosleep(&sleep_remain, &sleep_remain);
     }
 
 #ifdef DEBUG
@@ -709,6 +708,8 @@ int main(int argc, char *argv[]) {
 
     int pid;
     struct measurement_info info;
+    const struct timespec sleep_request = {.tv_sec = 2, .tv_nsec = 0};
+    struct timespec sleep_remain;
 
 #ifdef DEBUG
     printf("\nYou are running debug mode");
@@ -722,6 +723,10 @@ int main(int argc, char *argv[]) {
     if(pid == 0) {
         // Child Process
         dup2(info.caffelog_fd, STDERR_FILENO);
+
+        // Sleep enough
+        while(nanosleep(&sleep_request, &sleep_remain) == -1)
+            nanosleep(&sleep_remain, &sleep_remain);
 
         // NOTE: Only works with absolute path
         execve(info.child_cmd[0], info.child_cmd, NULL);
