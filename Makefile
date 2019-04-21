@@ -15,7 +15,7 @@ all: $(TARGET)
 
 $(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o \
 	       mkdir_p.o
-	$(CC) $(CFLAGS) $? -o $@ $(LIBS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
