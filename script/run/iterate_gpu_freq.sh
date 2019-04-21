@@ -27,8 +27,8 @@ DEFAULT_GPU_GOVERNOR="nvhost_podgov"
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
 
 POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../..)
-POWER_MEASUREMENT_TOOL="$POWER_MEASUREMENT_HOME/tx2_power_measurement"
-RESULT_DIR="$POWER_MEASUREMENT_HOME/test_result/$BENCHMARK_NAME"
+POWER_MEASUREMENT_TOOL="$POWER_MEASUREMENT_HOME/power_measurement"
+RESULT_DIR="$POWER_MEASUREMENT_HOME/exp_result/$BENCHMARK_NAME"
 
 if [ ! -d "$RESULT_DIR" ]; then
     mkdir -p $RESULT_DIR
@@ -66,7 +66,8 @@ do
 
     STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.txt
 
-    "$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND"
+    $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
+    cd $POWER_MEASUREMENT_HOME
 done;
 
 echo END
@@ -81,4 +82,4 @@ echo "GPU frequency is recovered to default setting"
 
 STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
 
-"$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND"
+$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND

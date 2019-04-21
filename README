@@ -52,8 +52,10 @@ SCRIPT USAGE EXAMPLE
    sudo ./script/run/fix_gpu_freq 1122000000
 
    # Run experiments with all available GPU frequencies as fixed frequency
-   # and default governor setup with CIFAR-10 dataset
-   sudo ./script/run/iterate_gpu_freq.sh cifar-10 ./script/run/run_cifar10.sh
+   # and default governor setup with CIFAR-10 dataset.
+   #
+   # Note that 2nd argument of script should be given as ABSOLUTE PATH: (ex) /bin/bash
+   sudo ./script/run/iterate_gpu_freq.sh cifar-10 /bin/bash ./script/run/run_cifar10.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset
