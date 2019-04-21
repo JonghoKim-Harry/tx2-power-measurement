@@ -362,7 +362,10 @@ end_arg_processing:
      *  Caffe event should be the right-most column,
      *  in order to be freindly with MS Excel
      */
-    snprintf(buff, 256, "  Caffe-event");
+    snprintf(buff, 256, "%*s%*s%*s",
+             22, "specific-Caffe-event",
+             7, "batch",
+             13, "Caffe-event");
     strcat(info->header_raw, buff);
 
     /*
@@ -487,7 +490,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
-    const char separation_line[256] = "\n\n_____________________________________________________________________________________________________________________________________________\n";
+    const char separation_line[256] = "\n\n__________________________________________________________________________________________________________________________________________________________________________\n";
     time_t elapsed_time_sec;
     int64_t elapsed_time_ns;
     int64_t diff_time_ns;
@@ -625,9 +628,14 @@ write_a_powerlog:
             if (read_result <= 0) break;
         }
 
-        // Write #N/A value to last column (Caffe-event),
-        // in order to be friendly with MS Excel
-        buff_len = snprintf(buff, 256, "%13s", "#N/A");
+        // Suffixes.
+        // Write #N/A values to some last columns,
+        // in order to be friendly with MS Excel.
+        // The last column is Caffe-event
+        buff_len = snprintf(buff, 256, "%*s%*s%*s",
+                            22, "#N/A",
+                            7, "#N/A",
+                            13, "#N/A");
         write(stat_fd, buff, buff_len);
 
         // Calculate powerlog: GPU ENERGY PARTIAL SUM
@@ -689,7 +697,14 @@ write_a_caffelog:
             write(stat_fd, buff, buff_len);
         }
 
-        // Write a caffelog: Event
+        // Write suffixes.
+        // Note that Caffe-event should be excluded
+        buff_len = snprintf(buff, 256, "%*s%*s",
+                            22, "#N/A",
+                            7, "#N/A");
+        write(stat_fd, buff, buff_len);
+
+        // Write a caffelog : Caffe-event
         buff_len = snprintf(buff, 256, "%2s%s", "  ", caffelog.event);
         write(stat_fd, buff, buff_len);
     }   // while(1)
