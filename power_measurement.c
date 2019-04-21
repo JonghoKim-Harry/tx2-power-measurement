@@ -20,13 +20,15 @@
 #include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
-#define TWO_MILLISECOND_TO_NANOSECOND 2000000
-#define SECOND_TO_NANOSECOND 1000000000
-#define HOUR_TO_SECOND 3600
-#define WATTHOUR_TO_PICOWATTHOUR 1000000000000
+#define TWO_MILLISECOND_TO_NANOSECOND         2000000
+#define ONE_SECOND_TO_NANOSECOND           1000000000
+// No use of macro in order to prevent integer overflow
+const int64_t FOUR_SECONDS_TO_NANOSECOND = 4000000000;
+#define WATTHOUR_TO_PICOWATTHOUR        1000000000000
 
+#define HOUR_TO_SECOND       3600
 // 9 hours = 540 minutes = 32400 seconds
-#define GMT_TO_KOREA_TIME 32400
+#define GMT_TO_KOREA_TIME   32400
 
 void help() {
 
@@ -378,9 +380,12 @@ end_arg_processing:
 void measure_rawdata(const int pid, const struct measurement_info info) {
 
     int i;
+    int flag_childexit;
+    int64_t ns_since_childexit;
+    int diff_ns, diff_sec;
     const struct timespec sleep_request = {.tv_sec = 0, .tv_nsec = TWO_MILLISECOND_TO_NANOSECOND};
     struct timespec sleep_remain;
-    struct timespec curr_time;
+    struct timespec prev_time, curr_time;
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int child_status;
     int num_read_bytes;
@@ -392,17 +397,33 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     int mem_freq;
 #endif  // TRACE_DDR
 
+    flag_childexit = 0;
+    ns_since_childexit = 0;
+
     while(1) {
 
         if(waitpid(pid, &child_status, WNOHANG))
-            break;
+            flag_childexit = 1;
 
-        // Sleep, wakeup, and then check time
-        if(nanosleep(&sleep_request, &sleep_remain) == -1) continue;
+        if(flag_childexit)
+            prev_time = curr_time;
+
         if(clock_gettime(CLOCK_REALTIME, &curr_time) == -1) continue;
 
-        write(info.rawdata_fd, &curr_time, sizeof(struct timespec));
+        if(flag_childexit) {
+            diff_sec = curr_time.tv_sec - prev_time.tv_sec;
+            diff_ns = curr_time.tv_nsec - prev_time.tv_nsec;
 
+            ns_since_childexit += diff_ns;
+            if(diff_sec > 0)
+                ns_since_childexit += (diff_sec * ONE_SECOND_TO_NANOSECOND);
+
+            if(ns_since_childexit >= FOUR_SECONDS_TO_NANOSECOND)
+                break;
+        }
+
+        // Write timestamp
+        write(info.rawdata_fd, &curr_time, sizeof(struct timespec));
 
         // GPU Power
         lseek(info.gpu_power_fd, 0, SEEK_SET);
@@ -420,6 +441,11 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
             stat_info = info.stat_info[i];
             stat_info.read_sysfs_func(stat_info, info.rawdata_fd);
         }
+
+sleep_enough:
+        // Sleep enough
+        if(nanosleep(&sleep_request, &sleep_remain) == -1)
+            goto sleep_enough;
     }
 
 #ifdef DEBUG
@@ -569,7 +595,7 @@ write_a_powerlog:
         if(elapsed_time_ns < 0) {
         
             -- elapsed_time_sec;
-            elapsed_time_ns += SECOND_TO_NANOSECOND;
+            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
         }
 
         if(elapsed_time_sec == 0)
@@ -595,7 +621,7 @@ write_a_powerlog:
         prev_gpu_power = gpu_power;
         gpu_power = atoi(gpu_power_str);
         avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
-        diff_time_ns = SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
+        diff_time_ns = ONE_SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
                       + (powerlog_timestamp.tv_nsec - prev_powerlog_timestamp.tv_nsec);
 
         gpu_energy += avg_gpu_power * diff_time_ns;
@@ -632,7 +658,7 @@ write_a_caffelog:
         if(elapsed_time_ns < 0) {
         
             -- elapsed_time_sec;
-            elapsed_time_ns += SECOND_TO_NANOSECOND;
+            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
         }
 
         if(elapsed_time_sec == 0)
