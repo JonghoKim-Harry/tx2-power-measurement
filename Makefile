@@ -6,9 +6,9 @@ export POWER_MEASUREMENT_HOME = $(shell pwd)
 export POWER_MEASUREMENT_SCRIPT_HOME = $(POWER_MEASUREMENT_HOME)/script
 export CFLAGS := -Wall -DTRACE_CPU
 
-TARGET_DEVICE := tx2
+#TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
-TARGET := $(TARGET_DEVICE)_power_measurement
+TARGET := power_measurement
 DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
