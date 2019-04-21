@@ -55,6 +55,8 @@ SCRIPT USAGE EXAMPLE
    # and default governor setup with CIFAR-10 dataset.
    #
    # Note that 2nd argument of script should be given as ABSOLUTE PATH: (ex) /bin/bash
+   # This inconvenience is due to power measurement program's lack of argument processing,
+   # NOT due to script itself
    sudo ./script/run/iterate_gpu_freq.sh cifar-10 /bin/bash ./script/run/run_cifar10.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
