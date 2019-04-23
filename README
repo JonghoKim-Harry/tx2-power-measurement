@@ -61,7 +61,12 @@ SCRIPT USAGE EXAMPLE
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset
-   sudo ./script/run/iterate_gpu_freq.sh mnist ./script/run/run_mnist.sh
+   sudo ./script/run/iterate_gpu_freq.sh mnist /bin/bash ./script/run/run_mnist.sh
+
+   # Use tegrastats to measure power, etc.
+   #
+   # Note that there is sleep in the script, in order to cool down CPUs or GPU
+   sudo ./script/run/use_tegrastats.sh cifar10-tegralog.txt script/run/run_cifar10.sh
 
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
