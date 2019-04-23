@@ -214,25 +214,25 @@ end_arg_processing:
     // mkdir -p
     mkdir_p(given_dirname, 0755);
 
-    // OOO_stats.txt
+    // Stat File: OOO.txt
     stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     printf("\nCreated statistic file: %s", stat_filename);
 
-    // OOO.rawdata.bin
+    // Rawdata File: OOO.rawdata.bin
     strcpy(rawdata_filename, given_dirname);
     strcat(rawdata_filename, "/");
     strcat(rawdata_filename, filename_prefix);
     strcat(rawdata_filename, ".rawdata.bin");
     rawdata_fd = open(rawdata_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
-    // OOO.powerlog.txt
+    // Powerlog File: OOO.powerlog.txt
     strcpy(powerlog_filename, given_dirname);
     strcat(powerlog_filename, "/");
     strcat(powerlog_filename, filename_prefix);
     strcat(powerlog_filename, ".powerlog.txt");
     powerlog_fd = open(powerlog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
-    // OOO.caffelog.txt
+    // Caffelog File: OOO.caffelog.txt
     strcpy(caffelog_filename, given_dirname);
     strcat(caffelog_filename, "/");
     strcat(caffelog_filename, filename_prefix);

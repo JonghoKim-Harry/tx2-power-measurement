@@ -43,7 +43,7 @@ void print_stat_info(const struct sysfs_stat stat_info);
 
 struct measurement_info {
 
-    //
+    // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;
 
@@ -54,6 +54,8 @@ struct measurement_info {
      *  thus, we store caffelog file name and fd
      */
     char **child_cmd;
+
+    // Caffelog
     char caffelog_filename[128];
     int caffelog_fd;
     regex_t caffelog_pattern;
