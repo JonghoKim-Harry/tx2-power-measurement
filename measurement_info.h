@@ -43,6 +43,9 @@ void print_stat_info(const struct sysfs_stat stat_info);
 
 struct measurement_info {
 
+    // Measurement interval in nanosecond
+    struct timespec powertool_interval;
+
     // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;

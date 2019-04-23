@@ -20,7 +20,7 @@
 #include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS "-c:f:h"
-#define TWO_MILLISECOND_TO_NANOSECOND         2000000
+#define ONE_MILLISECOND_TO_NANOSECOND         1000000
 #define ONE_SECOND_TO_NANOSECOND           1000000000
 // No use of macro in order to prevent integer overflow
 const int64_t FOUR_SECONDS_TO_NANOSECOND = 4000000000;
@@ -190,10 +190,13 @@ end_arg_processing:
         perror("localtime() call error");
         exit(-1);
     }
-   
+ 
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
 
+    // Set powertool measurement interval
+    info->powertool_interval.tv_sec = 0;
+    info->powertool_interval.tv_nsec = 11 * ONE_MILLISECOND_TO_NANOSECOND;
 
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
@@ -394,7 +397,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     int flag_childexit;
     int64_t ns_since_childexit;
     int diff_ns, diff_sec;
-    const struct timespec sleep_request = {.tv_sec = 0, .tv_nsec = TWO_MILLISECOND_TO_NANOSECOND};
+    const struct timespec sleep_request = info.powertool_interval;
     struct timespec sleep_remain;
     struct timespec prev_time, curr_time;
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
