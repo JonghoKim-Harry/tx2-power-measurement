@@ -66,7 +66,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     char raw_power_filename[128];
 
     char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
-    size_t gmt_buff_len, korea_time_buff_len;
+    size_t buff_len, gmt_buff_len, korea_time_buff_len;
     int gpu_power_fd;
     struct timeval walltime;
     struct tm *walltime_calendar;
@@ -196,7 +196,7 @@ end_arg_processing:
 
     // Set powertool measurement interval
     info->powertool_interval.tv_sec = 0;
-    info->powertool_interval.tv_nsec = 11 * ONE_MILLISECOND_TO_NANOSECOND;
+    info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
 
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
@@ -260,6 +260,12 @@ end_arg_processing:
     write(stat_fd, " (", 2);
     write(stat_fd, raw_power_filename, strlen(raw_power_filename));
     write(stat_fd, ")", 1);
+
+    // Measurement Interval
+    buff_len = snprintf(buff, 256, "\n   * Interval: %ld.%09ld seconds",
+                        info->powertool_interval.tv_sec,
+                        info->powertool_interval.tv_nsec);
+    write(stat_fd, buff, buff_len);
 
     // CPUFreq Group0 Informations
     message = "\n\nCPUFreq Group0";
@@ -515,7 +521,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     stat_fd = open(info.stat_filename, O_WRONLY);
     lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
 
-    /* Empty space for summary at the top of stat file */
+    /* Keep some empty space for summary at the top of stat file */
     lseek(stat_fd, 105, SEEK_CUR);
 
     caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
