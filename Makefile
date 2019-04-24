@@ -6,6 +6,10 @@ export POWER_MEASUREMENT_HOME = $(shell pwd)
 export POWER_MEASUREMENT_SCRIPT_HOME = $(POWER_MEASUREMENT_HOME)/script
 export CFLAGS := -Wall -DTRACE_CPU
 
+# Uncomment if you trace caffe timestamp
+# Note that some caffe apps do not give timestamp
+#CFLAGS += -DTRACE_CAFFE_TIMESTAMP
+
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
 TARGET := power_measurement

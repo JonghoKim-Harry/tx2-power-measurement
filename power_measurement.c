@@ -479,6 +479,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
 void calculate_2ndstat(const struct measurement_info info) {
 
+#ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
     int caffelog_fd;
     off_t offset;
@@ -486,6 +487,8 @@ void calculate_2ndstat(const struct measurement_info info) {
     int64_t caffelog_powerlog_hms_diff_ns;
     int caffelog_powerlog_comparison;
     int caffelog_buffered;   // flag
+    int powerlog_buffered;   // flag
+#endif   // TRACE_CAFFE_TIMESTAMP
 
     /*
      *  This function get file name of statistics file.
@@ -503,7 +506,6 @@ void calculate_2ndstat(const struct measurement_info info) {
     time_t elapsed_time_sec;
     int64_t elapsed_time_ns;
     int64_t diff_time_ns;
-    int powerlog_buffered;      // flag
     int32_t gpu_energy;         // mW x ns
     int64_t gpu_energy_pWh;     // pWh (10^-12 Wh)
     int32_t gpu_energy_Wh;      // Wh
@@ -511,9 +513,14 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     struct sysfs_stat stat_info;
 
+#ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
     offset = 0;
     caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
+    caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
+    caffelog_buffered = 0;
+    powerlog_buffered = 0;
+#endif   // TRACE_CAFFE_TIMESTAMP
 
     // Rawdata
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
@@ -524,9 +531,6 @@ void calculate_2ndstat(const struct measurement_info info) {
     /* Keep some empty space for summary at the top of stat file */
     lseek(stat_fd, 105, SEEK_CUR);
 
-    caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
-    caffelog_buffered = 0;
-    powerlog_buffered = 0;
     gpu_power = 0;
     gpu_energy = 0;
     gpu_energy_pWh = 0;
@@ -538,6 +542,7 @@ void calculate_2ndstat(const struct measurement_info info) {
 
     while(1) {
 
+#ifdef TRACE_CAFFE_TIMESTAMP
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
 #endif   // DEBUG
@@ -550,6 +555,7 @@ void calculate_2ndstat(const struct measurement_info info) {
 
         if(powerlog_buffered)
             goto compare_timestamp;
+#endif   // TRACE_CAFFE_TIMESTAMP
 
 get_a_powerlog:
 #ifdef DEBUG
@@ -561,6 +567,8 @@ get_a_powerlog:
         read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
         if(read_result <= 0) break;
         powerlog_calendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
+
+#ifdef TRACE_CAFFE_TIMESTAMP
         powerlog_buffered = 1;   // Set a flag
 
         if(!caffelog_buffered)
@@ -595,11 +603,16 @@ compare_timestamp:
             goto write_a_caffelog;
 
 write_a_powerlog:
+#endif   // TRACE_CAFFE_TIMESTAMP
+
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: write a powerlog");
 #endif   // DEBUG
 
+
+#ifdef TRACE_CAFFE_TIMESTAMP
         powerlog_buffered = 0;   // Reset a flag
+#endif   // TRACE_CAFFE_TIMESTAMP
 
         // Write powerlog: POWERLOG TIMESTAMP
         write(stat_fd, "\n", 1);
@@ -667,6 +680,7 @@ write_a_powerlog:
         }
         goto get_a_powerlog;
 
+#ifdef TRACE_CAFFE_TIMESTAMP
 write_a_caffelog:
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: write a caffelog");
@@ -716,6 +730,7 @@ write_a_caffelog:
         // Write a caffelog : Caffe-event
         buff_len = snprintf(buff, 256, "%2s%s", "  ", caffelog.event);
         write(stat_fd, buff, buff_len);
+#endif   // TRACE_CAFFE_TIMESTAMP
     }   // while(1)
 
 #ifdef DEBUG
@@ -736,7 +751,9 @@ write_a_caffelog:
 
     printf("\nEnd Jetson TX2 power measurement\n");
     close(stat_fd);
+#ifdef TRACE_CAFFE_TIMESTAMP
     close(caffelog_fd);   // Reopened caffelog's fd
+#endif   // TRACE_CAFFE_TIMESTAMP
     close(info.powerlog_fd);
 
     return;
@@ -760,6 +777,7 @@ int main(int argc, char *argv[]) {
 
     if(pid == 0) {
         // Child Process
+        dup2(info.caffelog_fd, STDOUT_FILENO);
         dup2(info.caffelog_fd, STDERR_FILENO);
 
         // Sleep enough
