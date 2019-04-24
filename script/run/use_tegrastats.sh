@@ -1,12 +1,14 @@
 #!/bin/bash
 
 #
-#  $1: tegrastats logfile name
-#  $2~Last Argument: A shell command 
+#  $1: Interval, integer in millisecond
+#  $2: tegrastats logfile name
 #
-TEGRALOG_FILENAME=$1
-SHELL_COMMAND="${@:2}"
-
+#  $3~Last Argument: A shell command
+#
+INTERVAL=$1
+TEGRALOG_FILENAME=$2
+SHELL_COMMAND="${@:3}"
 
 #
 # You should run this script with sudoer privilege
@@ -16,8 +18,11 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
+#
+echo "Measurement Interval will be $INTERVAL ms, as you gave"
+
 # START tegrastats as a background process
-sudo ./tegrastats --interval 2 --logfile $TEGRALOG_FILENAME &
+sudo ./tegrastats --interval $INTERVAL --logfile $TEGRALOG_FILENAME &
 
 # Sleep to cooldown CPUs
 echo "Sleeping 2 seconds in order to cooldown CPUs"

@@ -66,7 +66,7 @@ SCRIPT USAGE EXAMPLE
    # Use tegrastats to measure power, etc.
    #
    # Note that there is sleep in the script, in order to cool down CPUs or GPU
-   sudo ./script/run/use_tegrastats.sh cifar10-tegralog.txt script/run/run_cifar10.sh
+   sudo ./script/run/use_tegrastats.sh 10 cifar10-tegralog-10ms.txt script/run/run_cifar10.sh
 
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
