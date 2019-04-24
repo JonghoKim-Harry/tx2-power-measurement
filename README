@@ -73,7 +73,7 @@ SCRIPT USAGE EXAMPLE
    ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 
    # Measure CaffeNet single image inference
-   ./power_measurement -c gpu -f exp_result/caffenet/caffenet_power.txt /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+   ./power_measurement -c gpu -f exp_result/caffenet/caffenet-cat_power.txt /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
