@@ -64,6 +64,13 @@ SCRIPT USAGE EXAMPLE
    # and default governor setup with MNIST dataset
    sudo ./script/run/iterate_gpu_freq.sh mnist /bin/bash ./script/run/run_mnist.sh
 
+   #
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+
+   #
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-fishbike /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/fish-bike.jpg
+
+
    # Use tegrastats to measure power, etc.
    #
    # Note that there is sleep in the script, in order to cool down CPUs or GPU
