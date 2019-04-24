@@ -68,6 +68,9 @@ SCRIPT USAGE EXAMPLE
    # Note that there is sleep in the script, in order to cool down CPUs or GPU
    sudo ./script/run/use_tegrastats.sh 10 cifar10-tegralog-10ms.txt script/run/run_cifar10.sh
 
+   # Run CaffeNet
+   ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.txt \
