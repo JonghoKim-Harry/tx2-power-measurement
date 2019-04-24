@@ -194,9 +194,17 @@ end_arg_processing:
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
 
+    // Set Caffe sleep request
+    info->caffe_sleep_request.tv_sec =  2;
+    info->caffe_sleep_request.tv_nsec = 0;
+
     // Set powertool measurement interval
     info->powertool_interval.tv_sec = 0;
     info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
+
+    // Set cooldown period
+    info->cooldown_period.tv_sec =  6;
+    info->cooldown_period.tv_nsec = 0;
 
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
@@ -261,11 +269,24 @@ end_arg_processing:
     write(stat_fd, raw_power_filename, strlen(raw_power_filename));
     write(stat_fd, ")", 1);
 
+    // Caffe sleep period
+    buff_len = snprintf(buff, 256, "\n   * Sleep:    %ld.%09ld seconds before Caffe START",
+                        info->caffe_sleep_request.tv_sec,
+                        info->caffe_sleep_request.tv_nsec);
+    write(stat_fd, buff, buff_len);
+
     // Measurement Interval
     buff_len = snprintf(buff, 256, "\n   * Interval: %ld.%09ld seconds",
                         info->powertool_interval.tv_sec,
                         info->powertool_interval.tv_nsec);
     write(stat_fd, buff, buff_len);
+
+    // Cooldown Period
+    buff_len = snprintf(buff, 256, "\n   * Cooldown: %ld.%09ld seconds after  Caffe FINISH",
+                        info->cooldown_period.tv_sec,
+                        info->cooldown_period.tv_nsec);
+    write(stat_fd, buff, buff_len);
+
 
     // CPUFreq Group0 Informations
     message = "\n\nCPUFreq Group0";
@@ -405,6 +426,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     int diff_ns, diff_sec;
     const struct timespec sleep_request = info.powertool_interval;
     struct timespec sleep_remain;
+    struct timespec cooldown_remain;
     struct timespec prev_time, curr_time;
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int child_status;
@@ -419,6 +441,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
 
     flag_childexit = 0;
     ns_since_childexit = 0;
+    cooldown_remain = info.cooldown_period;
 
     while(1) {
 
@@ -434,11 +457,20 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
             diff_sec = curr_time.tv_sec - prev_time.tv_sec;
             diff_ns = curr_time.tv_nsec - prev_time.tv_nsec;
 
-            ns_since_childexit += diff_ns;
-            if(diff_sec > 0)
-                ns_since_childexit += (diff_sec * ONE_SECOND_TO_NANOSECOND);
+            cooldown_remain.tv_sec  -= diff_sec;
+            cooldown_remain.tv_nsec -= diff_ns;
 
-            if(ns_since_childexit >= FOUR_SECONDS_TO_NANOSECOND)
+            while(cooldown_remain.tv_nsec >= ONE_SECOND_TO_NANOSECOND) {
+                cooldown_remain.tv_nsec -= ONE_SECOND_TO_NANOSECOND;
+                cooldown_remain.tv_sec  += 1;
+            }
+
+            while(cooldown_remain.tv_nsec < 0) {
+                cooldown_remain.tv_nsec += ONE_SECOND_TO_NANOSECOND;
+                cooldown_remain.tv_sec  -= 1;
+            }
+
+            if(cooldown_remain.tv_sec < 0)
                 break;
         }
 
@@ -763,7 +795,6 @@ int main(int argc, char *argv[]) {
 
     int pid;
     struct measurement_info info;
-    const struct timespec sleep_request = {.tv_sec = 2, .tv_nsec = 0};
     struct timespec sleep_remain;
 
 #ifdef DEBUG
@@ -781,7 +812,7 @@ int main(int argc, char *argv[]) {
         dup2(info.caffelog_fd, STDERR_FILENO);
 
         // Sleep enough
-        while(nanosleep(&sleep_request, &sleep_remain) == -1)
+        while(nanosleep(&info.caffe_sleep_request, &sleep_remain) == -1)
             nanosleep(&sleep_remain, &sleep_remain);
 
         // NOTE: Only works with absolute path

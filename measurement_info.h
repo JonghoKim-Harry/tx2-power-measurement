@@ -43,12 +43,19 @@ void print_stat_info(const struct sysfs_stat stat_info);
 
 struct measurement_info {
 
+    // Caffe sleep request: in order to cool down CPUs
+    struct timespec caffe_sleep_request;
+
     // Measurement interval in nanosecond
     struct timespec powertool_interval;
+
+    // Cooldown period: in order to cool down GPU, etc.
+    struct timespec cooldown_period;
 
     // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;
+
 
     /*
      *  I will use execve() to run child command.
