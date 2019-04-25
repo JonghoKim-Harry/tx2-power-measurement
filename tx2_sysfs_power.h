@@ -70,4 +70,11 @@
 #define TX2_SYSFS_GPU_UTIL   \
     TX2_SYSFS_GPU "/load"
 
+#define TX2_SYSFS_EMC_MAXFREQ   \
+    "/sys/kernel/debug/bpmp/debug/clk/emc/max_rate"
+#define TX2_SYSFS_EMC_MINFREQ   \
+    "/sys/kernel/debug/bpmp/debug/clk/emc/min_rate"
+#define TX2_SYSFS_EMC_FREQ   \
+    "/sys/kernel/debug/clk/emc/clk_rate"
+
 #endif   // TX2_SYSFS_POWER_H
