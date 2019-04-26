@@ -4,7 +4,7 @@
 export CAFFE_HOME = $(HOME)/caffe
 export POWER_MEASUREMENT_HOME = $(shell pwd)
 export POWER_MEASUREMENT_SCRIPT_HOME = $(POWER_MEASUREMENT_HOME)/script
-export CFLAGS := -Wall -DTRACE_CPU
+export CFLAGS := -Wall -DNDEBUG -DTRACE_CPU
 
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp
@@ -65,7 +65,7 @@ check-plot: check-cifar10 check-mnist
 	@echo "\n** Drawing a plot for selftesting result with MNIST\n"
 	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(EXP_RESULT_PATH_MNIST)/mnist_plot.png MNIST
 
-debug: CFLAGS += -DDEBUG
+debug: CFLAGS += -g -DDEBUG -UNDEBUG
 debug: $(TARGET)
 	@echo "\nSTART DEBUGGING"
 	@echo "\n** Start selftesting with CIFAR-10 with DEBUG VERSION\n"
