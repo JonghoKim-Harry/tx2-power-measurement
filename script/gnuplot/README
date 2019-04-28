@@ -1,0 +1,11 @@
+                               SCRIPTS FOR GNUPLOT
+
+DEFAULT CONFIGURATION
+
+   Gnuplot reads a startup file, ~/.gnuplot when it starts.
+   Note that I placed .gnuplot in this directory
+
+GNUPLOT ARGUMENTS
+
+   * Gnuplot supports only up to 10 arguments: ARG0, ARG1, ..., ARG9
+   * ARGC is the number of arguments
