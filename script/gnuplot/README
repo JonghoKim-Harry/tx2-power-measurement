@@ -1,10 +1,10 @@
-                               SCRIPTS FOR GNUPLOT
+SCRIPTS FOR GNUPLOT
+============
 
 DEFAULT CONFIGURATION
 
    Gnuplot reads a startup file, ~/.gnuplot when it starts.
    Note that I placed .gnuplot in this directory
-
 
 USAGE
 
@@ -25,3 +25,7 @@ NOTES ON BACKSLASH
    * There should be NO BLANK AFTER BACKSLASH in gpuplot
    * BACKSLASH AT THE END OF COMMENT makes gnuplot treat
      the next line also as comment
+
+REFERENCE
+
+   * http://triclinic.org/2015/04/publication-quality-plots-with-gnuplot/
