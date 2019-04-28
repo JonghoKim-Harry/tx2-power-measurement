@@ -98,29 +98,22 @@ if [[ -z "$X_AXIS_IDX" ]]; then
     X_AXIS_IDX="2"
 fi
 
-        
-GNUPLOT_CMD=
-exec < $(dirname $0)/setup.gnuplot
-while read LINE; do
-    GNUPLOT_LINE=$(echo $LINE | sed -rn '/[[:space:]]*#.*/!p')
-    if [[ -n "$GNUPLOT_LINE" ]]; then
-        echo $GNUPLOT_LINE
-    fi
-done
+GNUPLOT_FILE=$(echo $OUTPUT_FILE | sed -r 's/(.*)\.[^.]*/\1.gnuplot/g')
 
+cp $(dirname $0)/setup.gnuplot $GNUPLOT_FILE
 
-GNUPLOT_CMD="$GNUPLOT_CMD\nset output $OUTPUT_FILE"
-GNUPLOT_CMD="$GNUPLOT_CMD\nset title $TITLE"
+echo -e "set output \"$OUTPUT_FILE\"" >> $GNUPLOT_FILE
+echo -e "set title \"$TITLE\"" >> $GNUPLOT_FILE
 
 PLOT=
 for COL in "${COLUMN[@]}"; do
     if [[ -z "$PLOT" ]]; then
-        GNUPLOT_CMD="$GNUPLOT_CMD\nplot $INPUT_FILE using $X_AXIS_IDX$COL"
+        echo -e "plot \"$INPUT_FILE\" using $X_AXIS_IDX$COL" >> $GNUPLOT_FILE
         PLOT=YES
     else
-        GNUPLOT_CMD="$GNUPLOT_CMD\nreplot $INPUT_FILE using $X_AXIS_IDX$COL"
+        echo -e "replot \"$INPUT_FILE\" using $X_AXIS_IDX$COL" >> $GNUPLOT_FILE
     fi
 done
 
-echo -e $GNUPLOT_CMD
-#TODO: gnuplot -c $GNUPLOT_CMD
+echo -e "exit" >> $GNUPLOT_FILE
+gnuplot -c $GNUPLOT_FILE

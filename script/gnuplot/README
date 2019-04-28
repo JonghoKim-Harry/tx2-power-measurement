@@ -5,6 +5,11 @@ DEFAULT CONFIGURATION
    Gnuplot reads a startup file, ~/.gnuplot when it starts.
    Note that I placed .gnuplot in this directory
 
+
+USAGE
+
+   ./script/gnuplot/draw_from_table.sh -i exp_result/mnist/mnist_1122000000Hz.txt -o exp_result/mnist/mnist_1122MHz.png -t MNIST -x 2 5 GPU-util
+
 GNUPLOT ARGUMENTS
 
    * Gnuplot supports only up to 10 arguments: ARG0, ARG1, ..., ARG9
