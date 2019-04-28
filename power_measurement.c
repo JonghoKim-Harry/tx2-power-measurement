@@ -352,10 +352,6 @@ end_arg_processing:
     strcpy(info->stat_filename, stat_filename);
     info->gpu_power_fd = gpu_power_fd;
 
-    // Time information
-    clock_gettime(CLOCK_REALTIME, &info->gmt_start_time);
-    info->gmt_calendar_start_time = localtime(&info->gmt_start_time.tv_sec);
-
     // Raw data file informations
     strcpy(info->rawdata_filename, rawdata_filename);
     info->rawdata_fd = rawdata_fd;
@@ -415,6 +411,10 @@ end_arg_processing:
     printf("\nprepare_measurement()   FINISHED");
 #endif   // DEBUG
 
+    // Time information
+    // Note that this job should be done at last to be more accurate
+    clock_gettime(CLOCK_REALTIME, &info->gmt_start_time);
+    info->gmt_calendar_start_time = localtime(&info->gmt_start_time.tv_sec);
     return;
 }
 
@@ -791,6 +791,11 @@ write_a_caffelog:
     return;
 }
 
+void finish_measurement(struct measurement_info *info) {
+
+    regfree(&info->caffelog_pattern);
+}
+
 int main(int argc, char *argv[]) {
 
     int pid;
@@ -825,7 +830,6 @@ int main(int argc, char *argv[]) {
     // Parent Process
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
-    regfree(&info.caffelog_pattern);
-
+    finish_measurement(&info);
     return 0;
 }
