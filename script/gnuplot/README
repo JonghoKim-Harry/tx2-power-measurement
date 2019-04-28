@@ -9,3 +9,14 @@ GNUPLOT ARGUMENTS
 
    * Gnuplot supports only up to 10 arguments: ARG0, ARG1, ..., ARG9
    * ARGC is the number of arguments
+
+CO-WORKING WITH SHELL
+
+   * Some features must be double-quoted
+     (ex) set output "mnist_1122MHz.png"
+
+NOTES ON BACKSLASH
+
+   * There should be NO BLANK AFTER BACKSLASH in gpuplot
+   * BACKSLASH AT THE END OF COMMENT makes gnuplot treat
+     the next line also as comment
