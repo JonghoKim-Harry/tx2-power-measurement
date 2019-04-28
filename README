@@ -47,6 +47,16 @@ DESIGN PRINCIPLE
      See: Documentation/portability
 
 
+CFLAGS FOR COMPILATION
+
+   TRACE_CPU                        Trace CPU informations
+   TRACE_DDR                        Trace DDR/MEM informations
+   TRACE_CAFFE_TIMESTAMP            Trace Caffe timestamp (default: OFF)
+   DEBUG                            Trace powertool debug (default: OFF)
+   NDEBUG                           Suppress assert() defined by <assert.h>
+                                    (default: ON)
+
+
 SCRIPT USAGE EXAMPLE
 
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
