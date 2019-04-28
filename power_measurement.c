@@ -838,7 +838,7 @@ int main(int argc, char *argv[]) {
             nanosleep(&sleep_remain, &sleep_remain);
 
         // NOTE: Only works with absolute path
-        execve(info.child_cmd[0], info.child_cmd, NULL);
+        execvp(info.child_cmd[0], info.child_cmd);
 
         // If error, execve() returns -1. Otherwise, execve() does not return value
         perror("\nexecve() error");

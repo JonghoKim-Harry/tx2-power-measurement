@@ -33,7 +33,7 @@ For portability with mere measurement overhead, I used:
         - dup2()                       in <unistd.h>
         - close()                      in <unistd.h>
         - fork()                       in <unistd.h>
-        - execve()                     in <unistd.h>
+        - execvp()                     in <unistd.h>
         - waitpid()                    in <sys/wait.h>
 
 
