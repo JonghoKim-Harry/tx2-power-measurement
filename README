@@ -49,12 +49,13 @@ DESIGN PRINCIPLE
 
 CFLAGS FOR COMPILATION
 
-   TRACE_CPU                        Trace CPU informations
-   TRACE_DDR                        Trace DDR/MEM informations
-   TRACE_CAFFE_TIMESTAMP            Trace Caffe timestamp (default: OFF)
-   DEBUG                            Trace powertool debug (default: OFF)
-   NDEBUG                           Suppress assert() defined by <assert.h>
-                                    (default: ON)
+   CFLAGS                   Default    Explanation
+
+   TRACE_CPU                  ON       Trace CPU informations
+   TRACE_DDR                  ON       Trace DDR/MEM informations
+   TRACE_CAFFE_TIMESTAMP      OFF      Trace Caffe timestamp
+   DEBUG                      OFF      Trace powertool debug
+   NDEBUG                     ON       Suppress assert() defined by <assert.h>
 
 
 SCRIPT USAGE EXAMPLE
