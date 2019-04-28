@@ -793,7 +793,24 @@ write_a_caffelog:
 
 void finish_measurement(struct measurement_info *info) {
 
+    struct timespec gmt_finish_time, overall_interval;
+
+    // Free objects
     regfree(&info->caffelog_pattern);
+
+    // Overall Measurement Time
+    clock_gettime(CLOCK_REALTIME, &gmt_finish_time);
+    overall_interval.tv_sec = gmt_finish_time.tv_sec - info->gmt_start_time.tv_sec;
+    overall_interval.tv_nsec = gmt_finish_time.tv_nsec - info->gmt_start_time.tv_nsec;
+
+    if(overall_interval.tv_nsec < 0) {
+        -- overall_interval.tv_sec;
+        overall_interval.tv_nsec += ONE_SECOND_TO_NANOSECOND;
+    }
+
+    printf("\nTOTAL MEASUREMENT TOOK: %ld.%09ld seconds",
+           overall_interval.tv_sec,
+           overall_interval.tv_nsec);
 }
 
 int main(int argc, char *argv[]) {
