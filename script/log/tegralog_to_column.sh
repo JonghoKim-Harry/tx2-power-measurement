@@ -28,6 +28,16 @@ cpu_informations() {
     CPU0_UTIL=$(echo $LINE | sed -rn 's/.*CPU[[:space:]]+\[([[:digit:]]+)%.*/\1/p')
     CPU0_FREQ=$(echo $LINE | sed -rn 's/.*CPU[[:space:]]+\[[[:digit:]]+%@([[:digit:]]+).*/\1/p')
 
+    if [[ "$CPU0_UTIL" -eq "" ]]; then
+        CPU0_UTIL="#N/A"
+    fi
+    if [[ "$CPU0_FREQ" -eq "" ]]; then
+        CPU0_FREQ="#N/A"
+    fi
+    if [[ "$CPU_POWER" -eq "" ]]; then
+        CPU_POWER="#N/A"
+    fi
+
     echo -e "$INTENTIONAL_WHITESPACE $CPU0_UTIL   $CPU0_FREQ   $CPU_POWER"
 }
 
@@ -39,6 +49,19 @@ gpu_informations() {
     GPU_POWER=$(echo $LINE | sed -rn 's/.*VDD_GPU[[:space:]]+([[:digit:]]+).*/\1/p')
     GPU_TEMP=$(echo $LINE | sed -rn 's/.*GPU@([\.[:digit:]]+)C.*/\1/p')
 
+    if [[ "$GPU_UTIL" -eq "" ]]; then
+        GPU_UTIL="#N/A"
+    fi
+    if [[ "$GPU_FREQ" -eq "" ]]; then
+        GPU_FREQ="#N/A"
+    fi
+    if [[ "$GPU_POWER" -eq "" ]]; then
+        GPU_POWER="#N/A"
+    fi
+    if [[ "$GPU_TEMP" -eq "" ]]; then
+        GPU_TEMP="#N/A"
+    fi
+
     echo -e "$INTENTIONAL_WHITESPACE $GPU_UTIL   $GPU_FREQ   $GPU_POWER   $GPU_TEMP\c"
 }
 
@@ -48,6 +71,16 @@ ddr_informations() {
     EMC_UTIL=$(echo $LINE | sed -rn 's/.*EMC_FREQ[[:space:]]+([[:digit:]]+)%.*/\1/p')
     EMC_FREQ=$(echo $LINE | sed -rn 's/.*EMC_FREQ[[:space:]]+[[:digit:]]+%@([[:digit:]]+).*/\1/p')
     DDR_POWER=$(echo $LINE | sed -rn 's/.*VDD_DDR[[:space:]]+([[:digit:]]+).*/\1/p')
+
+    if [[ "$EMC_UTIL" -eq "" ]]; then
+        EMC_UTIL="#N/A"
+    fi
+    if [[ "$EMC_FREQ" -eq "" ]]; then
+        EMC_FREQ="#N/A"
+    fi
+    if [[ "$DDR_POWER" -eq "" ]]; then
+        DDR_POWER="#N/A"
+    fi
 
     echo -e "$INTENTIONAL_WHITESPACE $EMC_UTIL   $EMC_FREQ   $DDR_POWER\c"
 }
@@ -70,12 +103,13 @@ if [ "$#" -lt 1 ]; then
 fi
 
 
-# Print header raw
+# Print header raw I
 echo -e "$INTENTIONAL_WHITESPACE $NULL \"GPU Informations\" $NULL $NULL $NULL\c"
 echo -e "$INTENTIONAL_WHITESPACE \"DDR Informations\" $NULL $NULL\c"
 echo -e "$INTENTIONAL_WHITESPACE \"CPU Informations\" $NULL $NULL\c"
 echo ""
 
+# Print header raw II
 echo -e "$INTENTIONAL_WHITESPACE Log#   GPU-util(%)   GPU-freq(MHz)   GPU-power(mW)   GPU-temp($CELSIUS)\c"
 echo -e "$INTENTIONAL_WHITESPACE EMC-util(%)   EMC-freq(MHz)   DDR-power(mW)\c"
 echo -e "$INTENTIONAL_WHITESPACE CPU0-util(%)   CPU0-freq(MHz)   CPU-power(mW)\c"
