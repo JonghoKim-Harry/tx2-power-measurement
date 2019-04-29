@@ -13,6 +13,7 @@ usage() {
     echo "   -h, --help               Print usage"
     echo "   -i, --input-file         Input file"
     echo "   -o, --output-file        Output file"
+    echo "   -s, --setup-script       Setup gnuplot script"
     echo "   -t, --title              Title of the chart"
     echo "   -x, --x-axis             Index of x-axis"
 }
@@ -37,6 +38,12 @@ for opt in "$@"; do
 
         -o|--output-file)
             OUTPUT_FILE=$2
+            SKIP=YES
+            shift 2
+            ;;
+
+        -s|--setup-script)
+            SETUP_SCRIPT=$2
             SKIP=YES
             shift 2
             ;;
@@ -72,13 +79,6 @@ for opt in "$@"; do
     esac
 done
 
-        
-#echo "INPUT_FILE: $INPUT_FILE"
-#echo "OUTPUT_FILE: $OUTPUT_FILE"
-#echo "TITLE: $TITLE"
-#echo "X-AXIS INDEX: $X_AXIS_IDX"
-
-
 # You should give input file
 if [[ -z "$INPUT_FILE" ]]; then
     echo "You should give us input file"
@@ -93,6 +93,11 @@ if [[ -z "$OUTPUT_FILE" ]]; then
     exit
 fi
 
+# Default setup gnuplot script
+if [[ -z "$SETUP_SCRIPT" ]]; then
+    SETUP_SCRIPT=$(dirname $0)/setup_ps.gnuplot
+fi
+
 # Default x-axis index is 2
 if [[ -z "$X_AXIS_IDX" ]]; then
     X_AXIS_IDX="2"
@@ -100,7 +105,7 @@ fi
 
 GNUPLOT_FILE=$(echo $OUTPUT_FILE | sed -r 's/(.*)\.[^.]*/\1.gnuplot/g')
 
-cp $(dirname $0)/setup.gnuplot $GNUPLOT_FILE
+cp $SETUP_SCRIPT $GNUPLOT_FILE
 
 echo -e "set output \"$OUTPUT_FILE\"" >> $GNUPLOT_FILE
 echo -e "set title \"$TITLE\"" >> $GNUPLOT_FILE
