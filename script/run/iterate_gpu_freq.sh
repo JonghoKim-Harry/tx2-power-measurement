@@ -64,7 +64,8 @@ do
     sudo echo "$AVAILABLE_FREQ" > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
     echo "GPU frequency is set to $AVAILABLE_FREQ Hz"
 
-    STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$AVAILABLE_FREQ"Hz.txt
+    FREQ_IN_MHZ=$(echo $AVAILABLE_FREQ | sed -r 's/([[:digit:]]+)[[:digit:]]{6}/\1/g')
+    STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$FREQ_IN_MHZ"MHz.txt
 
     $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
     cd $POWER_MEASUREMENT_HOME
