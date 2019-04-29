@@ -95,7 +95,7 @@ fi
 
 # Default setup gnuplot script
 if [[ -z "$SETUP_SCRIPT" ]]; then
-    SETUP_SCRIPT=$(dirname $0)/setup_ps.gnuplot
+    SETUP_SCRIPT=$(dirname $0)/setup_eps.gnuplot
 fi
 
 # Default x-axis index is 2

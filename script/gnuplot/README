@@ -10,6 +10,10 @@ USAGE
 
    ./script/gnuplot/draw_from_table.sh -s script/gnuplot/setup_png.gnuplot -i exp_result/mnist/mnist_1122000000Hz.txt -o exp_result/mnist/mnist_1122MHz.png -t MNIST -x 2 5 GPU-util
 
+HOW TO CONVERT IMAGE FORMAT
+
+   convert -density 300 exp_result/mnist/mnist_1122MHz.eps -units PixelsPerInch -resize 3600x3600 exp_result/mnist/mnist_1122MHz.png
+
 GNUPLOT ARGUMENTS
 
    * Gnuplot supports only up to 10 arguments: ARG0, ARG1, ..., ARG9
@@ -29,3 +33,4 @@ NOTES ON BACKSLASH
 REFERENCE
 
    * http://triclinic.org/2015/04/publication-quality-plots-with-gnuplot/
+   * https://stackoverflow.com/questions/42928765/convertnot-authorized-aaaa-error-constitute-c-readimage-453
