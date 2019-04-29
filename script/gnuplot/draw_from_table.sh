@@ -69,7 +69,7 @@ for opt in "$@"; do
             if [[ -z "$SKIP" ]]; then
                 COLUMN_IDX=$1
                 COLUMN_NAME=$2
-                COLUMN+=(":$COLUMN_IDX title \"$COLUMN_NAME\"")
+                COLUMN+=(":$COLUMN_IDX title \"$COLUMN_NAME\" with lines")
                 shift 2
                 SKIP=YES
             else
