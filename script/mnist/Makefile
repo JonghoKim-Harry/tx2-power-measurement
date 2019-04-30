@@ -1,7 +1,3 @@
-# Original MNIST Test Images and Labels
-MNIST_TEST_IMAGES=t10k-images-idx3-ubyte
-MNIST_TEST_LABELS=t10k-labels-idx1-ubyte
-
 TARGET=process_mnist
 $(TARGET): process_mnist.o parse_mnist.o
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
@@ -9,10 +5,19 @@ $(TARGET): process_mnist.o parse_mnist.o
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: check
-check: process_mnist
-	./$(TARGET) -p -i $(MNIST_TEST_IMAGES) -j image.haha -l $(MNIST_TEST_LABELS) -m label.haha
+# Original MNIST Test Images and Labels
+MNIST_TEST_IMAGES=t10k-images-idx3-ubyte
+MNIST_TEST_LABELS=t10k-labels-idx1-ubyte
+
+.PHONY: check check-image check-label
+check: process_mnist check-image check-label
+
+check-image:
+	./$(TARGET) -p -i $(MNIST_TEST_IMAGES) -j image.haha
 	-diff -sq $(MNIST_TEST_IMAGES) image.haha
+
+check-label:
+	./$(TARGET) -p -l $(MNIST_TEST_LABELS) -m label.haha
 	-diff -sq $(MNIST_TEST_LABELS) label.haha
 
 .PHONY: clean
