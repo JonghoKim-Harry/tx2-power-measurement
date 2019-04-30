@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <assert.h>
 #include "parse_mnist.h"
 
 #define MNIST_IMAGE_MAGIC_NUMBER   0x00000803
@@ -114,6 +115,7 @@ int generate_mnist_image_file(const char *filename,
 
     // Magic number
     val = mnist_images.magic_number;
+    assert(val == reverse32(reverse32(val)));   // assert() for debug
     REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
@@ -214,6 +216,7 @@ int generate_mnist_label_file(const char *filename,
 
     // Magic number
     val = mnist_labels.magic_number;
+    assert(val == reverse32(reverse32(val)));   // assert() for debug
     REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
