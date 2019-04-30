@@ -91,7 +91,9 @@ void parse_mnist_image_file(int fd, struct mnist_image_struct *mnist_images) {
 
         mnist_images->images[idx] = malloc(num_pixels_per_image * sizeof(uint8_t));
         read_bytes = read(fd, pixels, num_pixels_per_image);
-        memcpy(&mnist_images->images[idx], pixels, num_pixels_per_image);
+        if(read_bytes < 0)
+            perror("read() error in parse_mnist_image_file()");
+        memcpy(&mnist_images->images[idx], pixels, read_bytes);
     }
 }
 
@@ -198,7 +200,9 @@ void parse_mnist_label_file(int fd, struct mnist_label_struct *mnist_labels) {
     for(idx=0; idx<mnist_labels->num_labels; ++idx) {
     
         read_bytes = read(fd, label, 1);
-        memcpy(&mnist_labels->labels[idx], label, 1);
+        if(read_bytes < 0)
+            perror("read() error in parse_mnist_label_file()");
+        memcpy(&mnist_labels->labels[idx], label, read_bytes);
     }
 }
 
