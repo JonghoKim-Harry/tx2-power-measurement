@@ -6,7 +6,7 @@
 #include "parse_mnist.h"
 
 #define FILENAME_MAXLEN   1024
-#define AVAILABLE_OPTIONS "-"   "hi:l:p"
+#define AVAILABLE_OPTIONS "-"   "hi:j:l:m:p"
 #define HELP_FIRST_COLUMN_WIDTH   30
 
 void help() {
@@ -16,8 +16,12 @@ void help() {
             "Print help message");
     printf("\n\t%-*s%s", HELP_FIRST_COLUMN_WIDTH, "-i <mnist image file>",
             "Process a MNIST image file");
+    printf("\n\t%-*s%s", HELP_FIRST_COLUMN_WIDTH, "-j <mnist image file>",
+            "Output MNIST image file name");
     printf("\n\t%-*s%s", HELP_FIRST_COLUMN_WIDTH, "-l <mnist label file>",
             "Process a MNIST label file");
+    printf("\n\t%-*s%s", HELP_FIRST_COLUMN_WIDTH, "-m <mnist label file>",
+            "Output MNIST label file name");
     printf("\n\t%-*s%s", HELP_FIRST_COLUMN_WIDTH, "-p",
             "Print metadata of MNIST data");
     printf("\n");
@@ -27,8 +31,9 @@ int main(int argc, char *argv[]) {
 
     // For argument processing
     int option;
-    int iflag = 0, lflag = 0, pflag = 0;
-    char image_filename[FILENAME_MAXLEN], label_filename[FILENAME_MAXLEN];
+    int iflag = 0, jflag = 0, lflag = 0, mflag = 0, pflag = 0;
+    char imagein_filename[FILENAME_MAXLEN], labelin_filename[FILENAME_MAXLEN];
+    char imageout_filename[FILENAME_MAXLEN], labelout_filename[FILENAME_MAXLEN];
 
     // For parsing MNIST dataset
     int fd;
@@ -43,12 +48,22 @@ int main(int argc, char *argv[]) {
 
         case 'i':   // Option -i
             iflag = 1;
-            strcpy(image_filename, optarg);
+            strcpy(imagein_filename, optarg);
+            break;
+
+        case 'j':   // Option -j
+            jflag = 1;
+            strcpy(imageout_filename, optarg);
             break;
 
         case 'l':   // Option -l
             lflag = 1;
-            strcpy(label_filename, optarg);
+            strcpy(labelin_filename, optarg);
+            break;
+
+        case 'm':   // Option -m
+            mflag = 1;
+            strcpy(labelout_filename, optarg);
             break;
 
         case 'p':   // Option -p
@@ -56,6 +71,7 @@ int main(int argc, char *argv[]) {
             break;
 
         case 1:   // The first non-optional argument
+            // Ignore the argument
             optind--;
             break;
 
@@ -72,23 +88,33 @@ int main(int argc, char *argv[]) {
 
     if(iflag) {
     
-        fd = open(image_filename, O_RDONLY);
+        fd = open(imagein_filename, O_RDONLY);
         get_mnist_image_meta(fd, &mnist_images);
         if(pflag) {
-            printf("\nMNIST image file: %s", image_filename);
+            printf("\nMNIST image file: %s", imagein_filename);
             print_mnist_image_meta(mnist_images);
         }
         close(fd);
     }
 
+    if(jflag) {
+        fd = generate_mnist_image_file(imageout_filename, mnist_images);
+        close(fd);
+    }
+
     if(lflag) {
 
-        fd = open(label_filename, O_RDONLY);
+        fd = open(labelin_filename, O_RDONLY);
         get_mnist_label_meta(fd, &mnist_labels);
         if(pflag) {
-            printf("\nMNIST label file: %s", label_filename);
+            printf("\nMNIST label file: %s", labelin_filename);
             print_mnist_label_meta(mnist_labels);
         }
+        close(fd);
+    }
+
+    if(mflag) {
+        fd = generate_mnist_label_file(labelout_filename, mnist_labels);
         close(fd);
     }
 
