@@ -11,6 +11,9 @@
 #define MAX_RESOLUTION                    784   // 28x28
 #define REVERSE(x_ref)  x_ref = reverse32(x_ref);
 
+// Reference: http://esr.ibiblio.org/?p=5095
+#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
+
 static int32_t reverse32(const int32_t bits) {
 
     int i;
@@ -42,7 +45,8 @@ void get_mnist_image_meta(int fd, struct mnist_image_struct *mnist_images) {
     // Magic Number
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_images->magic_number, buff, 4);
-    REVERSE(mnist_images->magic_number);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_images->magic_number);
 
     if(mnist_images->magic_number != MNIST_IMAGE_MAGIC_NUMBER)
         perror("MAGIC NUMBER NOT MATCHED: NOT MNIST IMAGE");
@@ -50,16 +54,19 @@ void get_mnist_image_meta(int fd, struct mnist_image_struct *mnist_images) {
     // Number of images
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_images->num_images, buff, 4);
-    REVERSE(mnist_images->num_images);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_images->num_images);
 
     // Resolution
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_images->resolution_height, buff, 4);
-    REVERSE(mnist_images->resolution_height);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_images->resolution_height);
 
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_images->resolution_width, buff, 4);
-    REVERSE(mnist_images->resolution_width);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_images->resolution_width);
 
     return;
 }
@@ -119,24 +126,28 @@ int generate_mnist_image_file(const char *filename,
     // Magic number
     val = mnist_images.magic_number;
     assert(val == reverse32(reverse32(val)));   // assert() for debug
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
     // Number of images
     val = mnist_images.num_images;
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
     // Resolution
     val = mnist_images.resolution_height;
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
     val = mnist_images.resolution_width;
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
@@ -165,7 +176,8 @@ void get_mnist_label_meta(int fd, struct mnist_label_struct *mnist_labels) {
     // Magic Number
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_labels->magic_number, buff, 4);
-    REVERSE(mnist_labels->magic_number);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_labels->magic_number);
 
     if(mnist_labels->magic_number != MNIST_LABEL_MAGIC_NUMBER)
         perror("MAGIC NUMBER NOT MATCHED: NOT MNIST LABEL");
@@ -173,7 +185,8 @@ void get_mnist_label_meta(int fd, struct mnist_label_struct *mnist_labels) {
     // Number of labels
     read_bytes = read(fd, buff, 4);
     memcpy(&mnist_labels->num_labels, buff, 4);
-    REVERSE(mnist_labels->num_labels);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(mnist_labels->num_labels);
 
     return;
 }
@@ -226,13 +239,15 @@ int generate_mnist_label_file(const char *filename,
     // Magic number
     val = mnist_labels.magic_number;
     assert(val == reverse32(reverse32(val)));   // assert() for debug
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
     // Number of labels
     val = mnist_labels.num_labels;
-    REVERSE(val);
+    if(!IS_BIG_ENDIAN)
+        REVERSE(val);
     memcpy(buff, &val, 4);
     write(fd, buff, 4);
 
