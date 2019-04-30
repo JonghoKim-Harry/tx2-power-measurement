@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <string.h>
 #include "parse_mnist.h"
 
@@ -75,22 +76,75 @@ void print_mnist_image_meta(const struct mnist_image_struct mnist_images) {
 void parse_mnist_image_file(int fd, struct mnist_image_struct *mnist_images) {
 
     int idx;
-    int num_pixels;
+    int num_pixels_per_image;
     ssize_t read_bytes;
     char pixels[MAX_RESOLUTION];
 
     get_mnist_image_meta(fd, mnist_images);
-    num_pixels = mnist_images->resolution_height * mnist_images->resolution_width;
+    num_pixels_per_image = mnist_images->resolution_height * mnist_images->resolution_width;
 
     // Images
     mnist_images->images = malloc(mnist_images->num_images * sizeof(uint8_t *));
 
     for(idx=0; idx<mnist_images->num_images; ++idx) {
 
-        mnist_images->images[idx] = malloc(num_pixels * sizeof(uint8_t));
-        read_bytes = read(fd, pixels, num_pixels);
-        memcpy(&mnist_images->images[idx], pixels, num_pixels);
+        mnist_images->images[idx] = malloc(num_pixels_per_image * sizeof(uint8_t));
+        read_bytes = read(fd, pixels, num_pixels_per_image);
+        memcpy(&mnist_images->images[idx], pixels, num_pixels_per_image);
     }
+}
+
+int generate_mnist_image_file(const char *filename,
+                              const mnist_image_struct mnist_images) {
+
+    // This function returns fd of generated file
+    // If fail, this function returns -1
+    int fd;
+    int32_t val;
+    char buff[4];
+    int num_pixels_per_image;
+    int idx;
+
+    fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+
+    if(fd == -1)
+        return -1;
+
+    lseek(fd, 0, SEEK_SET);
+
+    // Magic number
+    val = mnist_images.magic_number;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    // Number of images
+    val = mnist_images.num_images;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    // Resolution
+    val = mnist_images.resolution_height;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    val = mnist_images.resolution_width;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    // Images
+    num_pixels_per_image = mnist_images.resolution_width   *
+                           mnist_images.resolution_height;
+
+    for(idx=0; idx<mnist_images.num_images; idx++)
+        write(fd, &mnist_images.images[idx], num_pixels_per_image);
+
+    // Note that we do NOT close the generated file,
+    // and just return the fd of the generated file
+    return fd;
 }
 
 void get_mnist_label_meta(int fd, struct mnist_label_struct *mnist_labels) {
@@ -140,4 +194,40 @@ void parse_mnist_label_file(int fd, struct mnist_label_struct *mnist_labels) {
         read_bytes = read(fd, label, 1);
         memcpy(&mnist_labels->labels[idx], label, 1);
     }
+}
+
+int generate_mnist_label_file(const char *filename,
+                              const mnist_label_struct mnist_labels) {
+
+    // This function returns fd of generated file
+    // If fail, this function returns -1
+    int fd;
+    int32_t val;
+    char buff[4];
+
+    fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+
+    if(fd == -1)
+        return -1;
+
+    lseek(fd, 0, SEEK_SET);
+
+    // Magic number
+    val = mnist_labels.magic_number;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    // Number of labels
+    val = mnist_labels.num_labels;
+    REVERSE(val);
+    memcpy(buff, &val, 4);
+    write(fd, buff, 4);
+
+    // Labels
+    write(fd, &mnist_labels.labels, mnist_labels.num_labels);
+
+    // Note that we do NOT close the generated file,
+    // and just return the fd of the generated file
+    return fd;
 }
