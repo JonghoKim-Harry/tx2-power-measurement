@@ -9,7 +9,7 @@
 #define MNIST_IMAGE_MAGIC_NUMBER   0x00000803
 #define MNIST_LABEL_MAGIC_NUMBER   0x00000801
 #define MAX_RESOLUTION                    784   // 28x28
-#define REVERSE(x)   x = reverse32(x);
+#define REVERSE(x_ref)  x_ref = reverse32(x_ref);
 
 static int32_t reverse32(const int32_t bits) {
 
@@ -105,6 +105,7 @@ int generate_mnist_image_file(const char *filename,
     char buff[4];
     int num_pixels_per_image;
     int idx;
+    ssize_t written_bytes;
 
     fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
@@ -141,8 +142,11 @@ int generate_mnist_image_file(const char *filename,
     num_pixels_per_image = mnist_images.resolution_width   *
                            mnist_images.resolution_height;
 
-    for(idx=0; idx<mnist_images.num_images; idx++)
-        write(fd, &mnist_images.images[idx], num_pixels_per_image);
+    for(idx=0; idx<mnist_images.num_images; idx++) {
+        written_bytes = write(fd, &mnist_images.images[idx], num_pixels_per_image);
+        if(written_bytes < 0)
+            perror("write() error in generate_mnist_image_file()");
+    }
 
     // Note that we do NOT close the generated file,
     // and just return the fd of the generated file
@@ -206,6 +210,7 @@ int generate_mnist_label_file(const char *filename,
     int fd;
     int32_t val;
     char buff[4];
+    ssize_t written_bytes;
 
     fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
@@ -228,7 +233,9 @@ int generate_mnist_label_file(const char *filename,
     write(fd, buff, 4);
 
     // Labels
-    write(fd, &mnist_labels.labels, mnist_labels.num_labels);
+    written_bytes = write(fd, &mnist_labels.labels, mnist_labels.num_labels);
+    if(written_bytes < 0)
+        perror("write() error in generage_mnist_label_file()");
 
     // Note that we do NOT close the generated file,
     // and just return the fd of the generated file
