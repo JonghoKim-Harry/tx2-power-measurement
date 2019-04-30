@@ -1,6 +1,8 @@
 #ifndef PARSE_MNIST_H
 #define PARSE_MNIST_H
 
+// See: http://yann.lecun.com/exdb/mnist/
+
 #include <stdint.h>
 
 typedef struct mnist_image_struct {
