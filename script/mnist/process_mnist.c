@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     if(iflag) {
     
         fd = open(imagein_filename, O_RDONLY);
-        get_mnist_image_meta(fd, &mnist_images);
+        parse_mnist_image_file(fd, &mnist_images);
         if(pflag) {
             printf("\nMNIST image file: %s", imagein_filename);
             print_mnist_image_meta(mnist_images);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     if(lflag) {
 
         fd = open(labelin_filename, O_RDONLY);
-        get_mnist_label_meta(fd, &mnist_labels);
+        parse_mnist_label_file(fd, &mnist_labels);
         if(pflag) {
             printf("\nMNIST label file: %s", labelin_filename);
             print_mnist_label_meta(mnist_labels);
