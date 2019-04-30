@@ -11,8 +11,7 @@ $(TARGET): process_mnist.o parse_mnist.o
 
 .PHONY: check
 check: process_mnist
-	./$(TARGET) -i $(MNIST_TEST_IMAGES)
-	./$(TARGET) -l $(MNIST_TEST_LABELS)
+	./$(TARGET) -p -i $(MNIST_TEST_IMAGES) -l $(MNIST_TEST_LABELS)
 
 .PHONY: clean
 clean: FORCE
