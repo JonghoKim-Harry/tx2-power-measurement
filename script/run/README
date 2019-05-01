@@ -1,0 +1,39 @@
+SCRIPT USAGE EXAMPLE FOR SCRIPTS IN script/run/
+============
+
+   # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
+   sudo ./script/run/fix_gpu_freq 1122000000
+
+   # Run experiments with all available GPU frequencies as fixed frequency
+   # and default governor setup with CIFAR-10 dataset.
+   #
+   # Note that 2nd argument of script should be given as ABSOLUTE PATH: (ex) /bin/bash
+   # This inconvenience is due to power measurement program's lack of argument processing,
+   # NOT due to script itself
+   sudo ./script/run/iterate_gpu_freq.sh cifar-10 /bin/bash ./script/run/run_cifar10.sh
+
+   # Run experiments with all available GPU frequencies as fixed frequency
+   # and default governor setup with MNIST dataset
+   sudo ./script/run/iterate_gpu_freq.sh mnist /bin/bash ./script/run/run_mnist.sh
+
+   # Run MNIST dataset with reordered input
+   ./script/mnist/create_mnist_lmdb.sh script/mnist/image_mnist_reorder26500125.dat script/mnist/label_mnist_reorder26500125.dat script/mnist/mnist_test_reorder26500125_lmdb
+   ./script/run/run_mnist_with_prototxt.sh /home/nvidia/tx2-power-measurement/Caffe_prototxt/lenet/lenet_train_test_reorder26500125.prototxt
+
+   #
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+
+   #
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-fishbike /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/fish-bike.jpg
+
+
+   # Use tegrastats to measure power, etc.
+   #
+   # Note that there is sleep in the script, in order to cool down CPUs or GPU
+   sudo ./script/run/use_tegrastats.sh 10 cifar10-tegralog-10ms.txt script/run/run_cifar10.sh
+
+   # Run CaffeNet
+   ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+
+   # Measure CaffeNet single image inference
+   ./power_measurement -c gpu -f exp_result/caffenet/caffenet-cat_power.txt /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
