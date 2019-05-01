@@ -17,6 +17,7 @@ power_measurement
 *.o
 *.txt
 *.bin
+*.dat
 *.png
 *.caffelog
 *.csv
