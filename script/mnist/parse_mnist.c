@@ -35,7 +35,7 @@ static int32_t reverse32(const int32_t bits) {
     return reversed;
 }
 
-void get_mnist_image_meta(int fd, struct mnist_image_struct *mnist_images) {
+static void get_mnist_image_meta(int fd, struct mnist_image_struct *mnist_images) {
 
     ssize_t read_bytes;
     char buff[4];
@@ -166,7 +166,7 @@ int generate_mnist_image_file(const char *filename,
     return fd;
 }
 
-void get_mnist_label_meta(int fd, struct mnist_label_struct *mnist_labels) {
+static void get_mnist_label_meta(int fd, struct mnist_label_struct *mnist_labels) {
 
     ssize_t read_bytes;
     char buff[4];
@@ -210,11 +210,13 @@ void parse_mnist_label_file(int fd, struct mnist_label_struct *mnist_labels) {
 
     // Labels
     mnist_labels->labels = malloc(mnist_labels->num_labels * sizeof(uint8_t));
+
     for(idx=0; idx<mnist_labels->num_labels; ++idx) {
     
         read_bytes = read(fd, label, 1);
         if(read_bytes < 0)
             perror("read() error in parse_mnist_label_file()");
+
         memcpy(&mnist_labels->labels[idx], label, read_bytes);
     }
 }
@@ -228,6 +230,7 @@ int generate_mnist_label_file(const char *filename,
     int32_t val;
     char buff[4];
     ssize_t written_bytes;
+    int idx;
 
     fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 
@@ -252,9 +255,11 @@ int generate_mnist_label_file(const char *filename,
     write(fd, buff, 4);
 
     // Labels
-    written_bytes = write(fd, &mnist_labels.labels, mnist_labels.num_labels);
-    if(written_bytes < 0)
-        perror("write() error in generage_mnist_label_file()");
+    for(idx=0; idx<mnist_labels.num_labels; idx++) {
+
+        memcpy(buff, &mnist_labels.labels[idx], 1);
+        write(fd, buff, 1);
+    }
 
     // Note that we do NOT close the generated file,
     // and just return the fd of the generated file
