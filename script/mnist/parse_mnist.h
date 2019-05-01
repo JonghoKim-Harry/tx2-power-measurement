@@ -11,7 +11,7 @@ typedef struct mnist_image_struct {
     int32_t num_images;
     int32_t resolution_height;
     int32_t resolution_width;
-    uint8_t **images;
+    uint8_t *images;
 } mnist_image_struct;
 
 void print_mnist_image_meta(const mnist_image_struct mnist_images);

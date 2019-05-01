@@ -92,15 +92,15 @@ void parse_mnist_image_file(int fd, struct mnist_image_struct *mnist_images) {
     num_pixels_per_image = mnist_images->resolution_height * mnist_images->resolution_width;
 
     // Images
-    mnist_images->images = malloc(mnist_images->num_images * sizeof(uint8_t *));
+    mnist_images->images = malloc(mnist_images->num_images * num_pixels_per_image *sizeof(uint8_t));
 
     for(idx=0; idx<mnist_images->num_images; ++idx) {
 
-        mnist_images->images[idx] = malloc(num_pixels_per_image * sizeof(uint8_t));
         read_bytes = read(fd, pixels, num_pixels_per_image);
+        assert(read_bytes == num_pixels_per_image);
         if(read_bytes < 0)
             perror("read() error in parse_mnist_image_file()");
-        memcpy(&mnist_images->images[idx], pixels, read_bytes);
+        memcpy(mnist_images->images + (idx * num_pixels_per_image), pixels, read_bytes);
     }
 }
 
@@ -112,6 +112,7 @@ int generate_mnist_image_file(const char *filename,
     int fd;
     int32_t val;
     char buff[4];
+    uint8_t imgbuff[MAX_RESOLUTION];
     int num_pixels_per_image;
     int idx;
     ssize_t written_bytes;
@@ -156,7 +157,10 @@ int generate_mnist_image_file(const char *filename,
                            mnist_images.resolution_height;
 
     for(idx=0; idx<mnist_images.num_images; idx++) {
-        written_bytes = write(fd, &mnist_images.images[idx], num_pixels_per_image);
+
+        memcpy(imgbuff, mnist_images.images + (idx * num_pixels_per_image), num_pixels_per_image);
+
+        written_bytes = write(fd, imgbuff, num_pixels_per_image);
         if(written_bytes < 0)
             perror("write() error in generate_mnist_image_file()");
     }
