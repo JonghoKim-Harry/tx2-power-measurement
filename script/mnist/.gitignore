@@ -2,3 +2,6 @@
 # Generated Files
 #
 process_mnist
+
+# Ignore LMDB file
+*_lmdb
