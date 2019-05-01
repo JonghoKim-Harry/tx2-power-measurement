@@ -1,0 +1,6 @@
+MNIST Script Usage
+============
+
+USAGE EXAMPLES
+
+   ./script/mnist/create_mnist_lmdb.sh script/mnist/image_mnist_reorder26500125.dat script/mnist/label_mnist_reorder26500125.dat script/mnist/mnist_test_reorder26500125_lmdb
