@@ -37,9 +37,9 @@ int generate_mnist_label_file(
 
 
 /*
- *   TODO: Reorder Functions
+ *   Reorder Functions
  */
-
-
+void reorder26500125_mnist_images(mnist_image_struct *mnist_images);
+void reorder26500125_mnist_labels(mnist_label_struct *mnist_labels);
 
 #endif   // PARSE_MNIST_H

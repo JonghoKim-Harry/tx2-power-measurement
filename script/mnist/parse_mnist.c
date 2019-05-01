@@ -6,6 +6,7 @@
 #include <assert.h>
 #include "parse_mnist.h"
 
+#define BATCH_SIZE                        100
 #define MNIST_IMAGE_MAGIC_NUMBER   0x00000803
 #define MNIST_LABEL_MAGIC_NUMBER   0x00000801
 #define MAX_RESOLUTION                    784   // 28x28
@@ -268,4 +269,53 @@ int generate_mnist_label_file(const char *filename,
     // Note that we do NOT close the generated file,
     // and just return the fd of the generated file
     return fd;
+}
+
+
+/*
+ *   Reorder Functions
+ */
+void reorder26500125_mnist_images(mnist_image_struct *mnist_images) {
+
+    const int num_pixels_per_batch = BATCH_SIZE * mnist_images->resolution_width * mnist_images->resolution_height;
+    uint8_t batchbuff[BATCH_SIZE * MAX_RESOLUTION];
+    int srcidx, destidx;
+
+    for(srcidx=0; srcidx < 25; srcidx++) {
+        destidx = srcidx + 25;
+
+        memcpy(batchbuff,
+               mnist_images->images + (num_pixels_per_batch * destidx),
+               num_pixels_per_batch);
+        memcpy(mnist_images->images + (num_pixels_per_batch * destidx),
+               mnist_images->images + (num_pixels_per_batch * srcidx),
+               num_pixels_per_batch);
+        memcpy(mnist_images->images + (num_pixels_per_batch * srcidx),
+                batchbuff,
+                num_pixels_per_batch);
+    }
+
+    return;
+}
+
+void reorder26500125_mnist_labels(mnist_label_struct *mnist_labels) {
+
+    uint8_t batchbuff[BATCH_SIZE * 1];
+    int srcidx, destidx;
+
+    for(srcidx=0; srcidx < 25; srcidx++) {
+        destidx = srcidx + 25;
+
+        memcpy(batchbuff,
+               mnist_labels->labels + (BATCH_SIZE * destidx),
+               BATCH_SIZE * 1);
+        memcpy(mnist_labels->labels + (BATCH_SIZE * destidx),
+               mnist_labels->labels + (BATCH_SIZE * srcidx),
+               BATCH_SIZE * 1);
+        memcpy(mnist_labels->labels + (BATCH_SIZE * srcidx),
+               batchbuff,
+               BATCH_SIZE * 1);
+    }
+
+    return;
 }
