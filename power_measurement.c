@@ -19,7 +19,7 @@
 #include "caffelog.h"
 #include "mkdir_p.h"
 
-#define AVAILABLE_OPTIONS "-c:f:h"
+#define AVAILABLE_OPTIONS "-"   "c:f:h"
 #define ONE_MILLISECOND_TO_NANOSECOND         1000000
 #define ONE_SECOND_TO_NANOSECOND           1000000000
 // No use of macro in order to prevent integer overflow
@@ -30,17 +30,19 @@ const int64_t FOUR_SECONDS_TO_NANOSECOND = 4000000000;
 // 9 hours = 540 minutes = 32400 seconds
 #define GMT_TO_KOREA_TIME   32400
 
+#define HELP_FIRST_COLWIDTH   30
+
 void help() {
 
     printf("\nJetson TX2 Power Measurement Script");
     printf("\nUsage: tx2_power_measurement [options] arguments\n");
-    printf("\n\t%-20s%s", "-h",
-            "Print help message");
-    printf("\n\t%-20s%s", "-c <component>",
-            "A component whose power consumption will be measured");
-    printf("\n\t%21s%s\n", "", "* Supported components: all, cpu, gpu, ddr, wifi, soc");
-    printf("\n\t%-20s%s", "-f <file name>",
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-c <component>",
+            "A component whose power consumption will be measured.");
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "", "Supported components: all, cpu, gpu, ddr, wifi, soc");
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-f <file name>",
                     "An execution file");
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-h",
+            "Print help message");
     printf("\n");
 }
 
