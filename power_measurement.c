@@ -1,25 +1,21 @@
-// Standard C Header Files
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <time.h>
 #include <assert.h>
-
-// POSIX Headers Files
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <libgen.h>
 
-// Custom Header Files
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
 #include "caffelog.h"
 #include "mkdir_p.h"
 
-#define AVAILABLE_OPTIONS "-"   "c:f:hi:"
+#define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
 #define ONE_PER_MICRO                         1000000
 #define MICRO_PER_NANO                           1000
 #define ONE_MILLISECOND_TO_NANOSECOND         1000000
@@ -29,8 +25,7 @@ const int64_t FOUR_SECONDS_TO_NANOSECOND = 4000000000;
 #define WATTHOUR_TO_PICOWATTHOUR        1000000000000
 
 #define HOUR_TO_SECOND       3600
-// 9 hours = 540 minutes = 32400 seconds
-#define GMT_TO_KOREA_TIME   32400
+#define GMT_TO_KOREA_TIME   32400   // 9 hours = 32400 seconds
 
 #define HELP_FIRST_COLWIDTH   30
 
@@ -66,7 +61,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     char powerlog_filename[128];
     int powerlog_fd;
     char token[128], *next_token;
-    char **cmd, cmd_str[256];
+    char **child_cmd, child_cmd_str[256];
 
     char raw_power_filename[128];
 
@@ -83,8 +78,7 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     while((option = getopt(argc, argv, AVAILABLE_OPTIONS)) != -1) {
         switch(option) {
 
-        case 'c':
-            // Process option -c
+        case 'c':   // option -c
             strcpy(component_str, optarg);
 
             if(!strcmp(optarg, "all"))
@@ -108,38 +102,33 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
             cflag = 1;
             break;
 
-        case 'f':
-            // Process option -f
+        case 'f':   // option -f with required argument
             strcpy(stat_filename_buff, optarg);
             fflag = 1;
             break;
 
-        case 'h':
-            // Process option -h
+        case 'h':   // option -h without argument
             help();
             exit(0);
 
-        case 'i':
-            // Process option -i
+        case 'i':   // option -i with required argument
             interval_us = atoi(optarg);
             info->powertool_interval.tv_sec = interval_us / ONE_PER_MICRO;
             info->powertool_interval.tv_nsec = (interval_us % ONE_PER_MICRO) * MICRO_PER_NANO;
             iflag = 1;
             break;
 
-        case 1:
-            // End argument processing when we meet the first non-optional argument
+        case 1:   // non-optional argument
+            // End argument processing
             optind--;
             goto end_arg_processing;
 
-        case ':':
-            // Missing arguments
+        case ':':   // Missing arguments
             fprintf(stderr, "\nMissing arguments for option %c", optopt);
             help();
             exit(-1);
 
-        case '?':
-            // Invalid option
+        case '?':   // Invalid option
             fprintf(stderr, "\nInvalid option: %c\n", optopt);
             break;
         }
@@ -167,19 +156,19 @@ end_arg_processing:
         exit(-1);
     }
 
-    cmd = (char **)malloc(sizeof(char *) * (argc-optind+1));
+    child_cmd = (char **)malloc(sizeof(char *) * (argc-optind+1));
 
     for(index=0; index < (argc-optind); index++){
-        cmd[index] = (char *)malloc(sizeof(char) * strlen(argv[index + optind]));
-        strcpy(cmd[index], argv[index+optind]);
-        strcat(cmd_str, cmd[index]);
+        child_cmd[index] = (char *)malloc(sizeof(char) * strlen(argv[index + optind]));
+        strcpy(child_cmd[index], argv[index+optind]);
+        strcat(child_cmd_str, child_cmd[index]);
         if(index != (argc-optind-1))
-            strcat(cmd_str, " ");
+            strcat(child_cmd_str, " ");
     }
 
-    cmd[argc-optind] = NULL;
+    child_cmd[argc-optind] = NULL;
 
-    info->child_cmd = cmd;
+    info->child_cmd = child_cmd;
 
     // GMT (Greenwich Mean Time)
     if(gettimeofday(&walltime, NULL) == -1) {
@@ -196,7 +185,7 @@ end_arg_processing:
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
-    // Korea Time
+    // Korea Timezone
     walltime.tv_sec += GMT_TO_KOREA_TIME;
     walltime_calendar = localtime(&walltime.tv_sec);
     if(!walltime_calendar) {
@@ -224,7 +213,7 @@ end_arg_processing:
 
     gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
-    printf("\nCommand: %s\n", cmd_str);
+    printf("\nCommand: %s\n", child_cmd_str);
 
 
     // Extract dirname and basename from the given stat file name
@@ -241,41 +230,50 @@ end_arg_processing:
     // mkdir -p
     mkdir_p(given_dirname, 0755);
 
-    // Stat File: OOO.txt
-    stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-    printf("\nCreated statistic file: %s", stat_filename);
+    // Powerlog File: OOO.powerlog.txt
+    strcpy(powerlog_filename, given_dirname);
+    strcat(powerlog_filename, "/");
+    strcat(powerlog_filename, filename_prefix);
+    strcat(powerlog_filename, ".powerlog.txt");
+    strcpy(info->powerlog_filename, powerlog_filename);
+    powerlog_fd = open(powerlog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    info->powerlog_fd = powerlog_fd;
+
+    dup2(powerlog_fd, STDERR_FILENO);
+    dup2(powerlog_fd, STDOUT_FILENO);
 
     // Rawdata File: OOO.rawdata.bin
     strcpy(rawdata_filename, given_dirname);
     strcat(rawdata_filename, "/");
     strcat(rawdata_filename, filename_prefix);
     strcat(rawdata_filename, ".rawdata.bin");
+    strcpy(info->rawdata_filename, rawdata_filename);
     rawdata_fd = open(rawdata_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-
-    // Powerlog File: OOO.powerlog.txt
-    strcpy(powerlog_filename, given_dirname);
-    strcat(powerlog_filename, "/");
-    strcat(powerlog_filename, filename_prefix);
-    strcat(powerlog_filename, ".powerlog.txt");
-    powerlog_fd = open(powerlog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    info->rawdata_fd = rawdata_fd;
 
     // Caffelog File: OOO.caffelog.txt
     strcpy(caffelog_filename, given_dirname);
     strcat(caffelog_filename, "/");
     strcat(caffelog_filename, filename_prefix);
     strcat(caffelog_filename, ".caffelog.txt");
+    strcpy(info->caffelog_filename, caffelog_filename);
     caffelog_fd = open(caffelog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    info->caffelog_fd = caffelog_fd;
 
-    // Start logging
+    // Statistics File: OOO.txt
+    stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    printf("\nCreated statistic file: %s", stat_filename);
+
+    // Start logging to statistics file
     write(stat_fd, "            JETSON TX2 POWER MEASUREMENT STATS\n", 47);
 
     message = "\n\n Measurement Informations";
     write(stat_fd, message, strlen(message));
 
-    // Command
+    // Child Command
     message = "\n   * Running:   ";
     write(stat_fd, message, strlen(message));
-    write(stat_fd, cmd_str, strlen(cmd_str));
+    write(stat_fd, child_cmd_str, strlen(child_cmd_str));
 
     // Component
     message = "\n   * Component: ";
@@ -303,6 +301,10 @@ end_arg_processing:
                         info->cooldown_period.tv_nsec);
     write(stat_fd, buff, buff_len);
 
+    /* 
+     *  One-time Reading of Informations: CPUFREQ Groups, DEVFREQ Infos,
+     *                                    Walltime, Stat Format, etc.
+     */
 
     // CPUFreq Group0 Informations
     message = "\n\nCPUFreq Group0";
@@ -368,20 +370,6 @@ end_arg_processing:
     strcpy(info->stat_filename, stat_filename);
     info->gpu_power_fd = gpu_power_fd;
 
-    // Raw data file informations
-    strcpy(info->rawdata_filename, rawdata_filename);
-    info->rawdata_fd = rawdata_fd;
-
-    // Powerlog file informations
-    strcpy(info->powerlog_filename, powerlog_filename);
-    info->powerlog_fd = powerlog_fd;
-
-    // Caffelog file informations
-    strcpy(info->caffelog_filename, caffelog_filename);
-    info->caffelog_fd = caffelog_fd;
-
-    dup2(powerlog_fd, STDERR_FILENO);
-    dup2(powerlog_fd, STDOUT_FILENO);
 
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq(Hz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
@@ -853,7 +841,6 @@ int main(int argc, char *argv[]) {
         while(nanosleep(&info.caffe_sleep_request, &sleep_remain) == -1)
             nanosleep(&sleep_remain, &sleep_remain);
 
-        // NOTE: Only works with absolute path
         execvp(info.child_cmd[0], info.child_cmd);
 
         // If error, execve() returns -1. Otherwise, execve() does not return value
