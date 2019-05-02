@@ -4,7 +4,7 @@
 #include <unistd.h>   // close()
 #include <string.h>
 #include <errno.h>
-#include "read_sysfs_stat.h"
+#include "register_rawdata.h"
 
 #define WHITESPACE   "                                                       "
 

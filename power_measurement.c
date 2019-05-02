@@ -11,7 +11,7 @@
 #include <libgen.h>
 #include <errno.h>
 
-#include "read_sysfs_stat.h"
+#include "register_rawdata.h"
 #include "tx2_sysfs_power.h"
 #include "caffelog.h"
 #include "mkdir_p.h"

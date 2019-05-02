@@ -8,7 +8,7 @@ export CFLAGS := -Wall -DNDEBUG -DTRACE_CPU -DTRACE_DDR
 
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp
-#CFLAGS += -DTRACE_CAFFE_TIMESTAMP
+CFLAGS += -DTRACE_CAFFE_TIMESTAMP
 
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
@@ -17,7 +17,7 @@ DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
 
-$(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o \
+$(TARGET): $(TARGET).o register_rawdata.o caffelog.o measurement_info.o \
 	       mkdir_p.o
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
@@ -45,7 +45,7 @@ EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar-10
 
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 2000 $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
@@ -56,7 +56,7 @@ EXP_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/exp_result/mnist
 
 check-mnist: $(TARGET)
 	@echo "\n** Start selftesting with MNIST\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt -i 2000 $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST\n"
 
 check-plot: check-cifar10 check-mnist

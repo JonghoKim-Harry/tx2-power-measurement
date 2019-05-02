@@ -6,7 +6,7 @@
 #include <time.h>
 #include <regex.h>
 
-#include "read_sysfs_stat.h"
+#include "register_rawdata.h"
 
 // match[0]: the whole match. Do not care about it
 // match[1]: caffelog timestamp

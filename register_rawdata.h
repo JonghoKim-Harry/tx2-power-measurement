@@ -1,5 +1,5 @@
-#ifndef READ_SYSFS_STAT_H
-#define READ_SYSFS_STAT_H
+#ifndef REGISTER_RAWDATA_H
+#define REGISTER_RAWDATA_H
 
 #include <time.h>
 #include <sys/types.h>
@@ -17,6 +17,7 @@
 #define SEVEN_SYSFS_FILES   7
 #define EIGHT_SYSFS_FILES   8
 
+// TODO: register_rawdata()
 void register_sysfs
     (struct measurement_info *info,
      ssize_t (*read_sysfs_func)(const struct sysfs_stat stat_info, const int rawdata_fd),
@@ -25,16 +26,22 @@ void register_sysfs
      const char *stat_format,
      const int num_sysfs_file, ...);
 
+// TODO: Rename: close_sysfs() -> close_sysfs_files()
 void close_sysfs(struct measurement_info info);
 
+// TODO: rawdata_to_powerlog
 ssize_t sysfs_to_stat(const int stat_fd, const char *sysfs_filename, const char *stat_format);
 
+// TODO: read_rawdata_1
 ssize_t read_sysfs_1(const struct sysfs_stat stat_info, const int rawdata_fd);
+// TODO: read_rawdata_2
 ssize_t read_sysfs_2(const struct sysfs_stat stat_info, const int rawdata_fd);
 
+// TODO: rawdata_to_powerlog_1
 ssize_t rawdata_to_stat_1(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
+// TODO: rawdata_to_powerlog_util
 ssize_t rawdata_to_stat_util(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
+// TODO: rawdata_to_powerlog_2
 ssize_t rawdata_to_stat_2(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
 
-
-#endif   // READ_SYSFS_STAT_H
+#endif   // REGISTER_RAWDATA_H
