@@ -1,14 +1,66 @@
 #ifndef MEASUREMENT_INFO_H
 #define MEASUREMENT_INFO_H
 
+#include <stdint.h>
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
 #include <regex.h>
 
-#include "powerlog.h"
+#define MAX_NUM_SYSFS_FD     8
+#define MAXNUM_RAWDATA      20
+#define RAWDATA_BUFFSIZE    64
 
-#define MAX_NUM_SYSFS_FD    8
+typedef struct powerlog_struct {
+
+    struct timespec gmt_timestamp;
+
+    int16_t gpu_power;         // mW
+    int16_t gpu_freq;          // MHz
+    int16_t gpu_util;          // x10%
+
+#ifdef TRACE_CPU
+    int16_t allcpu_power;      // mW
+    int group0_cpus[6];
+    int16_t cpu_group0_freq;   // MHz
+    int16_t cpu_group1_freq;   // MHz
+#endif   // TRACE_CPU
+
+#ifdef TRACE_DDR
+    int32_t mem_power;         // mW
+    int16_t emc_freq;          // MHz
+#endif   // TRACE_DDR
+
+    int num_rawdata;
+    uint8_t rawdata[MAXNUM_RAWDATA][RAWDATA_BUFFSIZE];
+} powerlog_struct;
+
+typedef struct powerlog_summary_struct {
+
+    struct timespec gmt_start_timestamp, gmt_finish_timestamp;
+    struct powerlog_struct last_powerlog;
+    int                     num_powerlog;
+
+    // GPU energy
+    int32_t gpu_energy_Wh;
+    int64_t gpu_energy_pWh;
+    int64_t gpu_energy_remainder;
+
+#ifdef TRACE_CPU
+    int32_t allcpu_energy_Wh;
+    int64_t allcpu_energy_pWh;
+    int32_t avg_allcpu_power;    // mW
+#endif   // TRACE_CPU
+
+#ifdef TRACE_DDR
+    int32_t mem_energy_Wh;
+    int64_t mem_energy_pWh;
+    int32_t avg_mem_power;       // mW
+#endif   // TRACE_DDR
+} powerlog_summary_struct;
+
+int update_powerlog_summary(const powerlog_struct powerlog,
+                            powerlog_summary_struct *powerlog_summary);
 
 typedef struct rawdata_info_struct {
 

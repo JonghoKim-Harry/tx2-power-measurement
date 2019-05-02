@@ -6,7 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include "tx2_sysfs_power.h"
-#include "register_rawdata.h"
+#include "rawdata.h"
 
 #define WHITESPACE   "                                                       "
 

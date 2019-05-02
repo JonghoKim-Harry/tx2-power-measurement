@@ -11,7 +11,7 @@
 #include <libgen.h>
 #include <errno.h>
 
-#include "register_rawdata.h"
+#include "rawdata.h"
 #include "tx2_sysfs_power.h"
 #include "caffelog.h"
 #include "mkdir_p.h"
@@ -503,6 +503,7 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
 
 void calculate_2ndstat(const measurement_info_struct info) {
 
+    powerlog_struct powerlog;
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
     int caffelog_fd;

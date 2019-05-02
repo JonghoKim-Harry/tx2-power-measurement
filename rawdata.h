@@ -1,12 +1,11 @@
-#ifndef REGISTER_RAWDATA_H
-#define REGISTER_RAWDATA_H
+#ifndef RAWDATA_H
+#define RAWDATA_H
 
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
 
 #include "measurement_info.h"
-#include "powerlog.h"
 
 #define  NO_SYSFS_FILE      0
 #define ONE_SYSFS_FILE      1
@@ -37,4 +36,4 @@ ssize_t gpupower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpufreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpuutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 
-#endif   // REGISTER_RAWDATA_H
+#endif   // RAWDATA_H
