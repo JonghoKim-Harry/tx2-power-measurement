@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <libgen.h>
+#include <errno.h>
 
 #include "read_sysfs_stat.h"
 #include "tx2_sysfs_power.h"
@@ -229,8 +230,10 @@ end_arg_processing:
 
     // mkdir -p
     mkdir_result = mkdir_p(given_dirname, 0755);
-    if(mkdir_result)
-        perror("mkdir_p()   fail");
+    if(mkdir_result) {
+        if(errno != EEXIST)
+            perror("mkdir_p()   fail");
+    }
 
     // Powerlog File: OOO.powerlog.txt
     strcpy(powerlog_filename, given_dirname);
