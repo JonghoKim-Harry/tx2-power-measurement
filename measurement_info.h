@@ -7,14 +7,6 @@
 #include <regex.h>
 
 #define MAX_NUM_SYSFS_FD    8
-#define ONE_SYSFS_FILE      1
-#define TWO_SYSFS_FILES     2
-#define THREE_SYSFS_FILES   3
-#define FOUR_SYSFS_FILES    4
-#define FIVE_SYSFS_FILES    5
-#define SIX_SYSFS_FILES     6
-#define SEVEN_SYSFS_FILES   7
-#define EIGHT_SYSFS_FILES   8
 
 struct sysfs_stat {
 

@@ -7,6 +7,16 @@
 
 #include "measurement_info.h"
 
+#define NO_SYSFS_FILES      0
+#define ONE_SYSFS_FILE      1
+#define TWO_SYSFS_FILES     2
+#define THREE_SYSFS_FILES   3
+#define FOUR_SYSFS_FILES    4
+#define FIVE_SYSFS_FILES    5
+#define SIX_SYSFS_FILES     6
+#define SEVEN_SYSFS_FILES   7
+#define EIGHT_SYSFS_FILES   8
+
 void register_sysfs
     (struct measurement_info *info,
      ssize_t (*read_sysfs_func)(const struct sysfs_stat stat_info, const int rawdata_fd),
