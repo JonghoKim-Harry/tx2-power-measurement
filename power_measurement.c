@@ -19,7 +19,9 @@
 #include "caffelog.h"
 #include "mkdir_p.h"
 
-#define AVAILABLE_OPTIONS "-"   "c:f:h"
+#define AVAILABLE_OPTIONS "-"   "c:f:hi:"
+#define ONE_PER_MICRO                         1000000
+#define MICRO_PER_NANO                           1000
 #define ONE_MILLISECOND_TO_NANOSECOND         1000000
 #define ONE_SECOND_TO_NANOSECOND           1000000000
 // No use of macro in order to prevent integer overflow
@@ -51,7 +53,8 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     //
     const char *message;
     int option, index;
-    int cflag = 0, fflag = 0;
+    int cflag = 0, fflag = 0, iflag = 0;
+    int interval_us;
     char component_str[16];
     char given_dirname[128], filename_prefix[128], stat_filename_buff[128];
     const char *stat_filename, *basename_ptr;
@@ -115,6 +118,14 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
             // Process option -h
             help();
             exit(0);
+
+        case 'i':
+            // Process option -i
+            interval_us = atoi(optarg);
+            info->powertool_interval.tv_sec = interval_us / ONE_PER_MICRO;
+            info->powertool_interval.tv_nsec = (interval_us % ONE_PER_MICRO) * MICRO_PER_NANO;
+            iflag = 1;
+            break;
 
         case 1:
             // End argument processing when we meet the first non-optional argument
@@ -201,8 +212,11 @@ end_arg_processing:
     info->caffe_sleep_request.tv_nsec = 0;
 
     // Set powertool measurement interval
-    info->powertool_interval.tv_sec = 0;
-    info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
+    if(!iflag) {
+        printf("\nSet measurement interval as default: 2 ms");
+        info->powertool_interval.tv_sec = 0;
+        info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
+    }
 
     // Set cooldown period
     info->cooldown_period.tv_sec =  6;
