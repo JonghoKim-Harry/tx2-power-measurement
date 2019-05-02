@@ -2,6 +2,14 @@
 #include <errno.h>
 #include "measurement_info.h"
 
+void init_info(measurement_info_struct *info) {
+
+    info->num_rawdata = 0;
+    info->offset_2ndstat = 0;
+
+    return;
+}
+
 #ifdef DEBUG
 void print_stat_info(const struct sysfs_stat stat_info) {
 

@@ -6,34 +6,31 @@
 #include <stdarg.h>
 #include <regex.h>
 
+#include "powerlog.h"
+
 #define MAX_NUM_SYSFS_FD    8
 
-struct sysfs_stat {
+typedef struct rawdata_info_struct {
 
 #ifdef DEBUG
     char column_name[256];
 #endif   // DEBUG
 
-    //
-    ssize_t (*read_sysfs_func)(const struct sysfs_stat stat_info, const int rawdata_fd);
+    ssize_t (*func_read_rawdata)(const int rawdata_fd, ...);
+    ssize_t (*func_rawdata_to_powerlog)(powerlog_struct *powerlog, const int rawdata_fd);
+    ssize_t data_size;
     int num_sysfs_fd;
-    int max_strlen[MAX_NUM_SYSFS_FD];
     int sysfs_fd[MAX_NUM_SYSFS_FD];
-
-    //
-    ssize_t (*rawdata_to_stat_func)(const struct sysfs_stat info, const int rawdata_fd, const int stat_fd);
-    int column_width;
-    char stat_format[64];
-};
+} rawdata_info_struct;
 
 #ifdef DEBUG
-void print_stat_info(const struct sysfs_stat stat_info);
+void print_rawdata_info(const rawdata_info_struct rawdata_info);
 #endif   // DEBUG
 
 
-#define MAX_NUM_SYSFS_DATA   16
+#define MAX_NUM_RAWDATA   16
 
-struct measurement_info {
+typedef struct measurement_info_struct {
 
     // Caffe sleep request: in order to cool down CPUs
     struct timespec caffe_sleep_request;
@@ -47,7 +44,6 @@ struct measurement_info {
     // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;
-
 
     /*
      *  I will use execve() to run child command.
@@ -65,28 +61,29 @@ struct measurement_info {
     /* Informations used by measure_rawdata() */
     struct tm *gmt_calendar_start_time;
     struct timespec gmt_start_time;
-    int rawdata_fd;
-    int gpu_power_fd;
 
     /* 
      *  In order to use sysfs interface easily.
      *  See addsysfs(), read_sysfs(), rawdata_to_stat()
      */
-    int num_sysfs_data;
-    struct sysfs_stat stat_info[MAX_NUM_SYSFS_DATA];
-    char header_raw[256];
-
-    /* Informations used by calculate_2ndstat() */
+    int num_rawdata;
+    struct rawdata_info_struct rawdata_info[MAX_NUM_RAWDATA];
     int offset_2ndstat;
     char rawdata_filename[128];
+    int rawdata_fd;
+    int gpu_power_fd;
     char rawdata_print_format[256];
     char rawdata_scan_format[256];
     int rawdata_linesize;
+
+    char header_raw[256];
     char stat_filename[128];
-};
+} measurement_info_struct;
+
+void init_info(measurement_info_struct *info);
 
 #ifdef DEBUG
-void print_info(const struct measurement_info info);
+void print_info(const struct measurement_info_struct info);
 #endif   // DEBUG
 
 

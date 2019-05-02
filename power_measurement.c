@@ -44,7 +44,7 @@ void help() {
     printf("\n");
 }
 
-void prepare_measurement(const int argc, char *argv[], struct measurement_info *info) {
+void prepare_measurement(const int argc, char *argv[], measurement_info_struct *info) {
 
     //
     const char *message;
@@ -76,30 +76,13 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     printf("\nprepare_measurement()   START");
 #endif   // DEBUG
 
+    init_info(info);
+
     while((option = getopt(argc, argv, AVAILABLE_OPTIONS)) != -1) {
         switch(option) {
 
         case 'c':   // option -c
             strcpy(component_str, optarg);
-
-            if(!strcmp(optarg, "all"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_ALL);
-            else if(!strcmp(optarg, "cpu"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_CPU);
-            else if(!strcmp(optarg, "gpu"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_GPU);
-            else if(!strcmp(optarg, "ddr"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_DDR);
-            else if(!strcmp(optarg, "soc"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_SOC);
-            else if(!strcmp(optarg, "wifi"))
-                strcpy(raw_power_filename, TX2_SYSFS_POWER_WIFI);
-            else {
-                fprintf(stderr, "\nInvalid component!\n");
-                help();
-                exit(-1);
-            }
-
             cflag = 1;
             break;
 
@@ -311,6 +294,7 @@ end_arg_processing:
      *                                    Walltime, Stat Format, etc.
      */
 
+    /*
     // CPUFreq Group0 Informations
     message = "\n\nCPUFreq Group0";
     write(stat_fd, message, strlen(message));
@@ -333,6 +317,8 @@ end_arg_processing:
     sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_GOVERNOR, "\n   * Governor: %s");
     sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_MINFREQ,  "\n   * MIN Frequency: %sHz");
     sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_MAXFREQ,  "\n   * MAX Frequency: %sHz");
+    */
+
 
     // Walltime
     write(stat_fd, "\n\n", 2);
@@ -346,15 +332,10 @@ end_arg_processing:
      *  Prefix of header raw.
      *  Note that 'TIME' and 'GPU-Power' should NOT be counted
      */
-    info->num_sysfs_data = 0;
-    info->rawdata_linesize = 0;
     snprintf(buff, 256, "%*s%*s%*s",
             19, "GMT-Time-Stamp",
             28, "TIME(ns)",
             15, "GPU-Power(mW)");
-    strcpy(info->header_raw, buff);
-    strcpy(info->rawdata_print_format, "");
-    strcpy(info->rawdata_scan_format, "");
 
     if(sizeof(time_t) <= sizeof(int32_t)) {
         strcpy(info->rawdata_print_format, "\n%11d%09dns");
@@ -375,22 +356,11 @@ end_arg_processing:
     strcpy(info->stat_filename, stat_filename);
     info->gpu_power_fd = gpu_power_fd;
 
-
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq(Hz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
-
-#ifdef TRACE_CPU
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power(mW)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "CPU0-Freq(kHz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_CPU_FREQ(0), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-
-    /* We should resolve too much measurement overhead
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU1-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(1), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(1), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU2-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(2), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(2), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU3-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(3), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(3), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU4-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(4), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(4), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_2, &rawdata_to_stat_2, "CPU5-Freq", "%*s", TWO_SYSFS_FILES, TX2_SYSFS_CPU_ONLINE(5), TX2_SYSFS_CPU_ONLINE_MAX_STRLEN, TX2_SYSFS_CPU_FREQ(5), TX2_SYSFS_CPU_FREQ_MAX_STRLEN);
-    */
-#endif   // TRACE_CPU
+    // TODO
+    register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
+    register_rawdata(info,  collect_gpupower,   gpupower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
+    register_rawdata(info,  collect_gpufreq,    gpufreq_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_FREQ);
+    register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
 
     /*
      *  Suffix of header row.
@@ -427,7 +397,7 @@ end_arg_processing:
     return;
 }
 
-void measure_rawdata(const int pid, const struct measurement_info info) {
+void measure_rawdata(const int pid, const measurement_info_struct info) {
 
     int i;
     int flag_childexit;
@@ -440,7 +410,7 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int child_status;
     int num_read_bytes;
-    struct sysfs_stat stat_info;
+    struct rawdata_info_struct rawdata_info;
 
 #ifdef TRACE_DDR
     int mem_freq_fd;
@@ -498,9 +468,22 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
             write(info.rawdata_fd, " ", 1);
         write(info.rawdata_fd, gpu_power_str, (num_read_bytes-1));
 
-        for(i=0; i<info.num_sysfs_data; i++) {
-            stat_info = info.stat_info[i];
-            stat_info.read_sysfs_func(stat_info, info.rawdata_fd);
+        for(i=0; i<info.num_rawdata; i++) {
+            rawdata_info = info.rawdata_info[i];
+            // TODO
+            switch(rawdata_info.num_sysfs_fd) {
+            case 0:
+                rawdata_info.func_read_rawdata(info.rawdata_fd, -1, -1);
+                break;
+            case 1:
+                rawdata_info.func_read_rawdata(info.rawdata_fd, rawdata_info.sysfs_fd[0], -1);
+                break;
+            case 2:
+                rawdata_info.func_read_rawdata(info.rawdata_fd, rawdata_info.sysfs_fd[0], rawdata_info.sysfs_fd[1]);
+                break;
+            default:
+                break;
+            }
         }
 
         // Sleep enough
@@ -515,10 +498,10 @@ void measure_rawdata(const int pid, const struct measurement_info info) {
     close(info.gpu_power_fd);
     close(info.rawdata_fd);
     close(info.caffelog_fd);
-    close_sysfs(info);
+    close_sysfs_files(info);
 }
 
-void calculate_2ndstat(const struct measurement_info info) {
+void calculate_2ndstat(const measurement_info_struct info) {
 
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
@@ -552,7 +535,7 @@ void calculate_2ndstat(const struct measurement_info info) {
     int32_t gpu_energy_Wh;      // Wh
     int32_t prev_gpu_power, gpu_power, avg_gpu_power;   // mW
 
-    struct sysfs_stat stat_info;
+    rawdata_info_struct rawdata_info;
 
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
@@ -684,12 +667,14 @@ write_a_powerlog:
         buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
         write(stat_fd, buff, buff_len);
 
+    /*
         // Write sysfs data: GPU frequency, GPU utilization, CPU infos, etc.
-        for(i=0; i<info.num_sysfs_data; i++) {
-            stat_info = info.stat_info[i];
-            read_result = stat_info.rawdata_to_stat_func(stat_info, rawdata_fd, stat_fd);
+        for(i=0; i<info.num_rawdata; i++) {
+            rawdata_info = info.rawdata_info[i];
+            read_result = rawdata_info.rawdata_to_stat_func(rawdata_info, rawdata_fd, stat_fd);
             if (read_result <= 0) break;
         }
+    */
 
         // Suffixes.
         // Write #N/A values to some last columns,
@@ -752,14 +737,16 @@ write_a_caffelog:
             buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
         write(stat_fd, buff, buff_len);
 
+    /*
         // Put #N/A values for MS Excel
         buff_len = snprintf(buff, 256, "%15s", "#N/A");
         write(stat_fd, buff, buff_len);
-        for(i=0; i<info.num_sysfs_data; i++) {
+        for(i=0; i<info.num_rawdata; i++) {
 
-            buff_len = snprintf(buff, 256, "%*s", info.stat_info[i].column_width + 2, "#N/A");
+            buff_len = snprintf(buff, 256, "%*s", info.rawdata_info[i].column_width + 2, "#N/A");
             write(stat_fd, buff, buff_len);
         }
+    */
 
         // Write suffixes.
         // Note that Caffe-event should be excluded
@@ -800,7 +787,7 @@ write_a_caffelog:
     return;
 }
 
-void finish_measurement(struct measurement_info *info) {
+void finish_measurement(measurement_info_struct *info) {
 
     struct timespec gmt_finish_time, overall_interval;
 
@@ -825,7 +812,7 @@ void finish_measurement(struct measurement_info *info) {
 int main(int argc, char *argv[]) {
 
     int pid;
-    struct measurement_info info;
+    measurement_info_struct info;
     struct timespec sleep_remain;
 
 #ifdef DEBUG

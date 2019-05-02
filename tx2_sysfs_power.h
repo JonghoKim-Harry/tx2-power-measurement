@@ -14,19 +14,19 @@
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN 5   // mW
 
 /* Power Measurement I */
-#define TX2_SYSFS_POWER_GPU    \
+#define TX2_SYSFS_GPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power0_input"
-#define TX2_SYSFS_POWER_SOC    \
+#define TX2_SYSFS_SOC_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power1_input"
-#define TX2_SYSFS_POWER_WIFI   \
+#define TX2_SYSFS_WIFI_POWER   \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
 
 /* Power Measurement II */
-#define TX2_SYSFS_POWER_ALL    \
+#define TX2_SYSFS_ALL_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power0_input"
-#define TX2_SYSFS_POWER_CPU    \
+#define TX2_SYSFS_CPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power1_input"
-#define TX2_SYSFS_POWER_DDR    \
+#define TX2_SYSFS_DDR_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power2_input"
 
 /* CPU Governor Informations */
