@@ -62,9 +62,9 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
     int powerlog_fd;
     char token[128], *next_token;
     char **child_cmd, child_cmd_str[256];
-
     char raw_power_filename[128];
 
+    int mkdir_result;
     char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
     size_t buff_len, gmt_buff_len, korea_time_buff_len;
     int gpu_power_fd;
@@ -228,7 +228,9 @@ end_arg_processing:
     strcpy(filename_prefix, token);
 
     // mkdir -p
-    mkdir_p(given_dirname, 0755);
+    mkdir_result = mkdir_p(given_dirname, 0755);
+    if(mkdir_result)
+        perror("mkdir_p()   fail");
 
     // Powerlog File: OOO.powerlog.txt
     strcpy(powerlog_filename, given_dirname);
