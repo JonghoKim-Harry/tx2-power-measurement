@@ -65,7 +65,6 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     char **child_cmd, child_cmd_str[256];
     char raw_power_filename[128];
 
-    int mkdir_result;
     char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
     size_t buff_len, gmt_buff_len, korea_time_buff_len;
     int gpu_power_fd;
@@ -212,10 +211,10 @@ end_arg_processing:
     strcpy(filename_prefix, token);
 
     // mkdir -p
-    mkdir_result = mkdir_p(given_dirname, 0755);
-    if(mkdir_result) {
-        if(errno != EEXIST)
-            perror("mkdir_p()   fail");
+    if(access(given_dirname, F_OK) == -1) {
+        if(mkdir_p(given_dirname, 0755) == -1)
+            if(errno != EEXIST)
+                perror("mkdir_p()   fail");
     }
 
     // Powerlog File: OOO.powerlog.txt
