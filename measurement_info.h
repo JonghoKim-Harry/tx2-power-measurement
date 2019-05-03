@@ -23,6 +23,9 @@
 
 #define NUM_CPUS             6
 
+struct rawdata_info_struct;
+struct powerlog_struct;
+
 /*
  *  Rawdata
  */
@@ -158,7 +161,7 @@ typedef struct caffelog_struct {
     "VDD_SOC[[:space:]]+[[:digit:]]+/[[:digit:]]+[[:space:]]+"             \
     "VDD_WIFI[[:space:]]+[[:digit:]]+/[[:digit:]]+[[:space:]]+"            \
     "VDD_DDR[[:space:]]+([[:digit:]]+)/[[:digit:]]+"                       \
-    "[[:space:]]*
+    "[[:space:]]*"
 
 // Tegralog Example:
 // RAM 1911/7854MB (lfb 224x4MB) CPU [0%@345,off,off,0%@345,0%@345,0%@345] EMC_FREQ 0%@665 GR3D_FREQ 0%@140 APE 150 BCPU@32C MCPU@32C GPU@31.5C PLL@32C Tboard@28C Tdiode@28.75C PMIC@100C thermal@31.8C VDD_IN 1182/1182 VDD_CPU 152/152 VDD_GPU 152/152 VDD_SOC 381/381 VDD_WIFI 0/0 VDD_DDR 192/192
