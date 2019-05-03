@@ -473,10 +473,10 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
             // TODO
             switch(rawdata_info.num_sysfs_fd) {
             case 0:
-                rawdata_info.func_read_rawdata(info.rawdata_fd, -1, -1);
+                rawdata_info.func_read_rawdata(info.rawdata_fd);
                 break;
             case 1:
-                rawdata_info.func_read_rawdata(info.rawdata_fd, rawdata_info.sysfs_fd[0], -1);
+                rawdata_info.func_read_rawdata(info.rawdata_fd, rawdata_info.sysfs_fd[0]);
                 break;
             case 2:
                 rawdata_info.func_read_rawdata(info.rawdata_fd, rawdata_info.sysfs_fd[0], rawdata_info.sysfs_fd[1]);
