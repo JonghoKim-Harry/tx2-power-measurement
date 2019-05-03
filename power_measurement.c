@@ -11,10 +11,14 @@
 #include <libgen.h>
 #include <errno.h>
 
-#include "rawdata.h"
-#include "tx2_sysfs_power.h"
-#include "caffelog.h"
+#include "measurement_info.h"
+#include "collect_rawdata.h"
+#include "rawdata_to_powerlog.h"
+#include "parse_caffelog.h"
 #include "mkdir_p.h"
+
+//
+#include "tx2_sysfs_power.h"
 
 #define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
 #define ONE_PER_MICRO                         1000000
