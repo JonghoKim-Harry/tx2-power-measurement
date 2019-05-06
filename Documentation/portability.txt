@@ -22,6 +22,7 @@ For portability with mere measurement overhead, I used:
 
    * POSIX-compatible Linux System Calls:
 
+        - geteuid()                    in <unistd.h>
         - gettimeofday()               in <sys/time.h>
         - access()                     in <unistd.h>
         - mkdir()                      in <sys/stat.h>

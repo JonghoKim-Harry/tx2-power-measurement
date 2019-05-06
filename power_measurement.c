@@ -827,6 +827,12 @@ int main(int argc, char *argv[]) {
     printf("\nYou are running debug mode");
 #endif   // DEBUG
 
+    if(geteuid() != 0) {
+
+        printf("\nPlease run this power measurement tool as root privilege\n"
+        exit(0);
+    }
+
     prepare_measurement(argc, argv, &info);
 
     // Run

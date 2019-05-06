@@ -13,25 +13,25 @@
 #define TX2_SYSFS_CPU_FREQ_MAX_STRLEN 7    // kHz
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN 5   // mW
 
-// Thermal Informations
-#define TX2_SYSFS_BCPU_THERM     \
-    "/sys/devices/virtual/thermal/thermal_zone0/temp"
-#define TX2_SYSFS_MCPU_THERM     \
-    "/sys/devices/virtual/thermal/thermal_zone1/temp"
-#define TX2_SYSFS_GPU_THERM      \
-    "/sys/devices/virtual/thermal/thermal_zone2/temp"
-#define TX2_SYSFS_PLL_THERM      \
-    "/sys/devices/virtual/thermal/thermal_zone3/temp"
-#define TX2_SYSFS_TBOARD_THERM   \
-    "/sys/devices/virtual/thermal/thermal_zone4/temp"
-#define TX2_SYSFS_TDIODE_THERM   \
-    "/sys/devices/virtual/thermal/thermal_zone5/temp"
-#define TX2_SYSFS_PMIC_THERM     \
-    "/sys/devices/virtual/thermal/thermal_zone6/temp"
-#define TX2_SYSFS_FAN_THERM      \
-    "/sys/devices/virtual/thermal/thermal_zone7/temp"
+// Thermal Informations (x1000 degree Celsius)
+//   * BCPU-therm
+//   * MCPU-therm
+//   * GPU-therm
+//   * PLL-therm
+//   * Tboard_tegra
+//   * Tdiode_tegra
+//   * PMIC-Die
+//   * thermal-fan-est
+#define TX2_SYSFS_BCPU_TEMP   "/sys/devices/virtual/thermal/thermal_zone0/temp"
+#define TX2_SYSFS_MCPU_TEMP   "/sys/devices/virtual/thermal/thermal_zone1/temp"
+#define TX2_SYSFS_GPU_TEMP    "/sys/devices/virtual/thermal/thermal_zone2/temp"
+#define TX2_SYSFS_PLL_TEMP    "/sys/devices/virtual/thermal/thermal_zone3/temp"
+#define TX2_SYSFS_TBOARD_TEMP "/sys/devices/virtual/thermal/thermal_zone4/temp"
+#define TX2_SYSFS_TDIODE_TEMP "/sys/devices/virtual/thermal/thermal_zone5/temp"
+#define TX2_SYSFS_PMIC_TEMP   "/sys/devices/virtual/thermal/thermal_zone6/temp"
+#define TX2_SYSFS_FAN_TEMP    "/sys/devices/virtual/thermal/thermal_zone7/temp"
 
-/* Power Measurement I */
+// Power Measurement I (mW, integer)
 #define TX2_SYSFS_POWER_GPU    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power0_input"
 #define TX2_SYSFS_POWER_SOC    \
@@ -39,7 +39,7 @@
 #define TX2_SYSFS_POWER_WIFI   \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
 
-/* Power Measurement II */
+// Power Measurement II (mW, integer)
 #define TX2_SYSFS_POWER_ALL    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power0_input"
 #define TX2_SYSFS_POWER_CPU    \
@@ -47,7 +47,7 @@
 #define TX2_SYSFS_POWER_DDR    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power2_input"
 
-/* CPU Governor Informations */
+// CPU Governor Informations
 #define TX2_SYSFS_CPUFREQ_GROUP(n)   \
     "/sys/devices/system/cpu/cpufreq/policy" TOSTRING(n)
 #define TX2_SYSFS_CPUFREQ_GROUP_REGISTERED_CPUS(n)   \
@@ -72,7 +72,8 @@
 #define TX2_SYSFS_CPU_ONLINE(n) \
     TX2_SYSFS_CPU(n) "/online"
 
-/* GPU Governor Informations */
+// GPU Governor Informations
+// Note that GPU utilization is given by x10%, integer
 #define TX2_SYSFS_GPU     \
     "/sys/devices/17000000.gp10b"
 #define TX2_SYSFS_GPU_GOVERNOR    \
@@ -88,16 +89,21 @@
 #define TX2_SYSFS_GPU_UTIL   \
     TX2_SYSFS_GPU "/load"
 
+// EMC Information
+// Note that getting EMC frequency informations requires root previlege
 #define TX2_SYSFS_EMC_MAXFREQ   \
     "/sys/kernel/debug/bpmp/debug/clk/emc/max_rate"
 #define TX2_SYSFS_EMC_MINFREQ   \
     "/sys/kernel/debug/bpmp/debug/clk/emc/min_rate"
-#define TX2_SYSFS_EMC_FREQ      \
+#define TX2_SYSFS_EMC_FREQ   \
     "/sys/kernel/debug/clk/emc/clk_rate"
-#define TX2_SYSFS_EMC_UTIL_MAYBE   \
+#define TX2_SYSFS_EMC_UTIL \
     "/sys/kernel/actmon_avg_activity/mc_all"
 
 // APE (Audio Processing Engine)
-#define TX2_SYSFS_APE_FREQ   "/sys/kernel/debug/clk/ape/clk_rate"
+// Note that getting APE frequency informations requires root previlege
+// Hz, integer
+#define TX2_SYSFS_APE_FREQ \
+    "/sys/kernel/debug/clk/ape/clk_rate"
 
 #endif   // TX2_SYSFS_POWER_H
