@@ -8,7 +8,7 @@ export CFLAGS := -Wall -DNDEBUG -DTRACE_CPU -DTRACE_DDR
 
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp
-#CFLAGS += -DTRACE_CAFFE_TIMESTAMP
+CFLAGS += -DTRACE_CAFFE_TIMESTAMP
 
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
