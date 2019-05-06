@@ -12,7 +12,10 @@
 
 ssize_t collect_timestamp(const int rawdata_fd) {
 
-    int result;
+#ifdef DEBUG
+    printf("collect_timestamp()   START");
+#endif  // DEBUG
+
     struct timespec time;
 
     //  0: Sucess
@@ -20,9 +23,13 @@ ssize_t collect_timestamp(const int rawdata_fd) {
     if(clock_gettime(CLOCK_REALTIME, &time) == -1)
         return -1;
 
-    write(rawdata_fd, &time, sizeof(struct timespec));
+    if(write(rawdata_fd, &time, sizeof(struct timespec)) == -1)
+        return -1;
 
-    return result;
+#ifdef DEBUG
+    printf("collect_timestamp()   FINISH");
+#endif  // DEBUG
+    return 0;
 }
 
 ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1) {

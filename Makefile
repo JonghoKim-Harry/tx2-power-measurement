@@ -18,7 +18,7 @@ DEBUG_TARGET := $(TARGET)_debug
 all: $(TARGET)
 
 OBJECTS := measurement_info.o   collect_rawdata.o   rawdata_to_powerlog.o \
-	       parse_caffelog.o     mkdir_p.o
+	       log_to_stat.o        parse_caffelog.o    mkdir_p.o
 
 $(TARGET): $(TARGET).o $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)

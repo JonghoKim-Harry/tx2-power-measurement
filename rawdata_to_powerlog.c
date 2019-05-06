@@ -12,7 +12,7 @@ ssize_t timestamp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
 
     ssize_t num_read_bytes;
 
-    num_read_bytes = read(rawdata_fd, &powerlog->gmt_timestamp, sizeof(struct timespec));
+    num_read_bytes = read(rawdata_fd, &powerlog->timestamp, sizeof(struct timespec));
 
     return num_read_bytes;
 }

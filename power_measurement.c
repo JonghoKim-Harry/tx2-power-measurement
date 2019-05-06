@@ -15,10 +15,9 @@
 #include "collect_rawdata.h"
 #include "rawdata_to_powerlog.h"
 #include "parse_caffelog.h"
-#include "mkdir_p.h"
-
-//
+#include "log_to_stat.h"
 #include "tx2_sysfs_power.h"
+#include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
 #define ONE_PER_MICRO                         1000000
@@ -69,8 +68,8 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     char **child_cmd, child_cmd_str[256];
     char raw_power_filename[128];
 
-    char buff[256], filename_buff[64], gmt_buff[256], korea_time_buff[256];
-    size_t buff_len, gmt_buff_len, korea_time_buff_len;
+    char buff[256], filename_buff[64], time_buff[256], korea_time_buff[256];
+    size_t buff_len, time_buff_len, korea_time_buff_len;
     int gpu_power_fd;
     struct timeval walltime;
     struct tm *walltime_calendar;
@@ -170,7 +169,7 @@ end_arg_processing:
     }
 
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
-    gmt_buff_len = snprintf(gmt_buff, 256, "\nStart measurement at %s (GMT)", buff);
+    time_buff_len = snprintf(time_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
     // Korea Timezone
     walltime.tv_sec += GMT_TO_KOREA_TIME;
@@ -292,40 +291,9 @@ end_arg_processing:
                         info->cooldown_period.tv_nsec);
     write(stat_fd, buff, buff_len);
 
-    /* 
-     *  One-time Reading of Informations: CPUFREQ Groups, DEVFREQ Infos,
-     *                                    Walltime, Stat Format, etc.
-     */
-
-    /*
-    // CPUFreq Group0 Informations
-    message = "\n\nCPUFreq Group0";
-    write(stat_fd, message, strlen(message));
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_GOVERNOR(0), "\n   * Governor: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_REGISTERED_CPUS(0), "\n   * Registered CPUs: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(0), "\n   * MIN Frequency: %skHz");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(0), "\n   * MAX Frequency: %skHz");
-
-    // CPUFreq Group1 Informations
-    message = "\n\nCPUFreq Group1";
-    write(stat_fd, message, strlen(message));
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_GOVERNOR(1), "\n   * Governor: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_REGISTERED_CPUS(1), "\n   * Registered CPUs: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MINFREQ(1), "\n   * MIN Frequency: %skHz");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_CPUFREQ_GROUP_MAXFREQ(1), "\n   * MAX Frequency: %skHz");
-
-    // GPUFreq Informations
-    message = "\n\nGPU Frequency Informations";
-    write(stat_fd, message, strlen(message));
-    sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_GOVERNOR, "\n   * Governor: %s");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_MINFREQ,  "\n   * MIN Frequency: %sHz");
-    sysfs_to_stat(stat_fd, TX2_SYSFS_GPU_MAXFREQ,  "\n   * MAX Frequency: %sHz");
-    */
-
-
     // Walltime
     write(stat_fd, "\n\n", 2);
-    write(stat_fd, gmt_buff, gmt_buff_len);
+    write(stat_fd, time_buff, time_buff_len);
     write(stat_fd, korea_time_buff, korea_time_buff_len);
 
     // Raw data format: Column name of the statistics table
@@ -340,17 +308,6 @@ end_arg_processing:
             28, "TIME(ns)",
             15, "GPU-Power(mW)");
 
-    if(sizeof(time_t) <= sizeof(int32_t)) {
-        strcpy(info->rawdata_print_format, "\n%11d%09dns");
-        info->rawdata_linesize += 23;
-        strcpy(info->rawdata_scan_format, "\n%20ldns");
-    }
-    else if(sizeof(time_t) == sizeof(int64_t)) {
-        strcpy(info->rawdata_print_format, "\n%19ld%09dns");
-        info->rawdata_linesize += 31;
-        strcpy(info->rawdata_scan_format, "\n%28ldns");
-    }
-
     // Write column names in the first raw of the statistics file
     info->offset_2ndstat = lseek(stat_fd, 0, SEEK_CUR);
     close(stat_fd);
@@ -359,11 +316,49 @@ end_arg_processing:
     strcpy(info->stat_filename, stat_filename);
     info->gpu_power_fd = gpu_power_fd;
 
-    // TODO
+    // TODO: Register rawdata to collect
     register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
     register_rawdata(info,  collect_gpupower,   gpupower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
     register_rawdata(info,  collect_gpufreq,    gpufreq_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_FREQ);
     register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
+
+    // TODO: Register statistics
+
+/*
+    register_column(info,  "Time(ns)",            28,
+                    LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
+*/
+    register_column(info,  "GPU-power(mW)",       13,
+                    LOGTYPE_POWERLOG,             gpupower_to_stat);
+/*
+    register_column(info,  "GPU-energy(pWh)",     15,
+                    LOGTYPE_POWERLOG_SUMMARY,     gpuenergy_to_stat);
+*/
+    register_column(info,  "GPU-freq(MHz)",       13,
+                    LOGTYPE_POWERLOG,             gpufreq_to_stat);
+    register_column(info,  "GPU-util(%)",         11,
+                    LOGTYPE_POWERLOG,             gpuutil_to_stat);
+    register_column(info,  "Timestamp",           18,
+                    LOGTYPE_POWERLOG,             timestamp_to_stat);
+
+    // TODO
+    /*
+    register_column(info,  "Event:CAFFE_START",       17,
+                    LOGTYPE_CAFFELOG,     
+    register_column(info,  "Event:CNN_START",         15,
+                    LOGTYPE_CAFFELOG,     
+    register_column(info,  "State:GPU_POWER_PEAK",    20,
+                    LOGTYPE_POWERLOG_SUMMARY,     
+    register_column(info,  "Event:CNN_FINISH",        16,
+                    LOGTYPE_CAFFELOG,     
+    register_column(info,  "Event:CAFFE_FINISH",      18,
+                    LOGTYPE_CAFFELOG,     
+    register_column(info,  "State:GPU_POWER_IDLE",    20,
+                    LOGTYPE_POWERLOG_SUMMARY,     
+
+
+    */
+
 
     /*
      *  Suffix of header row.
@@ -374,8 +369,6 @@ end_arg_processing:
              22, "specific-Caffe-event",
              7, "batch",
              13, "Caffe-event");
-    strcat(info->header_raw, buff);
-
     /*
      *   Ignore the compilation warning message: 
      *
@@ -395,8 +388,8 @@ end_arg_processing:
 
     // Time information
     // Note that this job should be done at last to be more accurate
-    clock_gettime(CLOCK_REALTIME, &info->gmt_start_time);
-    info->gmt_calendar_start_time = localtime(&info->gmt_start_time.tv_sec);
+    clock_gettime(CLOCK_REALTIME, &info->start_time);
+    info->calendar_start_time = localtime(&info->start_time.tv_sec);
     return;
 }
 
@@ -410,16 +403,9 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
     struct timespec sleep_remain;
     struct timespec cooldown_remain;
     struct timespec prev_time, curr_time;
-    char gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
     int child_status;
     int num_read_bytes;
     struct rawdata_info_struct rawdata_info;
-
-#ifdef TRACE_DDR
-    int mem_freq_fd;
-    int mem_power;
-    int mem_freq;
-#endif  // TRACE_DDR
 
     flag_childexit = 0;
     ns_since_childexit = 0;
@@ -456,21 +442,6 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
                 break;
         }
 
-        // Write timestamp
-        write(info.rawdata_fd, &curr_time, sizeof(struct timespec));
-
-        // GPU Power
-        lseek(info.gpu_power_fd, 0, SEEK_SET);
-        // Note that read() may read EOF character at the end
-        num_read_bytes = read(info.gpu_power_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
-#ifdef DEBUG
-        if(num_read_bytes <= 0)
-            fprintf(stderr, "\nCould not read GPU power\n");
-#endif   // DEBUG
-        for(i=0; i<(TX2_SYSFS_GPU_POWER_MAX_STRLEN - (num_read_bytes-1) ); i++)
-            write(info.rawdata_fd, " ", 1);
-        write(info.rawdata_fd, gpu_power_str, (num_read_bytes-1));
-
         for(i=0; i<info.num_rawdata; i++) {
             rawdata_info = info.rawdata_info[i];
             // TODO
@@ -506,7 +477,11 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
 
 void calculate_2ndstat(const measurement_info_struct info) {
 
-    powerlog_struct powerlog;
+    rawdata_info_struct            *rawdata_info;
+    powerlog_struct                 powerlog;
+    powerlog_summary_struct         powerlog_summary;
+    stat_info_struct               *stat_info;
+    ssize_t num_read_bytes, num_written_bytes;
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
     int caffelog_fd;
@@ -526,26 +501,17 @@ void calculate_2ndstat(const measurement_info_struct info) {
     ssize_t read_result;
     int rawdata_fd;
     int stat_fd;
-    char time_buff[256], buff[256], gpu_power_str[TX2_SYSFS_GPU_POWER_MAX_STRLEN + 1];
+    char time_buff[256], buff[256];
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
-    const char separation_line[256] = "\n\n__________________________________________________________________________________________________________________________________________________________________________\n";
-    time_t elapsed_time_sec;
-    int64_t elapsed_time_ns;
-    int64_t diff_time_ns;
-    int32_t gpu_energy;         // mW x ns
-    int64_t gpu_energy_pWh;     // pWh (10^-12 Wh)
-    int32_t gpu_energy_Wh;      // Wh
-    int32_t prev_gpu_power, gpu_power, avg_gpu_power;   // mW
-
-    rawdata_info_struct rawdata_info;
+    const char separation_line[256] = "\n__________________________________________________________________________________________________________________________________________________________________________\n";
 
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
     offset = 0;
     caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
-    caffelog.gmt_date_hms = *info.gmt_calendar_start_time;
+    caffelog.date_hms = *info.calendar_start_time;
     caffelog_buffered = 0;
     powerlog_buffered = 0;
 #endif   // TRACE_CAFFE_TIMESTAMP
@@ -554,22 +520,41 @@ void calculate_2ndstat(const measurement_info_struct info) {
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
     stat_fd = open(info.stat_filename, O_WRONLY);
-    lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
-
-    /* Keep some empty space for summary at the top of stat file */
-    lseek(stat_fd, 105, SEEK_CUR);
-
-    gpu_power = 0;
-    gpu_energy = 0;
-    gpu_energy_pWh = 0;
-    gpu_energy_Wh = 0;
 
     printf("\nSTART calculating 2nd stats\n");
     write(stat_fd, separation_line, strlen(separation_line));
-    write(stat_fd, info.header_raw, strlen(info.header_raw));
 
     while(1) {
 
+        // Write sysfs data: GPU frequency, GPU utilization, CPU infos, etc.
+        for(i=0; i<info.num_rawdata; i++) {
+            rawdata_info = &info.rawdata_info[i];
+            num_read_bytes = rawdata_info->func_rawdata_to_powerlog(&powerlog, rawdata_fd);
+            if (num_read_bytes <= 0) break;
+        }
+
+        for(i=0; i<info.num_stat; i++) {
+            stat_info = &info.stat_info[i];
+            switch(stat_info->logtype) {
+
+                case LOGTYPE_POWERLOG:
+                    stat_info->func_log_to_stat(stat_fd, powerlog);
+                    break;
+
+                case LOGTYPE_POWERLOG_SUMMARY:
+                    stat_info->func_log_to_stat(stat_fd, powerlog_summary);
+                    break;
+
+                //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog); break;
+
+                //case LOGTYPE_TEGRALOG: stat_info->func_log_to_stat(stat_fd, tegralog); break;
+                case LOGTYPE_NA:
+                default:
+                    break;
+            }
+        }
+
+/*
 #ifdef TRACE_CAFFE_TIMESTAMP
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
@@ -590,95 +575,6 @@ get_a_powerlog:
         printf("\ncalculate_2ndstat()   BB: get powerlog timestamp");
 #endif   // DEBUG
 
-        // Get a powerlog timestamp
-        prev_powerlog_timestamp = powerlog_timestamp;
-        read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
-        if(read_result <= 0) break;
-        powerlog_calendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
-
-#ifdef TRACE_CAFFE_TIMESTAMP
-        powerlog_buffered = 1;   // Set a flag
-
-        if(!caffelog_buffered)
-            goto write_a_powerlog;
-
-compare_timestamp:
-        assert(caffelog_buffered == 1);
-        assert(powerlog_buffered == 1);
-
-        caffelog_powerlog_hms_diff_ns
-        = compare_timestamp_hms(caffelog.gmt_date_hms, *powerlog_calendar_timestamp);
-
-        if(caffelog_powerlog_hms_diff_ns > 0)
-            caffelog_powerlog_comparison = 1;
-        else if(caffelog_powerlog_hms_diff_ns < 0)
-            caffelog_powerlog_comparison = -1;
-        else if(caffelog.gmt_timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
-            caffelog_powerlog_comparison = 1;
-        else if(caffelog.gmt_timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
-            caffelog_powerlog_comparison = -1;
-        else
-            caffelog_powerlog_comparison = 0;
-
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   caffelog_powerlog_hms_diff_ns: %ld", caffelog_powerlog_hms_diff_ns);
-        printf("\ncalculate_2ndstat()   caffelog tv_nsec: %ld", caffelog.gmt_timestamp.tv_nsec);
-        printf("\ncalculate_2ndstat()   powerlog tv_nsec: %ld", powerlog_timestamp.tv_nsec);
-        printf("\ncalculate_2ndstat()   caffelog_powerlog_comparison: %d", caffelog_powerlog_comparison);
-#endif   // DEBUG
-
-        if(caffelog_powerlog_comparison < 0)
-            goto write_a_caffelog;
-
-write_a_powerlog:
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   BB: write a powerlog");
-#endif   // DEBUG
-
-
-#ifdef TRACE_CAFFE_TIMESTAMP
-        powerlog_buffered = 0;   // Reset a flag
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-        // Write powerlog: POWERLOG TIMESTAMP
-        write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, " %H:%M:%S", powerlog_calendar_timestamp);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
-        write(stat_fd, buff, buff_len);
-
-        // Calculate and write powerlog: ELAPSED TIME (ns)
-        elapsed_time_sec = powerlog_timestamp.tv_sec - info.gmt_start_time.tv_sec;
-        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
-
-        if(elapsed_time_ns < 0) {
-        
-            -- elapsed_time_sec;
-            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
-        }
-
-        if(elapsed_time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
-        else
-            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
-        write(stat_fd, buff, buff_len);
-
-        // Read and write powerlog: GPU POWER (mW)
-        read_result = read(rawdata_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
-        if(read_result <= 0) break;
-        gpu_power_str[read_result] = '\0';
-        buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
-        write(stat_fd, buff, buff_len);
-
-    /*
-        // Write sysfs data: GPU frequency, GPU utilization, CPU infos, etc.
-        for(i=0; i<info.num_rawdata; i++) {
-            rawdata_info = info.rawdata_info[i];
-            read_result = rawdata_info.rawdata_to_stat_func(rawdata_info, rawdata_fd, stat_fd);
-            if (read_result <= 0) break;
-        }
-    */
 
         // Suffixes.
         // Write #N/A values to some last columns,
@@ -715,19 +611,71 @@ write_a_caffelog:
 #ifdef DEBUG
         printf("\ncalculate_2ndstat()   BB: write a caffelog");
 #endif   // DEBUG
+#endif   // TRACE_CAFFE_TIMESTAMP
 
         assert(caffelog_buffered == 1);
-        caffelog_buffered = 0;   // Reset a flag
 
-        // Write a caffelog: Timestamp
+        // Get a powerlog timestamp
+        prev_powerlog_timestamp = powerlog_timestamp;
+        read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
+        if(read_result <= 0) break;
+        powerlog_calendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
+
+#ifdef TRACE_CAFFE_TIMESTAMP
+        powerlog_buffered = 1;   // Set a flag
+
+        if(!caffelog_buffered)
+            goto write_a_powerlog;
+
+compare_timestamp:
+        assert(caffelog_buffered == 1);
+        assert(powerlog_buffered == 1);
+
+        caffelog_powerlog_hms_diff_ns
+        = compare_timestamp_hms(caffelog.date_hms, *powerlog_calendar_timestamp);
+
+        if(caffelog_powerlog_hms_diff_ns > 0)
+            caffelog_powerlog_comparison = 1;
+        else if(caffelog_powerlog_hms_diff_ns < 0)
+            caffelog_powerlog_comparison = -1;
+        else if(caffelog.timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
+            caffelog_powerlog_comparison = 1;
+        else if(caffelog.timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
+            caffelog_powerlog_comparison = -1;
+        else
+            caffelog_powerlog_comparison = 0;
+
+#ifdef DEBUG
+        printf("\ncalculate_2ndstat()   caffelog_powerlog_hms_diff_ns: %ld", caffelog_powerlog_hms_diff_ns);
+        printf("\ncalculate_2ndstat()   caffelog tv_nsec: %ld", caffelog.timestamp.tv_nsec);
+        printf("\ncalculate_2ndstat()   powerlog tv_nsec: %ld", powerlog_timestamp.tv_nsec);
+        printf("\ncalculate_2ndstat()   caffelog_powerlog_comparison: %d", caffelog_powerlog_comparison);
+#endif   // DEBUG
+
+        if(caffelog_powerlog_comparison < 0)
+            goto write_a_caffelog;
+
+write_a_powerlog:
+#endif   // TRACE_CAFFE_TIMESTAMP
+
+#ifdef DEBUG
+        printf("\ncalculate_2ndstat()   BB: write a powerlog");
+#endif   // DEBUG
+
+
+#ifdef TRACE_CAFFE_TIMESTAMP
+        powerlog_buffered = 0;   // Reset a flag
+#endif   // TRACE_CAFFE_TIMESTAMP
+
+        // Write powerlog: POWERLOG TIMESTAMP
         write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, " %H:%M:%S", &caffelog.gmt_date_hms);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.gmt_timestamp.tv_nsec);
+        strftime(time_buff, 256, " %H:%M:%S", powerlog_calendar_timestamp);
+        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
         write(stat_fd, buff, buff_len);
 
-        // Calculate and write caffelog: ELAPSED TIME (ns)
-        elapsed_time_sec = caffelog.gmt_timestamp.tv_sec - info.gmt_start_time.tv_sec;
-        elapsed_time_ns = caffelog.gmt_timestamp.tv_nsec - info.gmt_start_time.tv_nsec;
+        // Calculate and write powerlog: ELAPSED TIME (ns)
+        elapsed_time_sec = powerlog_timestamp.tv_sec - info.start_time.tv_sec;
+        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.start_time.tv_nsec;
 
         if(elapsed_time_ns < 0) {
         
@@ -741,16 +689,67 @@ write_a_caffelog:
             buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
         write(stat_fd, buff, buff_len);
 
-    /*
-        // Put #N/A values for MS Excel
-        buff_len = snprintf(buff, 256, "%15s", "#N/A");
+        // Read and write powerlog: GPU POWER (mW)
+        read_result = read(rawdata_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
+        if(read_result <= 0) break;
+        gpu_power_str[read_result] = '\0';
+        buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
         write(stat_fd, buff, buff_len);
-        for(i=0; i<info.num_rawdata; i++) {
 
-            buff_len = snprintf(buff, 256, "%*s", info.rawdata_info[i].column_width + 2, "#N/A");
-            write(stat_fd, buff, buff_len);
+        // Suffixes.
+        // Write #N/A values to some last columns,
+        // in order to be friendly with MS Excel.
+        // The last column is Caffe-event
+        buff_len = snprintf(buff, 256, "%*s%*s%*s",
+                            22, "#N/A",
+                            7, "#N/A",
+                            13, "#N/A");
+        write(stat_fd, buff, buff_len);
+
+        // Calculate powerlog: GPU ENERGY PARTIAL SUM
+        prev_gpu_power = gpu_power;
+        gpu_power = atoi(gpu_power_str);
+        avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
+        diff_time_ns = ONE_SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
+                      + (powerlog_timestamp.tv_nsec - prev_powerlog_timestamp.tv_nsec);
+
+        gpu_energy += avg_gpu_power * diff_time_ns;
+
+        if(gpu_energy >= HOUR_TO_SECOND) {
+            gpu_energy_pWh += (gpu_energy / HOUR_TO_SECOND);
+            gpu_energy %= HOUR_TO_SECOND;
         }
-    */
+
+        if(gpu_energy_pWh >= WATTHOUR_TO_PICOWATTHOUR) {
+            gpu_energy_Wh += (gpu_energy_pWh / WATTHOUR_TO_PICOWATTHOUR);
+            gpu_energy_pWh %= WATTHOUR_TO_PICOWATTHOUR;
+        }
+        goto get_a_powerlog;
+
+        assert(caffelog_buffered == 1);
+        caffelog_buffered = 0;   // Reset a flag
+
+        // Write a caffelog: Timestamp
+        write(stat_fd, "\n", 1);
+        strftime(time_buff, 256, " %H:%M:%S", &caffelog.date_hms);
+        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.timestamp.tv_nsec);
+        write(stat_fd, buff, buff_len);
+
+        // Calculate and write caffelog: ELAPSED TIME (ns)
+        elapsed_time_sec = caffelog.timestamp.tv_sec - info.start_time.tv_sec;
+        elapsed_time_ns = caffelog.timestamp.tv_nsec - info.start_time.tv_nsec;
+
+        if(elapsed_time_ns < 0) {
+        
+            -- elapsed_time_sec;
+            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
+        }
+
+        if(elapsed_time_sec == 0)
+            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
+        else
+            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
+        write(stat_fd, buff, buff_len);
 
         // Write suffixes.
         // Note that Caffe-event should be excluded
@@ -762,7 +761,8 @@ write_a_caffelog:
         // Write a caffelog : Caffe-event
         buff_len = snprintf(buff, 256, "%2s%s", "  ", caffelog.event);
         write(stat_fd, buff, buff_len);
-#endif   // TRACE_CAFFE_TIMESTAMP
+*/
+
     }   // while(1)
 
 #ifdef DEBUG
@@ -772,14 +772,6 @@ write_a_caffelog:
     // Close and remove rawdata.bin file
     close(rawdata_fd);
     remove(info.rawdata_filename);
-
-    lseek(stat_fd, info.offset_2ndstat, SEEK_SET);
-
-    buff_len = snprintf(buff, 256, "\nTOTAL MEASUREMENT TIME: %19ld.%09ld second", elapsed_time_sec, elapsed_time_ns); // 59
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, 256, "\nTOTAL GPU ENERGY: %9d.%012ld Wh", gpu_energy_Wh, gpu_energy_pWh); // 44
-    write(stat_fd, buff, buff_len);
 
     printf("\nEnd Jetson TX2 power measurement\n");
     close(stat_fd);
@@ -793,15 +785,15 @@ write_a_caffelog:
 
 void finish_measurement(measurement_info_struct *info) {
 
-    struct timespec gmt_finish_time, overall_interval;
+    struct timespec finish_time, overall_interval;
 
     // Free objects
     regfree(&info->caffelog_pattern);
 
     // Overall Measurement Time
-    clock_gettime(CLOCK_REALTIME, &gmt_finish_time);
-    overall_interval.tv_sec = gmt_finish_time.tv_sec - info->gmt_start_time.tv_sec;
-    overall_interval.tv_nsec = gmt_finish_time.tv_nsec - info->gmt_start_time.tv_nsec;
+    clock_gettime(CLOCK_REALTIME, &finish_time);
+    overall_interval.tv_sec = finish_time.tv_sec - info->start_time.tv_sec;
+    overall_interval.tv_nsec = finish_time.tv_nsec - info->start_time.tv_nsec;
 
     if(overall_interval.tv_nsec < 0) {
         -- overall_interval.tv_sec;

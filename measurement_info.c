@@ -1,39 +1,39 @@
 #include <stdio.h>
 #include <fcntl.h>
+#include <string.h>
 #include <errno.h>
 #include "measurement_info.h"
 
 #ifdef DEBUG
-void print_stat_info(const struct sysfs_stat stat_info) {
-
-    int i;
-
-    printf("\n--- stat_info ---");
-    printf("\n * num_sysfs_fd: %d", stat_info.num_sysfs_fd);
-    printf("\n * sysfs file info");
-    for(i=0; i<stat_info.num_sysfs_fd; i++) {
-        printf("\n   - max_strlen[%d]: %d", i, stat_info.max_strlen[i]);
-        printf("\n   - sysfs_fd[%d]: %d", i, stat_info.sysfs_fd[i]);
-    }
-    printf("\n-----------------\n");
-}
-
-void print_info(const struct measurement_info info) {
+void print_info(const struct measurement_info_struct info) {
 
     printf("\n--- info ---");
-    printf("\n * rawdata_fd: %d", info.rawdata_fd);
-    printf("\n * num_sysfs_data: %d", info.num_sysfs_data);
-    printf("\n * header raw: %s", info.header_raw);
+    printf("\n * num_rawdata: %d", info.num_rawdata);
+    printf("\n * num_stat: %d", info.num_stat);
     printf("\n------------\n");
 
     return;
 }
+
+void print_rawdata_info(const rawdata_info_struct rawdata_info) {
+
+    int i;
+
+    printf("\n--- rawdta_info ---");
+    printf("\n * num_sysfs_fd: %d", rawdata_info.num_sysfs_fd);
+    printf("\n * sysfs file info");
+    for(i=0; i<rawdata_info.num_sysfs_fd; i++) {
+        printf("\n   - sysfs_fd[%d]: %d", i, rawdata_info.sysfs_fd[i]);
+    }
+    printf("\n-----------------\n");
+}
+
 #endif   // DEBUG
 
 void init_info(measurement_info_struct *info) {
 
     info->num_rawdata = 0;
-    info->offset_2ndstat = 0;
+    info->num_stat = 0;
 
     return;
 }
@@ -44,8 +44,8 @@ void register_rawdata
      ssize_t (*func_rawdata_to_powerlog)(powerlog_struct *powerlog, const int rawdata_fd),
      const int num_sysfs_file, ...) {
 
-    const int index = info->num_rawdata;
-    rawdata_info_struct *rawdata_info = &info->rawdata_info[index];
+    const int idx = info->num_rawdata;
+    rawdata_info_struct *rawdata_info = &info->rawdata_info[idx];
     va_list sysfs_file_list;
     int i;
     char buff[128];
@@ -79,7 +79,7 @@ void register_rawdata
 
 #ifdef DEBUG
     for(i=0; i<num_sysfs_file; i++) {
-        printf("\nregister_sysfs()   rawdata_info->sysfs_fd[%d]: %d", i, rawdata_info->sysfs_fd[i]);
+        printf("\nregister_rawdata()   rawdata_info->sysfs_fd[%d]: %d", i, rawdata_info->sysfs_fd[i]);
     }
 #endif   // DEBUG
 
@@ -87,8 +87,28 @@ void register_rawdata
     ++(info->num_rawdata);
 
 #ifdef DEBUG
-    printf("\nregister_sysfs()   FINISHED");
+    printf("\nregister_rawdata()   FINISHED");
 #endif   // DEBUG
+
+    return;
+}
+
+void register_column
+    (measurement_info_struct *info,
+     const char *colname,
+     const int colwidth,
+     enum logtype_t logtype,
+     ssize_t (*func_log_to_stat)(const int stat_fd, ...)) {
+
+    const int idx = info->num_stat;
+    stat_info_struct *stat_info = &info->stat_info[idx];
+
+    strcpy(stat_info->colname, colname);
+    stat_info->colwidth = colwidth;
+    stat_info->logtype = logtype;
+    stat_info->func_log_to_stat = func_log_to_stat;
+
+    ++(info->num_stat);
 
     return;
 }

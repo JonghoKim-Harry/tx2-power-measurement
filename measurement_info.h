@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <regex.h>
 
+// sysfs fds
 #define MAX_NUM_SYSFS_FD     8
 #define  NO_SYSFS_FILE       0
 #define ONE_SYSFS_FILE       1
@@ -19,7 +20,9 @@
 #define EIGHT_SYSFS_FILES    8
 
 #define MAX_NUM_RAWDATA     20
+#define MAX_NUM_STAT        20
 #define RAWDATA_BUFFSIZE    64
+#define MAX_COLWIDTH        40
 
 #define NUM_CPUS             6
 
@@ -39,37 +42,47 @@ typedef struct rawdata_info_struct {
 } rawdata_info_struct;
 
 
+enum logtype_t {
+    LOGTYPE_NA = 0,
+    LOGTYPE_POWERLOG,
+    LOGTYPE_POWERLOG_SUMMARY,
+    LOGTYPE_CAFFELOG,
+    LOGTYPE_TEGRALOG,
+    NUM_LOGTYPES
+};
+
+
 /*
  *  Powerlog
  */
 typedef struct powerlog_struct {
 
-    struct timespec gmt_timestamp;
+    struct timespec timestamp;   // GMT
 
-    int16_t gpu_power;         // mW
-    int16_t gpu_freq;          // MHz
-    int16_t gpu_util;          // x10%
+    int16_t gpu_power;           // mW
+    int16_t gpu_freq;            // MHz
+    int16_t gpu_util;            // x10%
 
 #ifdef TRACE_CPU
-    int16_t allcpu_power;      // mW
+    int16_t allcpu_power;        // mW
     int group0_cpus[6];
-    int16_t cpu_group0_freq;   // MHz
-    int16_t cpu_group1_freq;   // MHz
+    int16_t cpu_group0_freq;     // MHz
+    int16_t cpu_group1_freq;     // MHz
 #endif   // TRACE_CPU
 
 #ifdef TRACE_DDR
-    int32_t mem_power;         // mW
-    int16_t emc_freq;          // MHz
+    int32_t mem_power;           // mW
+    int16_t emc_freq;            // MHz
 #endif   // TRACE_DDR
 
     int num_rawdata;
-    uint8_t rawdata[MAX_NUM_RAWDATA][RAWDATA_BUFFSIZE];
+    //uint8_t rawdata[MAX_NUM_RAWDATA][RAWDATA_BUFFSIZE];
 } powerlog_struct;
 
 typedef struct powerlog_summary_struct {
 
-    struct timespec gmt_start_timestamp, gmt_finish_timestamp;
-    struct powerlog_struct last_powerlog;
+    struct timespec start_timestamp, finish_timestamp;
+    struct powerlog_struct *last_powerlog;
     int                     num_powerlog;
 
     // GPU energy
@@ -104,13 +117,13 @@ typedef struct powerlog_summary_struct {
     "([^[:space:]].*)"
 
 typedef struct caffelog_struct {
-    struct timespec gmt_timestamp;
+    struct timespec timestamp;   // GMT
 
     /*
      *  HMS: Hour, Minute, Second
      *  Note that year, month, day are ignored to be 0
      */
-    struct tm gmt_date_hms;
+    struct tm date_hms;   // GMT, HH:MM:SS
     char event[128];
 } caffelog_struct;
 
@@ -205,6 +218,17 @@ typedef struct tegralog_struct {
 
 } tegralog_struct;
 
+/*
+ *  Statistics
+ */
+typedef struct stat_info_struct {
+
+    char colname[MAX_COLWIDTH];
+    int  colwidth;
+    enum logtype_t logtype;
+    ssize_t (*func_log_to_stat)(const int stat_fd, ...);
+} stat_info_struct;
+
 
 /*
  *  Measurement Information
@@ -236,38 +260,49 @@ typedef struct measurement_info_struct {
     regex_t caffelog_pattern;
 
     // Informations used by measure_rawdata()
-    struct tm *gmt_calendar_start_time;
-    struct timespec gmt_start_time;
+    struct tm *calendar_start_time;   // GMT
+    struct timespec     start_time;   // GMT
 
     //  In order to use sysfs interface easily.
     //  See addsysfs(), read_sysfs(), rawdata_to_stat()
-    int num_rawdata;
     struct rawdata_info_struct rawdata_info[MAX_NUM_RAWDATA];
-    int offset_2ndstat;
+    int num_rawdata;
     char rawdata_filename[128];
     int rawdata_fd;
     int gpu_power_fd;
     char rawdata_print_format[256];
     char rawdata_scan_format[256];
     int rawdata_linesize;
+    int offset_2ndstat;
 
-    char header_raw[256];
+    struct stat_info_struct stat_info[MAX_NUM_STAT];
+    int num_stat;
     char stat_filename[128];
+
 } measurement_info_struct;
 
 
 #ifdef DEBUG
-void print_info(const struct measurement_info_struct info);
+void print_info(const measurement_info_struct info);
 void print_rawdata_info(const rawdata_info_struct rawdata_info);
 #endif   // DEBUG
 
 void init_info(measurement_info_struct *info);
 
-void register_rawdata
-    (struct measurement_info_struct *info,
+void register_rawdata(
+     measurement_info_struct *info,
      ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),
      ssize_t (*func_rawdata_to_powerlog)(powerlog_struct *powerlog, const int rawdata_fd),
-     const int num_sysfs_file, ...);
+     const int num_sysfs_file, ...
+);
+
+void register_column(
+     measurement_info_struct *info,
+     const char *colname,
+     const int colwidth,
+     enum logtype_t logtype,
+     ssize_t (*func_log_to_stat)(const int stat_fd, ...)
+);
 
 void close_sysfs_files(struct measurement_info_struct info);
 
