@@ -372,7 +372,8 @@ end_arg_processing:
 
 
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "GPU-Freq(Hz)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_FREQ, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
-    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util1, "GPU-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_GPU_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
+    register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_util2, "EMC-Util(%)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_EMC_UTIL, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
 
 #ifdef TRACE_CPU
     register_sysfs(info, &read_sysfs_1, &rawdata_to_stat_1, "ALL-CPU-Power(mW)", "%*s", ONE_SYSFS_FILE, TX2_SYSFS_POWER_CPU, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
@@ -829,7 +830,7 @@ int main(int argc, char *argv[]) {
 
     if(geteuid() != 0) {
 
-        printf("\nPlease run this power measurement tool as root privilege\n"
+        printf("\nPlease run this power measurement tool as root privilege\n");
         exit(0);
     }
 
