@@ -12,7 +12,7 @@
 #define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1   // Boolean: 0, 1
 #define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7   // kHz, up to 2035200
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5   // mW
-#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     7   // x10000%, up to 1000000
+#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7   // x10000%, up to 1000000
 
 // Thermal Informations (x1000 degree Celsius)
 //   * BCPU-therm
