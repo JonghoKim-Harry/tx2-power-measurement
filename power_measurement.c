@@ -16,6 +16,7 @@
 #include "mkdir_p.h"
 
 #define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
+#define MIN_TIME_INTERVAL                       10000   // 10000 us = 10 ms
 #define ONE_PER_MICRO                         1000000
 #define MICRO_PER_NANO                           1000
 #define ONE_MILLISECOND_TO_NANOSECOND         1000000
@@ -41,7 +42,7 @@ void help() {
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-h",
             "Print help message");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-i <interval in us>",
-            "Measurement interval in micro-second");
+            "Measurement interval in micro-second (Default and MIN: 10000)");
     printf("\n");
 }
 
@@ -115,6 +116,10 @@ void prepare_measurement(const int argc, char *argv[], struct measurement_info *
 
         case 'i':   // option -i with required argument
             interval_us = atoi(optarg);
+            if(interval_us < MIN_TIME_INTERVAL) {
+                printf("\nYou should give time interval at least 10,000 us (10 ms)\n");
+                exit(0);
+            }
             info->powertool_interval.tv_sec = interval_us / ONE_PER_MICRO;
             info->powertool_interval.tv_nsec = (interval_us % ONE_PER_MICRO) * MICRO_PER_NANO;
             iflag = 1;
