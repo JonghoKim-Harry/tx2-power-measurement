@@ -60,6 +60,13 @@ CFLAGS FOR COMPILATION
 
 SCRIPT USAGE EXAMPLE
 
+   #
+   sudo ./power_measurement -c gpu -i 10000 -f exp_result/cifar-10/cifar-10@10ms.txt ./script/run/run_cifar10.sh
+   sudo ./power_measurement -c gpu -i 20000 -f exp_result/cifar-10/cifar-10@20ms.txt ./script/run/run_cifar10.sh
+   sudo ./power_measurement -c gpu -i 30000 -f exp_result/cifar-10/cifar-10@30ms.txt ./script/run/run_cifar10.sh
+   sudo ./power_measurement -c gpu -i 40000 -f exp_result/cifar-10/cifar-10@40ms.txt ./script/run/run_cifar10.sh
+   sudo ./power_measurement -c gpu -i 50000 -f exp_result/cifar-10/cifar-10@50ms.txt ./script/run/run_cifar10.sh
+
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
    sudo ./script/run/fix_gpu_freq 1122000000
 

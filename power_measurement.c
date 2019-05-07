@@ -40,6 +40,8 @@ void help() {
                     "An execution file");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-h",
             "Print help message");
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-i <interval in us>",
+            "Measurement interval in micro-second");
     printf("\n");
 }
 
@@ -202,9 +204,9 @@ end_arg_processing:
 
     // Set powertool measurement interval
     if(!iflag) {
-        printf("\nSet measurement interval as default: 2 ms");
+        printf("\nSet measurement interval as default: 10 ms");
         info->powertool_interval.tv_sec = 0;
-        info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
+        info->powertool_interval.tv_nsec = 10 * ONE_MILLISECOND_TO_NANOSECOND;
     }
 
     // Set cooldown period
