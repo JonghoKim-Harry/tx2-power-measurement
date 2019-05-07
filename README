@@ -93,6 +93,9 @@ SCRIPT USAGE EXAMPLE
    sudo ./script/run/use_tegrastats.sh 10 cifar10-tegralog-10ms.txt script/run/run_cifar10.sh
    sudo ./script/run/use_tegrastats.sh 10 exp_result/cifar10-tegralog-10ms.txt sudo ./power_measurement -c gpu -f exp_result/cifar10-powerlog-10ms.txt ./script/run/run_cifar10.sh
 
+   #
+   sudo ./script/run/iterate_gpu_freq_tegrastats.sh 1>exp_log.txt mnist 30 ./script/run/run_mnist.sh 2>>caffelog.txt
+
    # Run CaffeNet
    ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 

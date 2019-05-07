@@ -25,8 +25,8 @@ echo "$0: Measurement Interval will be $INTERVAL ms, as you gave"
 sudo ./tegrastats --interval $INTERVAL --logfile $TEGRALOG_FILENAME &
 
 # Sleep to cooldown CPUs
-#echo "$0: Sleeping 2 seconds in order to cooldown CPUs"
-#sleep 2s
+echo "$0: Sleeping 2 seconds in order to cooldown CPUs"
+sleep 2s
 
 $SHELL_COMMAND
 
