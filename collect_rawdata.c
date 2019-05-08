@@ -12,11 +12,11 @@
 
 ssize_t collect_timestamp(const int rawdata_fd) {
 
-#ifdef DEBUG
-    printf("collect_timestamp()   START");
-#endif  // DEBUG
-
     struct timespec time;
+
+#ifdef DEBUG
+    printf("\ncollect_timestamp()   START");
+#endif  // DEBUG
 
     //  0: Sucess
     // -1: Fail
@@ -27,7 +27,7 @@ ssize_t collect_timestamp(const int rawdata_fd) {
         return -1;
 
 #ifdef DEBUG
-    printf("collect_timestamp()   FINISH");
+    printf("\ncollect_timestamp()   FINISH");
 #endif  // DEBUG
     return 0;
 }
@@ -36,6 +36,10 @@ ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1) {
 
     ssize_t num_read_bytes;
     char buff[TX2_SYSFS_GPU_POWER_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\ncollect_gpupower()   START");
+#endif  // DEBUG
 
     lseek(sysfs_fd1, 0, SEEK_SET);
     num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
@@ -51,6 +55,9 @@ ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1) {
     write(rawdata_fd, buff, num_read_bytes);
     write(rawdata_fd, WHITESPACE, TX2_SYSFS_GPU_POWER_MAX_STRLEN - num_read_bytes);
 
+#ifdef DEBUG
+    printf("\ncollect_gpupower()   FINISH");
+#endif  // DEBUG
     return num_read_bytes;
 }
 
@@ -81,6 +88,10 @@ ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1) {
     ssize_t num_read_bytes;
     char buff[TX2_SYSFS_GPU_UTIL_MAX_STRLEN];
 
+#ifdef DEBUG
+    printf("\ncollect_gpuutil()   START");
+#endif  // DEBUG
+
     lseek(sysfs_fd1, 0, SEEK_SET);
     num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
 
@@ -95,5 +106,8 @@ ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1) {
     write(rawdata_fd, buff, num_read_bytes);
     write(rawdata_fd, WHITESPACE, TX2_SYSFS_GPU_UTIL_MAX_STRLEN - num_read_bytes);
 
+#ifdef DEBUG
+    printf("\ncollect_gpuutil()   FINISH");
+#endif  // DEBUG
     return num_read_bytes;
 }
