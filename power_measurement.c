@@ -550,7 +550,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
             printf("\ni: %d", i);
             rawdata_info = &info.rawdata_info[i];
             num_read_bytes = rawdata_info->func_rawdata_to_powerlog(&powerlog, rawdata_fd);
-            if (num_read_bytes < 0) goto end_of_data;
+            if (num_read_bytes <= 0) goto eof_found;
         }
 
         write(stat_fd, "\n", 1);
@@ -789,8 +789,8 @@ write_a_powerlog:
 */
 
     }   // while(1)
+eof_found:
 
-end_of_data:
 
 #ifdef DEBUG
     printf("\ncalculate_2ndstat() does NOT have infinite loop");
