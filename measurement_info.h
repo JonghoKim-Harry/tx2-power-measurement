@@ -88,7 +88,7 @@ typedef struct powerlog_summary_struct {
     // GPU energy
     int32_t gpu_energy_Wh;
     int64_t gpu_energy_pWh;
-    int64_t gpu_energy_remainder;
+    int64_t gpu_energy_pJ;       // joule = Watt * second
 
 #ifdef TRACE_CPU
     int32_t allcpu_energy_Wh;
