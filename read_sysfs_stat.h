@@ -23,9 +23,10 @@ ssize_t read_sysfs_1(const struct sysfs_stat stat_info, const int rawdata_fd);
 ssize_t read_sysfs_2(const struct sysfs_stat stat_info, const int rawdata_fd);
 
 ssize_t rawdata_to_stat_1(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
-ssize_t rawdata_to_stat_util1(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
-ssize_t rawdata_to_stat_util2(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
 ssize_t rawdata_to_stat_2(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
+ssize_t rawdata_to_stat_dot1(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
+ssize_t rawdata_to_stat_dot3(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
+ssize_t rawdata_to_stat_dot4(const struct sysfs_stat stat_info, const int rawdata_fd, const int stat_fd);
 
 
 #endif   // READ_SYSFS_STAT_H

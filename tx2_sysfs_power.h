@@ -9,6 +9,7 @@
 #define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10   // Hz, up to 1300500000
 #define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5   // mW
 #define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5   // x10%, up to 1000
+#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7   // x1000%, up to 1000000
 #define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1   // Boolean: 0, 1
 #define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7   // kHz, up to 2035200
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5   // mW
