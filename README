@@ -52,7 +52,7 @@ CFLAGS FOR COMPILATION
    CFLAGS                   Default    Explanation
 
    TRACE_CPU                  ON       Trace CPU informations
-   TRACE_DDR                  ON       Trace DDR/MEM informations
+   TRACE_MEM                  ON       Trace EMC/DDR/MEM informations
    TRACE_CAFFE_TIMESTAMP      OFF      Trace Caffe timestamp
    DEBUG                      OFF      Trace powertool debug
    NDEBUG                     ON       Suppress assert() defined by <assert.h>
