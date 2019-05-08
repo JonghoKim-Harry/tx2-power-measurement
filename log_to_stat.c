@@ -19,10 +19,21 @@ ssize_t timestamp_to_stat(const int stat_fd, const powerlog_struct powerlog) {
     char buff1[MAX_BUFFLEN], buff2[MAX_BUFFLEN];
     int buff2_len;
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
     calendar_timestamp = localtime(&powerlog.timestamp.tv_sec);
     strftime(buff1, MAX_BUFFLEN, "%H:%M:%S", calendar_timestamp);
     buff2_len = snprintf(buff2, MAX_BUFFLEN, "%s.%09ld", buff1, powerlog.timestamp.tv_nsec);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
+
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
 
     return num_written_bytes;
 }
@@ -34,9 +45,18 @@ ssize_t gpupower_to_stat(const int stat_fd, const powerlog_struct powerlog) {
     char buff[MAX_BUFFLEN];
     int buff_len;
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
     buff_len = snprintf(buff, MAX_BUFFLEN, "%*d", TX2_SYSFS_GPU_POWER_MAX_STRLEN,  powerlog.gpu_power);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
     return num_written_bytes;
 }
 
@@ -47,9 +67,20 @@ ssize_t gpufreq_to_stat(const int stat_fd, const powerlog_struct powerlog) {
     char buff[MAX_BUFFLEN];
     int buff_len;
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "%*d", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, powerlog.gpu_freq);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
+
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
     return num_written_bytes;
 }
 
@@ -61,12 +92,22 @@ ssize_t gpuutil_to_stat(const int stat_fd, const powerlog_struct powerlog) {
     int buff_len;
     int upper, lower;
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
     upper = powerlog.gpu_util / 10;
     lower = powerlog.gpu_util % 10;
 
     buff_len = snprintf(buff, MAX_BUFFLEN, "%3d.%1d", upper, lower);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
     return num_written_bytes;
 }
 

@@ -1,0 +1,10 @@
+DEBUG
+======
+
+Use of C/C++ standard predefined macros: __FILE__, __LINE__, __func__
+
+/* Example: */  #ifdef DEBUG
+                    printf("\n%s:%d", __FILE__, __LINE__);
+                #endif
+
+Note that __FUNCTION__ of GCC compiler can have portability issues

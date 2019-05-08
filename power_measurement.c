@@ -188,9 +188,9 @@ end_arg_processing:
 
     // Set powertool measurement interval
     if(!iflag) {
-        printf("\nSet measurement interval as default: 2 ms");
+        printf("\nSet measurement interval as default: 10 ms");
         info->powertool_interval.tv_sec = 0;
-        info->powertool_interval.tv_nsec = 2 * ONE_MILLISECOND_TO_NANOSECOND;
+        info->powertool_interval.tv_nsec = 10 * ONE_MILLISECOND_TO_NANOSECOND;
     }
 
     // Set cooldown period
@@ -255,6 +255,7 @@ end_arg_processing:
     printf("\nCreated statistic file: %s", stat_filename);
 
     // Start logging to statistics file
+    lseek(stat_fd, 0, SEEK_SET);
     write(stat_fd, "            JETSON TX2 POWER MEASUREMENT STATS\n", 47);
 
     message = "\n\n Measurement Informations";
@@ -310,6 +311,7 @@ end_arg_processing:
 
     // Write column names in the first raw of the statistics file
     info->offset_2ndstat = lseek(stat_fd, 0, SEEK_CUR);
+    info->metadata_end = lseek(stat_fd, 0, SEEK_CUR);
     close(stat_fd);
 
     // Statistics file informations
@@ -497,7 +499,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
      *  This function get file name of statistics file.
      *  Then, calculate 2nd stats and write to the given stat file
      */
-    int i;
+    int i, j, num_log;
     ssize_t read_result;
     int rawdata_fd;
     int stat_fd;
@@ -505,7 +507,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
-    const char separation_line[256] = "\n__________________________________________________________________________________________________________________________________________________________________________\n";
+    const char separation_line1[256] = "\n__________________________________________________________________________________________________________________________________________________________________________";
+    const char separation_line2[256] = "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
 
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
@@ -519,30 +522,50 @@ void calculate_2ndstat(const measurement_info_struct info) {
     // Rawdata
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
+
+    // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY);
+    lseek(stat_fd, info.metadata_end, SEEK_SET);
 
     printf("\nSTART calculating 2nd stats\n");
-    write(stat_fd, separation_line, strlen(separation_line));
 
+    write(stat_fd, separation_line1, strlen(separation_line1));
+    write(stat_fd, "\n", 1);
+    for(j=0; j<info.num_stat; j++) {
+        write(stat_fd, "  ", 2);
+        if(info.stat_info[j].colwidth - strlen(info.stat_info[j].colname) > 0)
+            write(stat_fd, " ", info.stat_info[j].colwidth - strlen(info.stat_info[j].colname));
+        write(stat_fd, info.stat_info[j].colname, strlen(info.stat_info[j].colname));
+    }
+    write(stat_fd, separation_line2, strlen(separation_line2));
+
+    num_log = 0;
     while(1) {
 
-        // Write sysfs data: GPU frequency, GPU utilization, CPU infos, etc.
+        ++ num_log;
+
+        printf("\nnum_log: %d", num_log);
+        // Read rawdata: GPU frequency, GPU utilization, CPU infos, etc.
         for(i=0; i<info.num_rawdata; i++) {
+            printf("\ni: %d", i);
             rawdata_info = &info.rawdata_info[i];
             num_read_bytes = rawdata_info->func_rawdata_to_powerlog(&powerlog, rawdata_fd);
-            if (num_read_bytes <= 0) break;
+            if (num_read_bytes < 0) goto end_of_data;
         }
 
-        for(i=0; i<info.num_stat; i++) {
-            stat_info = &info.stat_info[i];
-            switch(stat_info->logtype) {
+        write(stat_fd, "\n", 1);
+        // Convert rawdata to stat
+        for(j=0; j<info.num_stat; j++) {
+            printf("\nj: %d", j);
+            write(stat_fd, "  ", 2);
+            switch(info.stat_info[j].logtype) {
 
                 case LOGTYPE_POWERLOG:
-                    stat_info->func_log_to_stat(stat_fd, powerlog);
+                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, powerlog);
                     break;
 
                 case LOGTYPE_POWERLOG_SUMMARY:
-                    stat_info->func_log_to_stat(stat_fd, powerlog_summary);
+                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, powerlog_summary);
                     break;
 
                 //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog); break;
@@ -552,6 +575,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
                 default:
                     break;
             }
+
+            if (num_written_bytes <= 0) break;
         }
 
 /*
@@ -764,6 +789,8 @@ write_a_powerlog:
 */
 
     }   // while(1)
+
+end_of_data:
 
 #ifdef DEBUG
     printf("\ncalculate_2ndstat() does NOT have infinite loop");

@@ -278,6 +278,7 @@ typedef struct measurement_info_struct {
     struct stat_info_struct stat_info[MAX_NUM_STAT];
     int num_stat;
     char stat_filename[128];
+    off_t metadata_end;
 
 } measurement_info_struct;
 
