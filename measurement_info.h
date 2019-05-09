@@ -74,9 +74,6 @@ typedef struct powerlog_struct {
     int32_t mem_power;           // mW
     int16_t emc_freq;            // MHz
 #endif   // TRACE_DDR
-
-    int num_rawdata;
-    //uint8_t rawdata[MAX_NUM_RAWDATA][RAWDATA_BUFFSIZE];
 } powerlog_struct;
 
 typedef struct powerlog_summary_struct {
