@@ -327,35 +327,35 @@ end_arg_processing:
     // TODO: Register statistics
 
 /*
-    register_column(info,  "Time(ns)",            28,
+    register_stat(info,  "Time(ns)",            28,
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
 */
-    register_column(info,  "GPU-power(mW)",       13,
+    register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
 /*
-    register_column(info,  "GPU-energy(pWh)",     15,
+    register_stat(info,  "GPU-energy(pWh)",     15,
                     LOGTYPE_POWERLOG_SUMMARY,     gpuenergy_to_stat);
 */
-    register_column(info,  "GPU-freq(MHz)",       13,
+    register_stat(info,  "GPU-freq(MHz)",       13,
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
-    register_column(info,  "GPU-util(%)",         11,
+    register_stat(info,  "GPU-util(%)",         11,
                     LOGTYPE_POWERLOG,             gpuutil_to_stat);
-    register_column(info,  "Timestamp",           18,
+    register_stat(info,  "Timestamp",           18,
                     LOGTYPE_POWERLOG,             timestamp_to_stat);
 
     // TODO
     /*
-    register_column(info,  "Event:CAFFE_START",       17,
+    register_stat(info,  "Event:CAFFE_START",       17,
                     LOGTYPE_CAFFELOG,     
-    register_column(info,  "Event:CNN_START",         15,
+    register_stat(info,  "Event:CNN_START",         15,
                     LOGTYPE_CAFFELOG,     
-    register_column(info,  "State:GPU_POWER_PEAK",    20,
+    register_stat(info,  "State:GPU_POWER_PEAK",    20,
                     LOGTYPE_POWERLOG_SUMMARY,     
-    register_column(info,  "Event:CNN_FINISH",        16,
+    register_stat(info,  "Event:CNN_FINISH",        16,
                     LOGTYPE_CAFFELOG,     
-    register_column(info,  "Event:CAFFE_FINISH",      18,
+    register_stat(info,  "Event:CAFFE_FINISH",      18,
                     LOGTYPE_CAFFELOG,     
-    register_column(info,  "State:GPU_POWER_IDLE",    20,
+    register_stat(info,  "State:GPU_POWER_IDLE",    20,
                     LOGTYPE_POWERLOG_SUMMARY,     
 
 
@@ -542,11 +542,11 @@ void calculate_2ndstat(const measurement_info_struct info) {
             switch(info.stat_info[j].logtype) {
 
                 case LOGTYPE_POWERLOG:
-                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, powerlog);
+                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, info.stat_info[j].colwidth, powerlog);
                     break;
 
                 case LOGTYPE_POWERLOG_SUMMARY:
-                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, powerlog_summary);
+                    num_written_bytes = info.stat_info[j].func_log_to_stat(stat_fd, info.stat_info[j].colwidth, powerlog_summary);
                     break;
 
                 //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog); break;

@@ -93,12 +93,12 @@ void register_rawdata
     return;
 }
 
-void register_column
+void register_stat
     (measurement_info_struct *info,
      const char *colname,
      const int colwidth,
      enum logtype_t logtype,
-     ssize_t (*func_log_to_stat)(const int stat_fd, ...)) {
+     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...)) {
 
     const int idx = info->num_stat;
     stat_info_struct *stat_info = &info->stat_info[idx];
