@@ -310,7 +310,6 @@ end_arg_processing:
             15, "GPU-Power(mW)");
 
     // Write column names in the first raw of the statistics file
-    info->offset_2ndstat = lseek(stat_fd, 0, SEEK_CUR);
     info->metadata_end = lseek(stat_fd, 0, SEEK_CUR);
     close(stat_fd);
 
@@ -499,7 +498,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
      *  This function get file name of statistics file.
      *  Then, calculate 2nd stats and write to the given stat file
      */
-    int i, j, num_log;
+    int i, j;
     ssize_t read_result;
     int rawdata_fd;
     int stat_fd;
@@ -524,8 +523,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     lseek(rawdata_fd, 0, SEEK_SET);
 
     // Statistics
-    stat_fd = open(info.stat_filename, O_WRONLY);
-    lseek(stat_fd, info.metadata_end, SEEK_SET);
+    stat_fd = open(info.stat_filename, O_WRONLY | O_APPEND);
 
     printf("\nSTART calculating 2nd stats\n");
 
@@ -539,15 +537,10 @@ void calculate_2ndstat(const measurement_info_struct info) {
     }
     write(stat_fd, separation_line2, strlen(separation_line2));
 
-    num_log = 0;
     while(1) {
 
-        ++ num_log;
-
-        printf("\nnum_log: %d", num_log);
         // Read rawdata: GPU frequency, GPU utilization, CPU infos, etc.
         for(i=0; i<info.num_rawdata; i++) {
-            printf("\ni: %d", i);
             rawdata_info = &info.rawdata_info[i];
             num_read_bytes = rawdata_info->func_rawdata_to_powerlog(&powerlog, rawdata_fd);
             if (num_read_bytes <= 0) goto eof_found;
@@ -556,7 +549,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
         write(stat_fd, "\n", 1);
         // Convert rawdata to stat
         for(j=0; j<info.num_stat; j++) {
-            printf("\nj: %d", j);
             write(stat_fd, "  ", 2);
             switch(info.stat_info[j].logtype) {
 
@@ -578,216 +570,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
             if (num_written_bytes <= 0) break;
         }
-
-/*
-#ifdef TRACE_CAFFE_TIMESTAMP
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   BB: get a caffelog timestamp");
-#endif   // DEBUG
-
-        offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, offset, &caffelog);
-        if(offset < 0)    
-            goto write_a_powerlog;
-
-        caffelog_buffered = 1;   // Set a flag
-
-        if(powerlog_buffered)
-            goto compare_timestamp;
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-get_a_powerlog:
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   BB: get powerlog timestamp");
-#endif   // DEBUG
-
-
-        // Suffixes.
-        // Write #N/A values to some last columns,
-        // in order to be friendly with MS Excel.
-        // The last column is Caffe-event
-        buff_len = snprintf(buff, 256, "%*s%*s%*s",
-                            22, "#N/A",
-                            7, "#N/A",
-                            13, "#N/A");
-        write(stat_fd, buff, buff_len);
-
-        // Calculate powerlog: GPU ENERGY PARTIAL SUM
-        prev_gpu_power = gpu_power;
-        gpu_power = atoi(gpu_power_str);
-        avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
-        diff_time_ns = ONE_SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
-                      + (powerlog_timestamp.tv_nsec - prev_powerlog_timestamp.tv_nsec);
-
-        gpu_energy += avg_gpu_power * diff_time_ns;
-
-        if(gpu_energy >= HOUR_TO_SECOND) {
-            gpu_energy_pWh += (gpu_energy / HOUR_TO_SECOND);
-            gpu_energy %= HOUR_TO_SECOND;
-        }
-
-        if(gpu_energy_pWh >= WATTHOUR_TO_PICOWATTHOUR) {
-            gpu_energy_Wh += (gpu_energy_pWh / WATTHOUR_TO_PICOWATTHOUR);
-            gpu_energy_pWh %= WATTHOUR_TO_PICOWATTHOUR;
-        }
-        goto get_a_powerlog;
-
-#ifdef TRACE_CAFFE_TIMESTAMP
-write_a_caffelog:
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   BB: write a caffelog");
-#endif   // DEBUG
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-        assert(caffelog_buffered == 1);
-
-        // Get a powerlog timestamp
-        prev_powerlog_timestamp = powerlog_timestamp;
-        read_result = read(rawdata_fd, &powerlog_timestamp, sizeof(struct timespec));
-        if(read_result <= 0) break;
-        powerlog_calendar_timestamp = localtime(&powerlog_timestamp.tv_sec);
-
-#ifdef TRACE_CAFFE_TIMESTAMP
-        powerlog_buffered = 1;   // Set a flag
-
-        if(!caffelog_buffered)
-            goto write_a_powerlog;
-
-compare_timestamp:
-        assert(caffelog_buffered == 1);
-        assert(powerlog_buffered == 1);
-
-        caffelog_powerlog_hms_diff_ns
-        = compare_timestamp_hms(caffelog.date_hms, *powerlog_calendar_timestamp);
-
-        if(caffelog_powerlog_hms_diff_ns > 0)
-            caffelog_powerlog_comparison = 1;
-        else if(caffelog_powerlog_hms_diff_ns < 0)
-            caffelog_powerlog_comparison = -1;
-        else if(caffelog.timestamp.tv_nsec > powerlog_timestamp.tv_nsec)
-            caffelog_powerlog_comparison = 1;
-        else if(caffelog.timestamp.tv_nsec < powerlog_timestamp.tv_nsec)
-            caffelog_powerlog_comparison = -1;
-        else
-            caffelog_powerlog_comparison = 0;
-
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   caffelog_powerlog_hms_diff_ns: %ld", caffelog_powerlog_hms_diff_ns);
-        printf("\ncalculate_2ndstat()   caffelog tv_nsec: %ld", caffelog.timestamp.tv_nsec);
-        printf("\ncalculate_2ndstat()   powerlog tv_nsec: %ld", powerlog_timestamp.tv_nsec);
-        printf("\ncalculate_2ndstat()   caffelog_powerlog_comparison: %d", caffelog_powerlog_comparison);
-#endif   // DEBUG
-
-        if(caffelog_powerlog_comparison < 0)
-            goto write_a_caffelog;
-
-write_a_powerlog:
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-#ifdef DEBUG
-        printf("\ncalculate_2ndstat()   BB: write a powerlog");
-#endif   // DEBUG
-
-
-#ifdef TRACE_CAFFE_TIMESTAMP
-        powerlog_buffered = 0;   // Reset a flag
-#endif   // TRACE_CAFFE_TIMESTAMP
-
-        // Write powerlog: POWERLOG TIMESTAMP
-        write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, " %H:%M:%S", powerlog_calendar_timestamp);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, powerlog_timestamp.tv_nsec);
-        write(stat_fd, buff, buff_len);
-
-        // Calculate and write powerlog: ELAPSED TIME (ns)
-        elapsed_time_sec = powerlog_timestamp.tv_sec - info.start_time.tv_sec;
-        elapsed_time_ns = powerlog_timestamp.tv_nsec - info.start_time.tv_nsec;
-
-        if(elapsed_time_ns < 0) {
-        
-            -- elapsed_time_sec;
-            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
-        }
-
-        if(elapsed_time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
-        else
-            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
-        write(stat_fd, buff, buff_len);
-
-        // Read and write powerlog: GPU POWER (mW)
-        read_result = read(rawdata_fd, gpu_power_str, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
-        if(read_result <= 0) break;
-        gpu_power_str[read_result] = '\0';
-        buff_len = snprintf(buff, 256, "%10s%*s", "", TX2_SYSFS_GPU_POWER_MAX_STRLEN, gpu_power_str);   // mW
-        write(stat_fd, buff, buff_len);
-
-        // Suffixes.
-        // Write #N/A values to some last columns,
-        // in order to be friendly with MS Excel.
-        // The last column is Caffe-event
-        buff_len = snprintf(buff, 256, "%*s%*s%*s",
-                            22, "#N/A",
-                            7, "#N/A",
-                            13, "#N/A");
-        write(stat_fd, buff, buff_len);
-
-        // Calculate powerlog: GPU ENERGY PARTIAL SUM
-        prev_gpu_power = gpu_power;
-        gpu_power = atoi(gpu_power_str);
-        avg_gpu_power = (gpu_power + prev_gpu_power) / 2;
-        diff_time_ns = ONE_SECOND_TO_NANOSECOND * (powerlog_timestamp.tv_sec - prev_powerlog_timestamp.tv_sec)
-                      + (powerlog_timestamp.tv_nsec - prev_powerlog_timestamp.tv_nsec);
-
-        gpu_energy += avg_gpu_power * diff_time_ns;
-
-        if(gpu_energy >= HOUR_TO_SECOND) {
-            gpu_energy_pWh += (gpu_energy / HOUR_TO_SECOND);
-            gpu_energy %= HOUR_TO_SECOND;
-        }
-
-        if(gpu_energy_pWh >= WATTHOUR_TO_PICOWATTHOUR) {
-            gpu_energy_Wh += (gpu_energy_pWh / WATTHOUR_TO_PICOWATTHOUR);
-            gpu_energy_pWh %= WATTHOUR_TO_PICOWATTHOUR;
-        }
-        goto get_a_powerlog;
-
-        assert(caffelog_buffered == 1);
-        caffelog_buffered = 0;   // Reset a flag
-
-        // Write a caffelog: Timestamp
-        write(stat_fd, "\n", 1);
-        strftime(time_buff, 256, " %H:%M:%S", &caffelog.date_hms);
-        buff_len = snprintf(buff, 256, "%s.%09ld", time_buff, caffelog.timestamp.tv_nsec);
-        write(stat_fd, buff, buff_len);
-
-        // Calculate and write caffelog: ELAPSED TIME (ns)
-        elapsed_time_sec = caffelog.timestamp.tv_sec - info.start_time.tv_sec;
-        elapsed_time_ns = caffelog.timestamp.tv_nsec - info.start_time.tv_nsec;
-
-        if(elapsed_time_ns < 0) {
-        
-            -- elapsed_time_sec;
-            elapsed_time_ns += ONE_SECOND_TO_NANOSECOND;
-        }
-
-        if(elapsed_time_sec == 0)
-            buff_len = snprintf(buff, 256, "%19s%9ld", " ", elapsed_time_ns);   // ns
-        else
-            buff_len = snprintf(buff, 256, "%19ld%09ld", elapsed_time_sec, elapsed_time_ns);   // ns
-        write(stat_fd, buff, buff_len);
-
-        // Write suffixes.
-        // Note that Caffe-event should be excluded
-        buff_len = snprintf(buff, 256, "%*s%*s",
-                            22, "#N/A",
-                            7, "#N/A");
-        write(stat_fd, buff, buff_len);
-
-        // Write a caffelog : Caffe-event
-        buff_len = snprintf(buff, 256, "%2s%s", "  ", caffelog.event);
-        write(stat_fd, buff, buff_len);
-*/
-
     }   // while(1)
 eof_found:
 
