@@ -16,6 +16,7 @@
 #include "rawdata_to_powerlog.h"
 #include "parse_caffelog.h"
 #include "log_to_stat.h"
+#include "stat.h"
 #include "tx2_sysfs_power.h"
 #include "mkdir_p.h"
 
@@ -506,8 +507,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
     int buff_len;
     struct timespec prev_powerlog_timestamp, powerlog_timestamp;
     struct tm *powerlog_calendar_timestamp;
-    const char separation_line1[256] = "\n__________________________________________________________________________________________________________________________________________________________________________";
-    const char separation_line2[256] = "\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
 
 #ifdef TRACE_CAFFE_TIMESTAMP
     // Caffelog
@@ -524,18 +523,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
     // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY | O_APPEND);
-
     printf("\nSTART calculating 2nd stats\n");
-
-    write(stat_fd, separation_line1, strlen(separation_line1));
-    write(stat_fd, "\n", 1);
-    for(j=0; j<info.num_stat; j++) {
-        write(stat_fd, "  ", 2);
-        if(info.stat_info[j].colwidth - strlen(info.stat_info[j].colname) > 0)
-            write(stat_fd, " ", info.stat_info[j].colwidth - strlen(info.stat_info[j].colname));
-        write(stat_fd, info.stat_info[j].colname, strlen(info.stat_info[j].colname));
-    }
-    write(stat_fd, separation_line2, strlen(separation_line2));
+    print_header_raw(stat_fd, info);
 
     while(1) {
 
