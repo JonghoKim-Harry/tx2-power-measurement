@@ -198,7 +198,6 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
     printf("\nmeasure_rawdata() does NOT have infinite loop");
 #endif   // DEBUG
 
-    close(info.gpu_power_fd);
     close(info.rawdata_fd);
     close(info.caffelog_fd);
     close_sysfs_files(info);

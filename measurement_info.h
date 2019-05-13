@@ -241,6 +241,10 @@ typedef struct measurement_info_struct {
     // Cooldown period: in order to cool down GPU, etc.
     struct timespec cooldown_period;
 
+    // Result Directory
+    int flag_mkdir;
+    char result_dirname[128];
+
     // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;
@@ -266,11 +270,7 @@ typedef struct measurement_info_struct {
     int num_rawdata;
     char rawdata_filename[128];
     int rawdata_fd;
-    int gpu_power_fd;
-    char rawdata_print_format[256];
-    char rawdata_scan_format[256];
     int rawdata_linesize;
-    int offset_2ndstat;
 
     struct stat_info_struct stat_info[MAX_NUM_STAT];
     int num_stat;

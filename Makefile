@@ -23,7 +23,7 @@ OBJECTS := measurement_info.o \
 	       log_to_stat.o \
 		   stat.o \
 		   parse_caffelog.o \
-		   mkdir_p.o \
+		   enhanced_shcmd.o \
 
 $(TARGET): $(TARGET).o $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)

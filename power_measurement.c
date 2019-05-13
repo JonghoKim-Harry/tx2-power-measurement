@@ -18,7 +18,7 @@
 #include "log_to_stat.h"
 #include "stat.h"
 #include "tx2_sysfs_power.h"
-#include "mkdir_p.h"
+#include "enhanced_shcmd.h"
 #include "constants.h"
 #include "default_values.h"
 
@@ -206,17 +206,22 @@ end_arg_processing:
     stat_filename = stat_filename_buff;
     strcpy(filename_buff, stat_filename);
     strcpy(given_dirname, dirname(filename_buff));
+    strcpy(info->result_dirname, given_dirname);
     basename_ptr = stat_filename + strlen(given_dirname) + 1;
     strcpy(token, basename_ptr);
     strtok_r(token, ".", &next_token);
     strcpy(filename_prefix, token);
 
-    // mkdir -p
     if(access(given_dirname, F_OK) == -1) {
+
+        info->flag_mkdir = 1;
+
+        // $ mkdir -p
         if(mkdir_p(given_dirname, 0755) == -1)
-            if(errno != EEXIST)
-                perror("mkdir_p()   fail");
+            perror("mkdir_p()   fail");
     }
+    else
+        info->flag_mkdir = 0;
 
     // Powerlog File: OOO.powerlog.txt
     strcpy(powerlog_filename, given_dirname);
@@ -313,7 +318,6 @@ end_arg_processing:
 
     // Statistics file informations
     strcpy(info->stat_filename, stat_filename);
-    info->gpu_power_fd = gpu_power_fd;
 
     // TODO: Register rawdata to collect
     register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
@@ -467,6 +471,15 @@ void finish_measurement(measurement_info_struct *info) {
 
     remove(info->rawdata_filename);
     close(info->powerlog_fd);
+
+    if(info->flag_mkdir) {
+
+        printf("\nchown -R %s", info->result_dirname);
+
+        // $ chown -R
+        if(chown_R(info->result_dirname, DEFAULT_UID, DEFAULT_GID) == -1)
+            perror("chown_R() fail");
+    }
 
     // Free objects
     regfree(&info->caffelog_pattern);

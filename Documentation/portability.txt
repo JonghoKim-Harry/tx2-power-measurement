@@ -6,6 +6,28 @@ For portability with mere measurement overhead, I used:
         - nanosleep()                  in <time.h>
         - exit()                       in <stdlib.h>
 
+   * POSIX-compatible Linux System Calls:
+
+        - gettimeofday()               in <sys/time.h>
+        - stat()                       in <sys/stat.h>
+        - mkdir()                      in <sys/stat.h>
+        - chown()                      in <unistd.h>
+        - geteuid()                    in <unistd.h>
+        - access()                     in <unistd.h>
+        - open()                       in <fcntl.h>
+        - lseek()                      in <unistd.h>
+        - read()                       in <unistd.h>
+        - pread()                      in <unistd.h>
+        - write()                      in <unistd.h>
+        - dup2()                       in <unistd.h>
+        - close()                      in <unistd.h>
+        - fork()                       in <unistd.h>
+        - execvp()                     in <unistd.h>
+        - waitpid()                    in <sys/wait.h>
+
+
+
+For portability, I used:
 
    * C Standard Macros and Data Types:
 
@@ -19,34 +41,6 @@ For portability with mere measurement overhead, I used:
         - va_arg()                     in <stdarg.h>
         - va_end()                     in <stdarg.h>
 
-
-   * POSIX-compatible Linux System Calls:
-
-        - geteuid()                    in <unistd.h>
-        - gettimeofday()               in <sys/time.h>
-        - access()                     in <unistd.h>
-        - mkdir()                      in <sys/stat.h>
-        - open()                       in <fcntl.h>
-        - lseek()                      in <unistd.h>
-        - read()                       in <unistd.h>
-        - pread()                      in <unistd.h>
-        - write()                      in <unistd.h>
-        - dup2()                       in <unistd.h>
-        - close()                      in <unistd.h>
-        - fork()                       in <unistd.h>
-        - execvp()                     in <unistd.h>
-        - waitpid()                    in <sys/wait.h>
-
-
-   * POSIX Data Types:
-
-        - regex_t                      in <regex.h>
-        - regmatch_t                   in <regex.h>
-        - off_t                        in <sys/types.h>
-
-
-For portability, I used:
-
    * C Standard Library Variables and Functions:
 
         - snprintf()                   in <stdio.h>
@@ -56,9 +50,11 @@ For portability, I used:
         - atoi()                       in <stdlib.h>
         - localtime()                  in <time.h>
 
+   * POSIX Library Data Types, Variables, Macros, and Functions:
 
-   * POSIX Library Variables and Functions:
-
+        - regex_t                      in <regex.h>
+        - regmatch_t                   in <regex.h>
+        - off_t                        in <sys/types.h>
         - extern char * optarg         in <unistd.h>
         - extern int optind            in <unistd.h>
         - extern int optopt            in <unistd.h>
@@ -67,3 +63,10 @@ For portability, I used:
         - regcomp()                    in <regex.h>
         - regexec()                    in <regex.h>
         - regfree()                    in <regex.h>
+        - S_IFDIR()                    in <sys/stat.h>
+
+
+Unfortunately, I used Linux functions:
+
+        - opendir()                    in <dirent.h>
+        - readdir()                    in <dirent.h>
