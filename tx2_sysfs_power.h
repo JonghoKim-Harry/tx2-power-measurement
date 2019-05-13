@@ -5,6 +5,12 @@
 #define TOSTRING(n) STR(n)
 #define STR(n) #n
 
+// Informations which requires root previlege:
+//   * TX2_SYSFS_EMC_MINFREQ
+//   * TX2_SYSFS_EMC_MAXFREQ
+//   * TX2_SYSFS_EMC_FREQ
+//   * TX2_SYSFS_APE_FREQ
+
 // I assume that CPU/GPU/DDR power < 100W
 #define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10   // Hz, up to 1300500000
 #define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5   // mW
@@ -35,11 +41,11 @@
 #define TX2_SYSFS_FAN_TEMP    "/sys/devices/virtual/thermal/thermal_zone7/temp"
 
 // Power Measurement I (mW, integer)
-#define TX2_SYSFS_POWER_GPU    \
+#define TX2_SYSFS_GPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power0_input"
-#define TX2_SYSFS_POWER_SOC    \
+#define TX2_SYSFS_SOC_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power1_input"
-#define TX2_SYSFS_POWER_WIFI   \
+#define TX2_SYSFS_WIFI_POWER   \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
 
 // Power Measurement II (mW, integer)

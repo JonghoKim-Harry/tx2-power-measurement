@@ -6,6 +6,7 @@
 
 int mkdir_p(const char *path, mode_t mode) {
 
+    int mkdir_result;
     char buff[4096];
     int push;
     char *p;
@@ -21,17 +22,21 @@ int mkdir_p(const char *path, mode_t mode) {
 
         if(!*p) {
             if(access(buff, F_OK | R_OK | X_OK)) {
-                mkdir(buff, mode);
+                mkdir_result = mkdir(buff, mode);
+                if(mkdir_result)
+                    return mkdir_result;
             }
         }
-        
+
         if(push) {
             *p = '/';
             push = 0;
         }
     }
-                
-    mkdir(buff, mode);
+
+    mkdir_result = mkdir(buff, mode);
+    if(mkdir_result)
+        return mkdir_result;
 
     // mkdir() returns zero on success, or -1 if an error occured
     // (in which case, errno is set appropriately)

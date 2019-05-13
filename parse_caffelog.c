@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "caffelog.h"
+#include "parse_caffelog.h"
 
 #define SECOND_TO_NANOSECOND        1000000000
 #define MICROSECOND_TO_NANOSECOND   1000
@@ -118,7 +119,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->gmt_date_hms.tm_hour = atoi(timebuff);
+    caffelog->date_hms.tm_hour = atoi(timebuff);
 
     // Minute
     start_ptr += 3;
@@ -127,7 +128,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff min: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->gmt_date_hms.tm_min = atoi(timebuff);
+    caffelog->date_hms.tm_min = atoi(timebuff);
 
     // Second
     start_ptr += 3;
@@ -136,8 +137,8 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->gmt_date_hms.tm_sec = atoi(timebuff);
-    (&caffelog->gmt_timestamp)->tv_sec = mktime(&caffelog->gmt_date_hms);
+    caffelog->date_hms.tm_sec = atoi(timebuff);
+    (&caffelog->timestamp)->tv_sec = mktime(&caffelog->date_hms);
 
 
     // Nanosecond
@@ -147,7 +148,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff ns: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    (&caffelog->gmt_timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
+    (&caffelog->timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
 
     // Event
     // Note that putting caffelog message in " " makes MS Excel to recognize

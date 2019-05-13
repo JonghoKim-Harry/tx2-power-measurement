@@ -17,8 +17,15 @@ DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
 
-$(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o \
-	       mkdir_p.o
+OBJECTS := measurement_info.o \
+	       runtime/collect_rawdata.o \
+           rawdata_to_powerlog.o \
+	       log_to_stat.o \
+		   stat.o \
+		   parse_caffelog.o \
+		   mkdir_p.o \
+
+$(TARGET): $(TARGET).o $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.c
@@ -26,7 +33,7 @@ $(TARGET): $(TARGET).o read_sysfs_stat.o caffelog.o measurement_info.o \
 
 .PHONY: clean
 clean: FORCE
-	-rm $(TARGET) *.o *.txt
+	-rm $(TARGET) *.o *.txt runtime/*.o
 
 .PHONY: check check-intro check-cifar10 check-mnist
 check: $(TARGET) check-intro check-cifar10 check-mnist
@@ -45,7 +52,7 @@ EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar-10
 
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
-	cd $(CAFFE_HOME); sudo $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(CAFFE_COMMAND_CIFAR10)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
@@ -56,7 +63,7 @@ EXP_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/exp_result/mnist
 
 check-mnist: $(TARGET)
 	@echo "\n** Start selftesting with MNIST\n"
-	cd $(CAFFE_HOME); sudo $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(CAFFE_COMMAND_MNIST)
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt -i 10000 $(CAFFE_COMMAND_MNIST)
 	@echo "\n** Finish selftesting with MNIST\n"
 
 check-plot: check-cifar10 check-mnist
