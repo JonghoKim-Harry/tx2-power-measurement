@@ -4,8 +4,6 @@
 #include "tx2_sysfs_power.h"
 #include "log_to_stat.h"
 
-#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN   4   // MHz
-
 // Header Row
 //void register_column(measurement_info_struct *info, const char *colname, const int colwidth) {}
 

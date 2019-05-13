@@ -5,9 +5,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include "collect_rawdata.h"
-#include "tx2_sysfs_power.h"
-#include "constants.h"
+#include "../tx2_sysfs_power.h"
+#include "../constants.h"
 
 #define WHITESPACE   "                                                       "
 

@@ -20,11 +20,10 @@
 #include "tx2_sysfs_power.h"
 #include "mkdir_p.h"
 #include "constants.h"
+#include "default_values.h"
 
+#define HELP_FIRST_COLWIDTH         30
 #define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
-#define MIN_TIME_INTERVAL                       10000   // 10000 us = 10 ms
-#define GMT_TO_KOREA_TIME   32400   // 9 hours = 32400 seconds
-#define HELP_FIRST_COLWIDTH   30
 
 void help() {
 
@@ -171,7 +170,7 @@ end_arg_processing:
     time_buff_len = snprintf(time_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
     // Korea Timezone
-    walltime.tv_sec += GMT_TO_KOREA_TIME;
+    walltime.tv_sec += SECONDS_GMT_TO_KOREA_TIME;
     walltime_calendar = localtime(&walltime.tv_sec);
     if(!walltime_calendar) {
         perror("localtime() call error");

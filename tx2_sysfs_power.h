@@ -12,6 +12,7 @@
 //   * TX2_SYSFS_APE_FREQ
 
 // I assume that CPU/GPU/DDR power < 100W
+#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  4   // MHz, up to 1300
 #define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10   // Hz, up to 1300500000
 #define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5   // mW
 #define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5   // x10%, up to 1000

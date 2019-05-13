@@ -3,11 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parse_caffelog.h"
+#include "constants.h"
 
-#define SECOND_TO_NANOSECOND        1000000000
-#define MICROSECOND_TO_NANOSECOND   1000
-#define HOUR_TO_SECOND              3600
-#define MIN_TO_SECOND               60
 #define NO_REGEX_EFLAGS   0
 
 int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timestamp2) {
@@ -34,7 +31,7 @@ int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timest
     diff_min  = timestamp1.tm_min  - timestamp2.tm_min;
     diff_sec  = timestamp1.tm_sec  - timestamp2.tm_sec;
 
-    diff_ns   = SECOND_TO_NANOSECOND *
+    diff_ns   = ONE_SECOND_TO_NANOSECOND *
                 (HOUR_TO_SECOND * diff_hour
                 + MIN_TO_SECOND * diff_min
                 + diff_sec);
