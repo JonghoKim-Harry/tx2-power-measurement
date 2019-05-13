@@ -14,6 +14,7 @@
 #include "measurement_info.h"
 #include "runtime/collect_rawdata.h"
 #include "rawdata_to_powerlog.h"
+#include "summary.h"
 #include "parse_caffelog.h"
 #include "log_to_stat.h"
 #include "stat.h"
@@ -327,10 +328,8 @@ end_arg_processing:
 
     // TODO: Register statistics
 
-/*
     register_stat(info,  "Time(ns)",            28,
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
-*/
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
 /*
@@ -398,7 +397,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
     rawdata_info_struct            *rawdata_info;
     powerlog_struct                 powerlog;
-    powerlog_summary_struct         powerlog_summary;
+    powerlog_summary_struct         summary;
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
@@ -415,6 +414,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
     printf("\nSTART calculating 2nd stats\n");
     print_header_raw(stat_fd, info);
 
+    init_summary(&summary);
+
     while(1) {
 
         // Read rawdata: GPU frequency, GPU utilization, CPU infos, etc.
@@ -424,8 +425,11 @@ void calculate_2ndstat(const measurement_info_struct info) {
             if (num_read_bytes <= 0) goto eof_found;
         }
 
+        // Update summary
+        update_summary(&summary, &powerlog);
+
+        // Convert rawdata to stat and write to statfile
         write(stat_fd, "\n", 1);
-        // Convert rawdata to stat
         for(j=0; j<info.num_stat; j++) {
             write(stat_fd, "  ", 2);
             stat_info = &info.stat_info[j];
@@ -436,7 +440,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
                     break;
 
                 case LOGTYPE_POWERLOG_SUMMARY:
-                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, powerlog_summary);
+                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, summary);
                     break;
 
                 //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog); break;

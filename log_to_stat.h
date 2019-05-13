@@ -14,6 +14,5 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlo
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary);
 
 // TODO: Caffelog to Statistics
-// TODO: Tegralog to Statistics
 
 #endif   // LOG_TO_STAT_H

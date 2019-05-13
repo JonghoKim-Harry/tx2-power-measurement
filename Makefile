@@ -20,6 +20,7 @@ all: $(TARGET)
 OBJECTS := measurement_info.o \
 	       runtime/collect_rawdata.o \
            rawdata_to_powerlog.o \
+		   summary.o \
 	       log_to_stat.o \
 		   stat.o \
 		   parse_caffelog.o \

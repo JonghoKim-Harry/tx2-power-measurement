@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include "tx2_sysfs_power.h"
+#include "constants.h"
 #include "log_to_stat.h"
 
 // Header Row
@@ -111,6 +112,56 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
 }
 
 // Powerlog Summary to Statistics
-//ssize_t eleapsed_time_to_stat(const int stat_fd, const powerlog_summary_struct powerlog_summary) {}
+ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
 
-//ssize_t energy_to_stat(const int stat_fd, const powerlog_summary_struct powerlog_summary) {}
+    // return value
+    ssize_t num_written_bytes;
+    int32_t sec, nsec;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    sec = powerlog_summary.finish_timestamp.tv_sec - powerlog_summary.start_timestamp.tv_sec;
+    nsec = powerlog_summary.finish_timestamp.tv_nsec - powerlog_summary.start_timestamp.tv_nsec;
+
+    if(nsec < 0) {
+        --sec;
+        nsec += ONE_SECOND_TO_NANOSECOND;
+    }
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09ld", (colwidth-9), sec, nsec);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
+    return num_written_bytes;
+}
+
+ssize_t energy_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
+
+    // return value
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    //TODO
+
+#ifdef DEBUG
+    if(num_written_bytes < 0)
+        perror("\nError while write()");
+
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG
+    return num_written_bytes;
+}

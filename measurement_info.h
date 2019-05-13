@@ -83,9 +83,8 @@ typedef struct powerlog_summary_struct {
     int                     num_powerlog;
 
     // GPU energy
-    int32_t gpu_energy_Wh;
-    int64_t gpu_energy_pWh;
-    int64_t gpu_energy_pJ;       // joule = Watt * second
+    double gpu_energy_mJ;       // joule = Watt * second
+    double gpu_energy_pJ;       // pico: 10^(-12)
 
 #ifdef TRACE_CPU
     int32_t allcpu_energy_Wh;
