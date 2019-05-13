@@ -70,3 +70,8 @@ Unfortunately, I used Linux functions:
 
         - opendir()                    in <dirent.h>
         - readdir()                    in <dirent.h>
+
+
+Therefore, those implementations are NOT PORTABLE:
+
+        - chown_R()                    in "enhanced_shcmd.c"
