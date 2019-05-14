@@ -13,7 +13,8 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
     char buff1[MAX_BUFFLEN], buff2[MAX_BUFFLEN];
     int buff1_len, buff2_len;
     int fd;
-    const char **ptr;
+    const char **ptrptr;
+    char *ptr;
     struct timeval walltime;
     struct tm *calendar;
 
@@ -41,9 +42,9 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
 
     // Child Command
     strcpy(buff1, info.child_cmd[0]);
-    for(ptr = &info.child_cmd[1]; *ptr != NULL; ptr++) {
+    for(ptrptr = &info.child_cmd[1]; *ptrptr != NULL; ptrptr++) {
         strcat(buff1, " ");
-        strcat(buff1, *ptr);
+        strcat(buff1, *ptrptr);
     }
 
     buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * Running:  %s", buff1);
@@ -67,16 +68,46 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
                         info.cooldown_period.tv_nsec);
     write(stat_fd, buff1, buff1_len);
 
+    // GPU Informations
+    buff1_len = snprintf(buff1, MAX_BUFFLEN, "\n\n GPU Informations");
+    write(stat_fd, buff1, buff1_len);
+
     // GPU Governor
+    strncpy(buff1, "\0", MAX_BUFFLEN);
     fd = open(TX2_SYSFS_GPU_GOVERNOR, O_RDONLY);
     lseek(fd, 0, SEEK_SET);
-    strncpy(buff1, "", MAX_BUFFLEN);
-    read(fd, buff1, MAX_BUFFLEN);
+    buff1_len = read(fd, buff1, MAX_BUFFLEN);
+    for(ptr = buff1; ptr < buff1 + buff1_len; ptr++) {
+        if(*ptr == '\n')
+            *ptr = '\0';
+    }
     buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s", buff1);
     write(stat_fd, buff2, buff2_len);
+    close(fd);
 
-    // Raw data format: Column name of the statistics table
-    write(stat_fd, "\n", 1);
+    // GPU MAX/MIN Frequency
+    strncpy(buff1, "\0", MAX_BUFFLEN);
+    fd = open(TX2_SYSFS_GPU_MAXFREQ, O_RDONLY);
+    lseek(fd, 0, SEEK_SET);
+    buff1_len = read(fd, buff1, MAX_BUFFLEN);
+    for(ptr = buff1; ptr < buff1 + buff1_len; ptr++) {
+        if(*ptr == '\n')
+            *ptr = '\0';
+    }
+    buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Max Frequency: %s Hz", buff1);
+    write(stat_fd, buff2, buff2_len);
+    close(fd);
+    strncpy(buff1, "\0", MAX_BUFFLEN);
+    fd = open(TX2_SYSFS_GPU_MINFREQ, O_RDONLY);
+    lseek(fd, 0, SEEK_SET);
+    buff1_len = read(fd, buff1, MAX_BUFFLEN);
+    for(ptr = buff1; ptr < buff1 + buff1_len; ptr++) {
+        if(*ptr == '\n')
+            *ptr = '\0';
+    }
+    buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Min Frequency: %s Hz", buff1);
+    write(stat_fd, buff2, buff2_len);
+    close(fd);
 
     return lseek(stat_fd, 0, SEEK_CUR);
 }
@@ -92,6 +123,9 @@ ssize_t print_header_raw(const int stat_fd, const measurement_info_struct info) 
     int buff_len;
 
     total_written_bytes = 0;
+
+    num_written_bytes = write(stat_fd, "\n", 1);
+    total_written_bytes += num_written_bytes;
 
     num_written_bytes = write(stat_fd, separation_line1, strlen(separation_line1));
     total_written_bytes += num_written_bytes;

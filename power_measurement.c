@@ -262,11 +262,6 @@ end_arg_processing:
 
     print_expinfo(stat_fd, *info);
 
-    // Walltime
-    write(stat_fd, "\n\n", 2);
-    write(stat_fd, time_buff, time_buff_len);
-    write(stat_fd, korea_time_buff, korea_time_buff_len);
-
     // Write column names in the first raw of the statistics file
     info->metadata_end = lseek(stat_fd, 0, SEEK_CUR);
     close(stat_fd);
@@ -310,16 +305,6 @@ end_arg_processing:
                     LOGTYPE_POWERLOG_SUMMARY,     
     */
 
-
-    /*
-     *  Suffix of header row.
-     *  Caffe event should be the right-most column,
-     *  in order to be freindly with MS Excel
-    snprintf(buff, 256, "%*s%*s%*s",
-             22, "specific-Caffe-event",
-             7, "batch",
-             13, "Caffe-event");
-     */
 
     /*
      *   Ignore the compilation warning message: 
