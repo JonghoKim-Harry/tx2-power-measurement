@@ -7,4 +7,6 @@
 #define DEFAULT_UID   1001   // nvidia
 #define DEFAULT_GID   1001   // nvidia
 
+#define MAX_BUFFLEN   256
+
 #endif   // DEFAULT_VALUES_H

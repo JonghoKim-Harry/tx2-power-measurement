@@ -74,6 +74,21 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 
     init_info(info);
 
+    // GMT (Greenwich Mean Time)
+    if(gettimeofday(&walltime, NULL) == -1) {
+        perror("gettimeofday() call error");
+        exit(-1);
+    }
+
+    walltime_calendar = localtime(&walltime.tv_sec);
+    if(!walltime_calendar) {
+        perror("localtime() call error");
+        exit(-1);
+    }
+
+    info->start_time = walltime;
+    info->calendar_start_time = walltime_calendar;
+
     while((option = getopt(argc, argv, AVAILABLE_OPTIONS)) != -1) {
         switch(option) {
 
@@ -154,18 +169,7 @@ end_arg_processing:
 
     info->child_cmd = child_cmd;
 
-    // GMT (Greenwich Mean Time)
-    if(gettimeofday(&walltime, NULL) == -1) {
-        perror("gettimeofday() call error");
-        exit(-1);
-    }
-
-    walltime_calendar = localtime(&walltime.tv_sec);
-    if(!walltime_calendar) {
-        perror("localtime() call error");
-        exit(-1);
-    }
-
+    /*
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     time_buff_len = snprintf(time_buff, 256, "\nStart measurement at %s (GMT)", buff);
 
@@ -179,6 +183,7 @@ end_arg_processing:
  
     strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
     korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
+    */
 
     // Set Caffe sleep request
     info->caffe_sleep_request.tv_sec =  2;
@@ -255,60 +260,12 @@ end_arg_processing:
     stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     printf("\nCreated statistic file: %s", stat_filename);
 
-    // Start logging to statistics file
-    lseek(stat_fd, 0, SEEK_SET);
-    write(stat_fd, "            JETSON TX2 POWER MEASUREMENT STATS\n", 47);
-
-    message = "\n\n Measurement Informations";
-    write(stat_fd, message, strlen(message));
-
-    // Child Command
-    message = "\n   * Running:   ";
-    write(stat_fd, message, strlen(message));
-    write(stat_fd, child_cmd_str, strlen(child_cmd_str));
-
-    // Component
-    message = "\n   * Component: ";
-    write(stat_fd, message, strlen(message));
-    write(stat_fd, component_str, strlen(component_str));
-    write(stat_fd, " (", 2);
-    write(stat_fd, raw_power_filename, strlen(raw_power_filename));
-    write(stat_fd, ")", 1);
-
-    // Caffe sleep period
-    buff_len = snprintf(buff, 256, "\n   * Sleep:    %ld.%09ld seconds before Caffe START",
-                        info->caffe_sleep_request.tv_sec,
-                        info->caffe_sleep_request.tv_nsec);
-    write(stat_fd, buff, buff_len);
-
-    // Measurement Interval
-    buff_len = snprintf(buff, 256, "\n   * Interval: %ld.%09ld seconds",
-                        info->powertool_interval.tv_sec,
-                        info->powertool_interval.tv_nsec);
-    write(stat_fd, buff, buff_len);
-
-    // Cooldown Period
-    buff_len = snprintf(buff, 256, "\n   * Cooldown: %ld.%09ld seconds after  Caffe FINISH",
-                        info->cooldown_period.tv_sec,
-                        info->cooldown_period.tv_nsec);
-    write(stat_fd, buff, buff_len);
+    print_expinfo(stat_fd, *info);
 
     // Walltime
     write(stat_fd, "\n\n", 2);
     write(stat_fd, time_buff, time_buff_len);
     write(stat_fd, korea_time_buff, korea_time_buff_len);
-
-    // Raw data format: Column name of the statistics table
-    write(stat_fd, "\n", 1);
-
-    /*
-     *  Prefix of header raw.
-     *  Note that 'TIME' and 'GPU-Power' should NOT be counted
-     */
-    snprintf(buff, 256, "%*s%*s%*s",
-            19, "GMT-Time-Stamp",
-            28, "TIME(ns)",
-            15, "GPU-Power(mW)");
 
     // Write column names in the first raw of the statistics file
     info->metadata_end = lseek(stat_fd, 0, SEEK_CUR);
@@ -380,11 +337,6 @@ end_arg_processing:
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
 #endif   // DEBUG
-
-    // Time information
-    // Note that this job should be done at last to be more accurate
-    clock_gettime(CLOCK_REALTIME, &info->start_time);
-    info->calendar_start_time = localtime(&info->start_time.tv_sec);
     return;
 }
 
@@ -483,19 +435,7 @@ void finish_measurement(measurement_info_struct *info) {
     // Free objects
     regfree(&info->caffelog_pattern);
 
-    // Overall Measurement Time
-    clock_gettime(CLOCK_REALTIME, &finish_time);
-    overall_interval.tv_sec = finish_time.tv_sec - info->start_time.tv_sec;
-    overall_interval.tv_nsec = finish_time.tv_nsec - info->start_time.tv_nsec;
-
-    if(overall_interval.tv_nsec < 0) {
-        -- overall_interval.tv_sec;
-        overall_interval.tv_nsec += ONE_SECOND_TO_NANOSECOND;
-    }
-
-    printf("\nTOTAL MEASUREMENT TOOK: %ld.%09ld seconds",
-           overall_interval.tv_sec,
-           overall_interval.tv_nsec);
+    return;
 }
 
 int main(int argc, char *argv[]) {
