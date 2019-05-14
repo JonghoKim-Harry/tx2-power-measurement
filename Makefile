@@ -25,6 +25,7 @@ OBJECTS := measurement_info.o \
 		   stat.o \
 		   parse_caffelog.o \
 		   enhanced_shcmd.o \
+		   constants.o
 
 $(TARGET): $(TARGET).o $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)

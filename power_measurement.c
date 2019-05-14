@@ -65,7 +65,6 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 
     char buff[256], filename_buff[64], time_buff[256], korea_time_buff[256];
     size_t buff_len, time_buff_len, korea_time_buff_len;
-    int gpu_power_fd;
     struct timeval walltime;
     struct tm *walltime_calendar;
 
@@ -195,8 +194,6 @@ end_arg_processing:
     // Set cooldown period
     info->cooldown_period.tv_sec =  6;
     info->cooldown_period.tv_nsec = 0;
-
-    gpu_power_fd = open(raw_power_filename, O_RDONLY | O_NONBLOCK);
 
     printf("\nCommand: %s\n", child_cmd_str);
 
@@ -332,10 +329,8 @@ end_arg_processing:
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
-/*
-    register_stat(info,  "GPU-energy(pWh)",     15,
+    register_stat(info,  "GPU-energy(mJ)",      21,
                     LOGTYPE_POWERLOG_SUMMARY,     gpuenergy_to_stat);
-*/
     register_stat(info,  "GPU-freq(MHz)",       13,
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",         11,

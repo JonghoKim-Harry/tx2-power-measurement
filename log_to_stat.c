@@ -116,7 +116,8 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlo
 
     // return value
     ssize_t num_written_bytes;
-    int32_t sec, nsec;
+    time_t sec;
+    int32_t nsec;
     char buff[MAX_COLWIDTH];
     int buff_len;
 
@@ -144,18 +145,23 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlo
     return num_written_bytes;
 }
 
-ssize_t energy_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
+ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
 
     // return value
     ssize_t num_written_bytes;
-    char buff[MAX_COLWIDTH];
-    int buff_len;
+    char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
+    int buff2_len;
+    double gpu_energy;
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG
 
-    //TODO
+    gpu_energy = powerlog_summary.gpu_energy_mJ + PICO_PER_MILLI * powerlog_summary.gpu_energy_pJ;
+
+    snprintf(buff1, MAX_COLWIDTH, "%lf", gpu_energy);
+    buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
+    num_written_bytes = write(stat_fd, buff2, buff2_len);
 
 #ifdef DEBUG
     if(num_written_bytes < 0)
