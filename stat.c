@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <fcntl.h>
 #include <string.h>
 #include <time.h>
 
@@ -11,6 +12,7 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
 
     char buff1[MAX_BUFFLEN], buff2[MAX_BUFFLEN];
     int buff1_len, buff2_len;
+    int fd;
     const char **ptr;
     struct timeval walltime;
     struct tm *calendar;
@@ -64,6 +66,14 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
                         info.cooldown_period.tv_sec,
                         info.cooldown_period.tv_nsec);
     write(stat_fd, buff1, buff1_len);
+
+    // GPU Governor
+    fd = open(TX2_SYSFS_GPU_GOVERNOR, O_RDONLY);
+    lseek(fd, 0, SEEK_SET);
+    strncpy(buff1, "", MAX_BUFFLEN);
+    read(fd, buff1, MAX_BUFFLEN);
+    buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s", buff1);
+    write(stat_fd, buff2, buff2_len);
 
     // Raw data format: Column name of the statistics table
     write(stat_fd, "\n", 1);
