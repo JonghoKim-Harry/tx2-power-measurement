@@ -30,9 +30,11 @@ power_measurement
 !Documentation/**
 
 #
-# Ignore my TODO list
+# Ignore my TODO/WIP/DONE list
 #
 TODO
+WIP
+DONE
 
 #
 # Track .gitignore file although it is dot-file
