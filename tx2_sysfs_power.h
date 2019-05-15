@@ -12,16 +12,16 @@
 //   * TX2_SYSFS_APE_FREQ
 
 // I assume that CPU/GPU/DDR power < 100W
-#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  4   // MHz, up to 1300
-#define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10   // Hz, up to 1300500000
-#define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5   // mW
-#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5   // x10%, up to 1000
-#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7   // x1000%, up to 1000000
-#define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1   // Boolean: 0, 1
-#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7   // kHz, up to 2035200
-#define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5   // mW
-#define TX2_SYSFS_DDR_POWER_MAX_STRLEN    5   // mW
-#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7   // x10000%, up to 1000000
+#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1300
+#define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
+#define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5       // mW
+#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5       // x10%, up to 1000
+#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7       // x1000%, up to 1000000
+#define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1       // Boolean: 0, 1
+#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7       // kHz, up to 2035200
+#define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5       // mW
+#define TX2_SYSFS_DDR_POWER_MAX_STRLEN    5       // mW
+#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x10000%, up to 1000000
 
 // Thermal Informations (x1000 degree Celsius)
 //   * BCPU-therm
@@ -90,6 +90,9 @@
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/governor"
 #define TX2_SYSFS_GPU_RAILGATE   \
     TX2_SYSFS_GPU "/railgate_enable"
+#define TX2_SYSFS_NUM_AVAILABLE_GPUFREQ    14
+#define TX2_SYSFS_AVAILABLE_GPUFREQ    \
+    TX2_SYSFS_GPU "/devfreq/17000000.gp10b/available_frequencies"
 #define TX2_SYSFS_GPU_MINFREQ   \
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/min_freq"
 #define TX2_SYSFS_GPU_MAXFREQ   \
@@ -98,6 +101,8 @@
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/cur_freq"
 #define TX2_SYSFS_GPU_UTIL   \
     TX2_SYSFS_GPU "/load"
+#define TX2_SYSFS_GPU_SET_FREQ \
+    TX2_SYSFS_GPU "/devfreq/17000000.gp10b/userspace/set_freq"
 
 // EMC Information
 // Note that getting EMC frequency informations requires root previlege

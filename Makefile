@@ -9,6 +9,7 @@ export CFLAGS := -Wall -DNDEBUG
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp
 CFLAGS += -DTRACE_CAFFE_TIMESTAMP
+#CFLAGS += -DDEBUG_GOVERNOR
 
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
@@ -18,7 +19,6 @@ DEBUG_TARGET := $(TARGET)_debug
 all: $(TARGET)
 
 OBJECTS := measurement_info.o \
-	       runtime/collect_rawdata.o \
            rawdata_to_powerlog.o \
 		   summary.o \
 	       log_to_stat.o \
@@ -26,6 +26,9 @@ OBJECTS := measurement_info.o \
 		   parse_caffelog.o \
 		   enhanced_shcmd.o \
 		   constants.o
+OBJECTS += runtime/collect_rawdata.o \
+           governor/governor.o \
+		   governor/ondemand_8050.o
 
 $(TARGET): $(TARGET).o $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
@@ -35,7 +38,7 @@ $(TARGET): $(TARGET).o $(OBJECTS)
 
 .PHONY: clean
 clean: FORCE
-	-rm $(TARGET) *.o *.txt runtime/*.o
+	-rm $(TARGET) *.o *.txt runtime/*.o governor/*.o
 
 .PHONY: check check-intro check-cifar10 check-mnist
 check: $(TARGET) check-intro check-cifar10 check-mnist

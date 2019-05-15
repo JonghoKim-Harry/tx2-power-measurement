@@ -12,7 +12,6 @@
 #include <errno.h>
 
 #include "measurement_info.h"
-#include "runtime/collect_rawdata.h"
 #include "rawdata_to_powerlog.h"
 #include "summary.h"
 #include "parse_caffelog.h"
@@ -23,8 +22,12 @@
 #include "constants.h"
 #include "default_values.h"
 
+// Runtime
+#include "runtime/collect_rawdata.h"
+#include "governor/governor.h"
+
 #define HELP_FIRST_COLWIDTH         30
-#define AVAILABLE_OPTIONS   "-"   "c:f:hi:"
+#define AVAILABLE_OPTIONS   "-"   "c:f:g::hi:"
 
 void help() {
 
@@ -35,6 +38,8 @@ void help() {
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "", "Supported components: all, cpu, gpu, ddr, wifi, soc");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-f <file name>",
                     "An execution file");
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-g [<governor>]",
+                    "Set an userspace governor");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-h",
             "Print help message");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-i <interval in us>",
@@ -47,7 +52,7 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     //
     const char *message;
     int option, index;
-    int cflag = 0, fflag = 0, iflag = 0;
+    int cflag = 0, fflag = 0, gflag = 0, iflag = 0;
     int interval_us;
     char component_str[16];
     char given_dirname[128], filename_prefix[128], stat_filename_buff[128];
@@ -102,6 +107,10 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
             fflag = 1;
             break;
 
+        case 'g':   // option -g with optional argument
+            gflag = 1;
+            break;
+
         case 'h':   // option -h without argument
             help();
             exit(0);
@@ -141,11 +150,18 @@ end_arg_processing:
         strcpy(stat_filename_buff, "stats.txt");
     }
 
+/*
     if(!cflag) {
 
         fprintf(stderr, "\nYou should specify which component to measure");
         help();
         exit(-1);
+    }
+*/
+
+    if(gflag) {
+        info->userspace_gpugovernor = 1;
+        start_gpugovernor();
     }
 
     if(argc == optind) {
@@ -417,6 +433,9 @@ void finish_measurement(measurement_info_struct *info) {
             perror("chown_R() fail");
     }
 
+    if(info->userspace_gpugovernor)
+        finish_gpugovernor();
+
     // Free objects
     regfree(&info->caffelog_pattern);
 
@@ -465,5 +484,6 @@ int main(int argc, char *argv[]) {
     measure_rawdata(pid, info);
     calculate_2ndstat(info);
     finish_measurement(&info);
+
     return 0;
 }

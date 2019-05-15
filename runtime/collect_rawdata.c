@@ -7,8 +7,10 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "collect_rawdata.h"
+#include "../measurement_info.h"
 #include "../tx2_sysfs_power.h"
 #include "../constants.h"
+#include "../governor/governor.h"
 
 #define WHITESPACE   "                                                       "
 
@@ -170,6 +172,9 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
             if(cooldown_remain.tv_sec < 0)
                 break;
         }
+
+        if(info.userspace_gpugovernor)
+            determine_gpufreq();
 
         for(i=0; i<info.num_rawdata; i++) {
             rawdata_info = info.rawdata_info[i];

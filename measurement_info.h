@@ -244,6 +244,9 @@ typedef struct measurement_info_struct {
     int flag_mkdir;
     char result_dirname[128];
 
+    // GPU Governor
+    int userspace_gpugovernor;
+
     // Powerlog
     char powerlog_filename[128];
     int powerlog_fd;

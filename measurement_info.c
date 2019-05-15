@@ -33,6 +33,7 @@ void print_rawdata_info(const rawdata_info_struct rawdata_info) {
 
 void init_info(measurement_info_struct *info) {
 
+    info->userspace_gpugovernor = 0;
     info->num_rawdata = 0;
     info->num_stat = 0;
 
