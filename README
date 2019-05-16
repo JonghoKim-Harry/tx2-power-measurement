@@ -48,15 +48,25 @@ DESIGN PRINCIPLE
 
 
 CFLAGS FOR COMPILATION
+============
 
-   CFLAGS                   Default    Explanation
-
+   CFLAG NAME               DEFAULT    EXPLANATION
+   ----------               -------    -----------
    TRACE_CPU                  ON       Trace CPU informations
    TRACE_MEM                  ON       Trace EMC/DDR/MEM informations
    TRACE_CAFFE_TIMESTAMP      OFF      Trace Caffe timestamp
+
+
+CFLAGS FOR DEBUG
+============
+
+   CFLAG NAME               DEFAULT    EXPLANATION
+   ----------               -------    -----------
    DEBUG                      OFF      Trace powertool debug
    NDEBUG                     ON       Suppress assert() defined by <assert.h>
+   DEBUG_SUMMARY              OFF
    DEBUG_GOVERNOR             OFF
+   DEBUG_LOG_TO_STAT          OFF
 
 
 SCRIPT USAGE EXAMPLE

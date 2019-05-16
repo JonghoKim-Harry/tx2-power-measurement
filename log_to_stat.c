@@ -17,9 +17,9 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_
     char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH], buff3[MAX_COLWIDTH];
     int buff3_len;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     calendar_timestamp = localtime(&powerlog.timestamp.tv_sec);
     strftime(buff1, MAX_COLWIDTH, "%H:%M:%S", calendar_timestamp);
@@ -27,12 +27,12 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_
     buff3_len = snprintf(buff3, MAX_COLWIDTH, "%*s", colwidth, buff2);
     num_written_bytes = write(stat_fd, buff3, buff3_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     return num_written_bytes;
 }
@@ -44,19 +44,19 @@ ssize_t gpupower_to_stat(const int stat_fd, const int colwidth, const powerlog_s
     char buff[MAX_COLWIDTH];
     int buff_len;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth,  powerlog.gpu_power);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
 
@@ -67,19 +67,19 @@ ssize_t gpufreq_to_stat(const int stat_fd, const int colwidth, const powerlog_st
     char buff[MAX_COLWIDTH];
     int buff_len;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth, powerlog.gpu_freq);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
 
@@ -91,9 +91,9 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
     int buff2_len;
     int upper, lower;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     upper = powerlog.gpu_util / 10;
     lower = powerlog.gpu_util % 10;
@@ -102,12 +102,12 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
 
@@ -121,9 +121,9 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlo
     char buff[MAX_COLWIDTH];
     int buff_len;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     sec = powerlog_summary.finish_timestamp.tv_sec - powerlog_summary.start_timestamp.tv_sec;
     nsec = powerlog_summary.finish_timestamp.tv_nsec - powerlog_summary.start_timestamp.tv_nsec;
@@ -136,12 +136,12 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlo
     buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09ld", (colwidth-9), sec, nsec);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
 
@@ -153,9 +153,9 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
     int buff2_len;
     double gpu_energy;
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     gpu_energy = powerlog_summary.gpu_energy_mJ + PICO_PER_MILLI * powerlog_summary.gpu_energy_pJ;
 
@@ -163,11 +163,11 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     if(num_written_bytes < 0)
         perror("\nError while write()");
 
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-#endif   // DEBUG
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }

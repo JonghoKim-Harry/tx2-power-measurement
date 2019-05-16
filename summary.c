@@ -3,12 +3,19 @@
 
 void init_summary(powerlog_summary_struct *summary) {
 
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_SUMMARY
+
     summary->last_powerlog = NULL;
     summary->num_powerlog = 0;
 
     summary->gpu_energy_mJ = 0;
     summary->gpu_energy_pJ = 0;
 
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_SUMMARY
     return;
 }
 
@@ -16,6 +23,10 @@ void update_summary(powerlog_summary_struct *summary, const powerlog_struct *pow
 
     int32_t sec, nsec;
     double avg_gpupower;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_SUMMARY
 
     // Timestamp
     summary->finish_timestamp = powerlog_ptr->timestamp;
@@ -43,5 +54,8 @@ void update_summary(powerlog_summary_struct *summary, const powerlog_struct *pow
     // AT LAST, Store the pointer to last powerlog
     summary->last_powerlog = powerlog_ptr;
 
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_SUMMARY
     return;
 }
