@@ -79,12 +79,14 @@ typedef struct powerlog_struct {
 typedef struct powerlog_summary_struct {
 
     struct timespec start_timestamp, finish_timestamp;
-    struct powerlog_struct *last_powerlog;
+    struct powerlog_struct last_powerlog;
     int                     num_powerlog;
 
     // GPU energy
-    double gpu_energy_mJ;       // joule = Watt * second
-    double gpu_energy_pJ;       // pico: 10^(-12)
+    int64_t gpu_energy_J;            // joule = Watt * second
+    int64_t gpu_energy_uJ;           // micro: 10^(-6)
+    int64_t gpu_energy_pJ;           // pico:  10^(-12)
+    int64_t gpu_energy_dotone_pJ;    // 0.1 pJ for remainder calculation
 
 #ifdef TRACE_CPU
     int32_t allcpu_energy_Wh;

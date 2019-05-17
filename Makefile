@@ -9,9 +9,6 @@ export CFLAGS := -Wall -DNDEBUG
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp
 CFLAGS += -DTRACE_CAFFE_TIMESTAMP
-CFLAGS += -DDEBUG_SUMMARY
-#CFLAGS += -DDEBUG_LOG_TO_STAT
-#CFLAGS += -DDEBUG_GOVERNOR
 
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)

@@ -151,15 +151,12 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
     ssize_t num_written_bytes;
     char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
     int buff2_len;
-    double gpu_energy;
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    gpu_energy = powerlog_summary.gpu_energy_mJ + PICO_PER_MILLI * powerlog_summary.gpu_energy_pJ;
-
-    snprintf(buff1, MAX_COLWIDTH, "%lf", gpu_energy);
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%ld", powerlog_summary.gpu_energy_uJ, powerlog_summary.gpu_energy_pJ, powerlog_summary.gpu_energy_dotone_pJ);
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 

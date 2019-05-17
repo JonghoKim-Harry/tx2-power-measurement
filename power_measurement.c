@@ -297,7 +297,7 @@ end_arg_processing:
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
-    register_stat(info,  "GPU-energy(mJ)",      21,
+    register_stat(info,  "GPU-energy(uJ)",      21,
                     LOGTYPE_POWERLOG_SUMMARY,     gpuenergy_to_stat);
     register_stat(info,  "GPU-freq(MHz)",       13,
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
