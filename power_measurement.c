@@ -117,10 +117,12 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 
         case 'i':   // option -i with required argument
             interval_us = atoi(optarg);
+        /*
             if(interval_us < MIN_TIME_INTERVAL) {
                 printf("\nYou should give time interval at least 10,000 us (10 ms)\n");
                 exit(0);
             }
+        */
             info->powertool_interval.tv_sec = interval_us / ONE_PER_MICRO;
             info->powertool_interval.tv_nsec = (interval_us % ONE_PER_MICRO) * MICRO_PER_NANO;
             iflag = 1;
@@ -285,14 +287,13 @@ end_arg_processing:
     // Statistics file informations
     strcpy(info->stat_filename, stat_filename);
 
-    // TODO: Register rawdata to collect
+    // Register rawdata to collect
     register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
     register_rawdata(info,  collect_gpupower,   gpupower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
     register_rawdata(info,  collect_gpufreq,    gpufreq_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_FREQ);
     register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
 
-    // TODO: Register statistics
-
+    // Register statistics
     register_stat(info,  "Time(ns)",            28,
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
@@ -307,17 +308,24 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,             timestamp_to_stat);
 
     /*
+    register_stat(info,  "Caffe-Event",         11,
+                    LOGTYPE_CAFFELOG,             caffeevent_to_stat);
+    register_stat(info,  "Batch#",               6,
+                    LOGTYPE_CAFFELOG,             batchnum_to_stat);
+    */
+
+    /*
     register_stat(info,  "Event:CAFFE_START",       17,
                     LOGTYPE_CAFFELOG,     
     register_stat(info,  "Event:CNN_START",         15,
                     LOGTYPE_CAFFELOG,     
-    register_stat(info,  "State:GPU_POWER_PEAK",    20,
+    register_stat(info,  "Event:GPU_POWER_FIRST_PEAK",    20,
                     LOGTYPE_POWERLOG_SUMMARY,     
     register_stat(info,  "Event:CNN_FINISH",        16,
                     LOGTYPE_CAFFELOG,     
     register_stat(info,  "Event:CAFFE_FINISH",      18,
                     LOGTYPE_CAFFELOG,     
-    register_stat(info,  "State:GPU_POWER_IDLE",    20,
+    register_stat(info,  "Event:GPU_POWER_LAG_FINISH",    20,
                     LOGTYPE_POWERLOG_SUMMARY,     
     */
 
@@ -344,12 +352,15 @@ end_arg_processing:
 void calculate_2ndstat(const measurement_info_struct info) {
 
     rawdata_info_struct            *rawdata_info;
-    powerlog_struct                 powerlog;
-    powerlog_summary_struct         summary;
+    powerlog_struct                powerlog;
+    caffelog_struct                *caffelog, list_caffelog;
+    powerlog_summary_struct        summary;
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
     int rawdata_fd;
+    int caffelog_fd;
+    off_t caffelog_offset;
     int stat_fd;
     int i, j;
 
@@ -357,12 +368,37 @@ void calculate_2ndstat(const measurement_info_struct info) {
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
 
+    // Caffelog
+    caffelog_fd = open(info.caffelog_filename, O_RDONLY | O_NONBLOCK);
+    caffelog_offset = 0;
+    lseek(caffelog_fd, 0, SEEK_SET);
+
     // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY | O_APPEND);
     printf("\nSTART calculating 2nd stats\n");
     print_header_raw(stat_fd, info);
 
     init_summary(&summary);
+
+
+    // TODO: Process Caffe log file
+    INIT_LIST_HEAD(&list_caffelog.list);
+    do {
+        caffelog = malloc(sizeof(struct caffelog_struct));
+        caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, caffelog);
+        if(caffelog_offset < 0)
+            break;
+        list_add_tail(caffelog, &list_caffelog.list);
+    } while(1);
+
+    while(!list_empty(&list_caffelog.list)) {
+        caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
+        list_del(&caffelog->list);
+        printf("\nCaffelog event: %s", caffelog->event);
+        free(caffelog);
+    }
+
+    close(caffelog_fd);
 
     while(1) {
 
@@ -391,7 +427,9 @@ void calculate_2ndstat(const measurement_info_struct info) {
                     num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, summary);
                     break;
 
-                //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog); break;
+                //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog);
+                // TODO
+                // break;
 
                 //case LOGTYPE_TEGRALOG: stat_info->func_log_to_stat(stat_fd, tegralog); break;
                 case LOGTYPE_NA:

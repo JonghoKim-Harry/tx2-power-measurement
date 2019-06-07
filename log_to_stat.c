@@ -168,3 +168,15 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
+
+// TODO
+// ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {}
+
+// Caffelog to Statistics
+// TODO
+ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {
+
+}
+
+// TODO
+//ssize_t batchnum_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {}

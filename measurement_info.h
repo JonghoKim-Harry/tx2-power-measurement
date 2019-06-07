@@ -7,6 +7,8 @@
 #include <stdarg.h>
 #include <regex.h>
 
+#include "list.h"
+
 // sysfs fds
 #define MAX_NUM_SYSFS_FD     8
 #define  NO_SYSFS_FILE       0
@@ -115,6 +117,7 @@ typedef struct powerlog_summary_struct {
     "([^[:space:]].*)"
 
 typedef struct caffelog_struct {
+    struct list_head list;
     struct timespec timestamp;   // GMT
 
     /*
