@@ -21,10 +21,10 @@ CUSTOM_USER="nvidia:nvidia"
 BENCHMARK_NAME=$1
 SHELL_COMMAND="${@:2}"
 
-MIN="140250000"
-MAX="1122000000"
 DEFAULT_GPU_GOVERNOR="nvhost_podgov"
 AVAILABLE_GPU_FREQ_LIST=$(cat /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/available_frequencies)
+MIN=${AVAILABLE_GPU_FREQ_LIST%%* }
+MAX=${AVAILABLE_GPU_FREQ_LIST##* }
 
 POWER_MEASUREMENT_HOME=$(realpath $(dirname $0)/../..)
 POWER_MEASUREMENT_TOOL="$POWER_MEASUREMENT_HOME/power_measurement"
@@ -67,7 +67,7 @@ do
     FREQ_IN_MHZ=$(echo $AVAILABLE_FREQ | sed -r 's/([[:digit:]]+)[[:digit:]]{6}/\1/g')
     STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$FREQ_IN_MHZ"MHz.txt
 
-    $POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
+    $POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND
     cd $POWER_MEASUREMENT_HOME
 done;
 
