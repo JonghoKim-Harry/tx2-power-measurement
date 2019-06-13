@@ -365,6 +365,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
     int stat_fd;
     int i, j;
 
+    int flag_powerlog;
+
     // Rawdata
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
@@ -394,9 +396,20 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
     close(caffelog_fd);
 
+    if(!list_empty(&list_caffelog.list))
+        caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
+    else
+        caffelog = NULL;
+
     // Process rawdata and write to stat file.
     // Note that making powerlogs to linked list is unreasonable,
     // because we have too many powerlogs
+#define PAD_COLUMN \
+    do { \
+        num_written_bytes  = write(stat_fd, WHITESPACE, (stat_info->colwidth - 4)); \
+        num_written_bytes += write(stat_fd, "#N/A", 4); \
+    } while(0);
+
     while(1) {
 
         // Read rawdata: GPU frequency, GPU utilization, CPU infos, etc.
@@ -409,6 +422,13 @@ void calculate_2ndstat(const measurement_info_struct info) {
         // Update summary
         update_summary(&summary, &powerlog);
 
+compare_timestamp:
+        // Compare timestamps and set/unset flag
+        if(caffelog == NULL || diff_timestamp_hms(*localtime(&powerlog.timestamp.tv_sec), caffelog->date_hms) < 0)
+            flag_powerlog = 1;
+        else
+            flag_powerlog = 0;
+
         // Convert rawdata to stat and write to statfile
         write(stat_fd, "\n", 1);
         for(j=0; j<info.num_stat; j++) {
@@ -417,17 +437,27 @@ void calculate_2ndstat(const measurement_info_struct info) {
             switch(info.stat_info[j].logtype) {
 
                 case LOGTYPE_POWERLOG:
-                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, powerlog);
+                    if(flag_powerlog)
+                        num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, powerlog);
+                    else 
+                        PAD_COLUMN;
                     break;
 
                 case LOGTYPE_POWERLOG_SUMMARY:
-                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, summary);
+                    if(flag_powerlog)
+                        num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, summary);
+                    else
+                        PAD_COLUMN;
                     break;
 
-                //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog);
-                // break;
+                case LOGTYPE_CAFFELOG:
+                    if(!flag_powerlog)
+                        num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, *caffelog);
+                    else
+                        PAD_COLUMN;
+                 break;
 
-                //case LOGTYPE_TEGRALOG: stat_info->func_log_to_stat(stat_fd, tegralog); break;
+                //case LOGTYPE_TEGRALOG:
                 case LOGTYPE_NA:
                 default:
                     break;
@@ -435,9 +465,20 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
             if (num_written_bytes <= 0) break;
         }
+ 
+        if(!flag_powerlog) {
+            if(!list_empty(&list_caffelog.list)) {
+                list_del(&caffelog->list);
+                free(caffelog);
+                caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
+            }
+            else
+                caffelog = NULL;
+            goto compare_timestamp;
+        }
     }   // while(1)
+#undef PAD_COLUMN
 eof_found:
-
 
 #ifdef DEBUG
     printf("\ncalculate_2ndstat() does NOT have infinite loop");

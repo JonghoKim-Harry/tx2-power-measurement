@@ -17,4 +17,7 @@ extern const float PICO_PER_MILLI;        //     0.00000001
 #define       WATTHOUR_PER_JOULE                       3600
 #define       SECONDS_GMT_TO_KOREA_TIME               32400   // 9 hours
 
+#define       WHITESPACE                      "                               \
+                                                                              "
+
 #endif   // CONSTANTS_H
