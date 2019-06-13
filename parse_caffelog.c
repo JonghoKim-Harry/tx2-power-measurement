@@ -7,7 +7,7 @@
 
 #define NO_REGEX_EFLAGS   0
 
-int64_t compare_timestamp_hms(const struct tm timestamp1, const struct tm timestamp2) {
+int64_t diff_timestamp_hms(const struct tm timestamp1, const struct tm timestamp2) {
 
     /*
      *   This function compares two timestamps.

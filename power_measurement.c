@@ -307,9 +307,10 @@ end_arg_processing:
     register_stat(info,  "Timestamp",           18,
                     LOGTYPE_POWERLOG,             timestamp_to_stat);
 
-    /*
-    register_stat(info,  "Caffe-Event",         11,
+    register_stat(info,  "Caffe-Event",         60,
                     LOGTYPE_CAFFELOG,             caffeevent_to_stat);
+
+    /*
     register_stat(info,  "Batch#",               6,
                     LOGTYPE_CAFFELOG,             batchnum_to_stat);
     */
@@ -381,7 +382,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     init_summary(&summary);
 
 
-    // TODO: Process Caffe log file
+    // Process Caffe log file
     INIT_LIST_HEAD(&list_caffelog.list);
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
@@ -391,15 +392,11 @@ void calculate_2ndstat(const measurement_info_struct info) {
         list_add_tail(caffelog, &list_caffelog.list);
     } while(1);
 
-    while(!list_empty(&list_caffelog.list)) {
-        caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
-        list_del(&caffelog->list);
-        printf("\nCaffelog event: %s", caffelog->event);
-        free(caffelog);
-    }
-
     close(caffelog_fd);
 
+    // Process rawdata and write to stat file.
+    // Note that making powerlogs to linked list is unreasonable,
+    // because we have too many powerlogs
     while(1) {
 
         // Read rawdata: GPU frequency, GPU utilization, CPU infos, etc.
@@ -428,7 +425,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
                     break;
 
                 //case LOGTYPE_CAFFELOG: stat_info->func_log_to_stat(stat_fd, caffelog);
-                // TODO
                 // break;
 
                 //case LOGTYPE_TEGRALOG: stat_info->func_log_to_stat(stat_fd, tegralog); break;
