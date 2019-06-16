@@ -1,0 +1,11 @@
+GOVERNOR
+======
+
+POLICY
+
+                      ________
+        util ---->   |        |
+   |--> freq ---->   | Jongho |   ==>   ENERGY SAVING
+   |--> epoch --->   | Policy |
+   |--> window -->   |________|
+   |_____________________|
