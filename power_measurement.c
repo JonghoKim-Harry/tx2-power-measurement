@@ -294,7 +294,7 @@ end_arg_processing:
     register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
 
     // Register statistics
-    register_stat(info,  "Time(ns)",            28,
+    register_stat(info,  "Time(ns)",            18,
                     LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
@@ -307,7 +307,7 @@ end_arg_processing:
     register_stat(info,  "Timestamp",           18,
                     LOGTYPE_POWERLOG,             timestamp_to_stat);
 
-    register_stat(info,  "Caffe-Event",         60,
+    register_stat(info,  "Caffe-Event",         30,
                     LOGTYPE_CAFFELOG,             caffeevent_to_stat);
 
     /*
