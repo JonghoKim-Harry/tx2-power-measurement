@@ -360,6 +360,9 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
     // Process Caffe log file
     INIT_LIST_HEAD(&list_caffelog.list);
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   Linked List for Caffelog: %p", __func__, __FILE__, __LINE__, &list_caffelog);
+#endif   // DEBUG
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
         caffelog_offset = parse_caffelog(caffelog_fd, caffelog_offset, info.calendar_start_time, caffelog);
@@ -460,9 +463,19 @@ compare_timestamp:
  
         if(!flag_powerlog) {
             if(!list_empty(&list_caffelog.list)) {
+
+#ifdef DEBUG
+                printf("\n%s() in %s:%d   Iterate to next caffelog: %p -> ", __func__, __FILE__, __LINE__, caffelog);
+#endif   // DEBUG
+
                 list_del(&caffelog->list);
                 free(caffelog);
                 caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
+                if(caffelog == &list_caffelog)
+                    caffelog = NULL;
+#ifdef DEBUG
+                printf("%p", caffelog);
+#endif   // DEBUG
             }
             else
                 caffelog = NULL;
