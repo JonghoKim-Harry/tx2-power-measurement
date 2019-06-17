@@ -304,7 +304,7 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",         11,
                     LOGTYPE_POWERLOG,             gpuutil_to_stat);
-    register_stat(info,  "Timestamp",           18,
+    register_stat(info,  "Timestamp",           19,
                     LOGTYPE_POWERLOG,             timestamp_to_stat);
 
     register_stat(info,  "Caffe-Event",         30,

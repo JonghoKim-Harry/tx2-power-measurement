@@ -23,7 +23,7 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_
 
     calendar_timestamp = localtime(&powerlog.timestamp.tv_sec);
     strftime(buff1, MAX_COLWIDTH, "%H:%M:%S", calendar_timestamp);
-    snprintf(buff2, MAX_COLWIDTH, "%s.%09ld", buff1, powerlog.timestamp.tv_nsec);
+    snprintf(buff2, MAX_COLWIDTH, "'%s.%09ld", buff1, powerlog.timestamp.tv_nsec);
     buff3_len = snprintf(buff3, MAX_COLWIDTH, "%*s", colwidth, buff2);
     num_written_bytes = write(stat_fd, buff3, buff3_len);
 
