@@ -7,7 +7,7 @@
 
 #define NO_REGEX_EFLAGS   0
 
-int64_t diff_timestamp_hms(const struct tm timestamp1, const struct tm timestamp2) {
+int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec timestamp2) {
 
     /*
      *   This function compares two timestamps.
@@ -19,27 +19,18 @@ int64_t diff_timestamp_hms(const struct tm timestamp1, const struct tm timestamp
      *   scale. If the difference is more than range of int64_t, this function
      *   returns INT64_MIN or INT64_MAX. However, there are enuogh room
      *   because the range covers about 292 years
-     *
-     *   This function only compares HMS (Hour, Minute, Second).
-     *   Note that year, month, day informations are ignored
      */
 
-    int diff_hour, diff_min, diff_sec;
-    int64_t diff_ns;
+    int64_t diff_sec, diff_nsec, diff_ns;
 
-    diff_hour = timestamp1.tm_hour - timestamp2.tm_hour;
-    diff_min  = timestamp1.tm_min  - timestamp2.tm_min;
-    diff_sec  = timestamp1.tm_sec  - timestamp2.tm_sec;
+    diff_sec   = timestamp1.tv_sec  - timestamp2.tv_sec;
+    diff_nsec  = timestamp1.tv_nsec - timestamp2.tv_nsec;
 
-    diff_ns   = ONE_SECOND_TO_NANOSECOND *
-                (HOUR_TO_SECOND * diff_hour
-                + MIN_TO_SECOND * diff_min
-                + diff_sec);
-
+    diff_ns   = ONE_SECOND_TO_NANOSECOND * diff_sec + diff_nsec;
     return diff_ns;
 }
 
-off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, caffelog_struct *caffelog) {
+off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, const struct tm calendar, caffelog_struct *caffelog) {
 
     /*
      *  This function returns end of line of parsed caffelog.
@@ -69,6 +60,14 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
 
         return -1;
     }
+
+    // Copy calendar informations
+    caffelog->date_hms.tm_isdst = calendar.tm_isdst;
+    caffelog->date_hms.tm_yday  = calendar.tm_yday;
+    caffelog->date_hms.tm_wday  = calendar.tm_wday;
+    caffelog->date_hms.tm_year  = calendar.tm_year;
+    caffelog->date_hms.tm_mon   = calendar.tm_mon;
+    caffelog->date_hms.tm_mday  = calendar.tm_mday;
 
 read_a_line:
     read_bytes = pread(caffelog_fd, buff, 256, new_offset);

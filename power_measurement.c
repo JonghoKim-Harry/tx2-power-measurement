@@ -372,7 +372,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     INIT_LIST_HEAD(&list_caffelog.list);
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
-        caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, caffelog);
+        caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, info.calendar_start_time, caffelog);
         if(caffelog_offset < 0)
             break;
         list_add_tail(caffelog, &list_caffelog.list);
@@ -408,7 +408,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
 compare_timestamp:
         // Compare timestamps and set/unset flag
-        if(caffelog == NULL || diff_timestamp_hms(*localtime(&powerlog.timestamp.tv_sec), caffelog->date_hms) < 0)
+        if(caffelog == NULL || diff_timestamp(powerlog.timestamp, caffelog->timestamp) < 0)
             flag_powerlog = 1;
         else
             flag_powerlog = 0;
