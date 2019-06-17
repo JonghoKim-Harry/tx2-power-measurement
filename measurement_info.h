@@ -14,6 +14,8 @@ struct powerlog_struct;
 struct summary_struct;
 struct caffelog_struct;
 struct tegralog_struct;
+struct stat_info_struct;
+struct measurement_info_struct;
 
 /*
  *  Rawdata
