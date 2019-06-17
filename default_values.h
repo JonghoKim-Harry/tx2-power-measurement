@@ -24,7 +24,9 @@
 #define MAX_NUM_RAWDATA     20
 #define MAX_NUM_STAT        20
 #define RAWDATA_BUFFSIZE    64
-#define MAX_COLWIDTH        80
+
+/* CAUTION: Do NOT decrease this value */
+#define MAX_COLWIDTH       128
 
 #define NUM_CPUS             6
 

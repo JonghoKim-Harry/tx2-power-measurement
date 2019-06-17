@@ -17,6 +17,17 @@ DEBUG_TARGET := $(TARGET)_debug
 
 all: $(TARGET)
 
+HEADERS := constants.h \
+	       default_values.h \
+		   enhanced_shcmd.h \
+		   log_to_stat.h \
+		   measurement_info.h \
+		   parse_caffelog.h \
+		   rawdata_to_powerlog.h \
+		   stat.h \
+		   summary.h \
+		   tx2_sysfs_power.h
+
 OBJECTS := measurement_info.o \
            rawdata_to_powerlog.o \
 		   summary.o \
@@ -29,7 +40,7 @@ OBJECTS += runtime/collect_rawdata.o \
            governor/governor.o \
 		   governor/ondemand_8050.o
 
-$(TARGET): $(TARGET).o $(OBJECTS)
+$(TARGET): $(TARGET).o $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.c

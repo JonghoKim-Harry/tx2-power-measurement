@@ -91,7 +91,8 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
         exit(-1);
     }
 
-    info->start_time = walltime;
+    info->start_time.tv_sec = walltime.tv_sec;
+    info->start_time.tv_nsec = MICRO_PER_NANO * walltime.tv_usec;
     info->calendar_start_time = *walltime_calendar;
 
     while((option = getopt(argc, argv, AVAILABLE_OPTIONS)) != -1) {
@@ -279,7 +280,7 @@ end_arg_processing:
 
     // Register statistics
     register_stat(info,  "Time(ns)",            18,
-                    LOGTYPE_POWERLOG_SUMMARY,     elapsedtime_to_stat);
+                    LOGTYPE_TIME,                 elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
     register_stat(info,  "GPU-energy(uJ)",      21,
@@ -289,9 +290,9 @@ end_arg_processing:
     register_stat(info,  "GPU-util(%)",         11,
                     LOGTYPE_POWERLOG,             gpuutil_to_stat);
     register_stat(info,  "Timestamp",           19,
-                    LOGTYPE_POWERLOG,             timestamp_to_stat);
+                    LOGTYPE_TIMESTAMP,            timestamp_to_stat);
 
-    register_stat(info,  "Caffe-Event",         30,
+    register_stat(info,  "Caffe-Event",         35,
                     LOGTYPE_CAFFELOG,             caffeevent_to_stat);
 
     /*
@@ -343,6 +344,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
+    struct timespec *timestamp_ptr;
     int rawdata_fd;
     int caffelog_fd;
     off_t caffelog_offset;
@@ -373,8 +375,10 @@ void calculate_2ndstat(const measurement_info_struct info) {
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
         caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, info.calendar_start_time, caffelog);
-        if(caffelog_offset <= 0)
+        if(caffelog_offset <= 0) {
+            free(caffelog);
             break;
+        }
         list_add_tail(caffelog, &list_caffelog.list);
     } while(1);
 
@@ -419,6 +423,22 @@ compare_timestamp:
             write(stat_fd, "  ", 2);
             stat_info = &info.stat_info[j];
             switch(info.stat_info[j].logtype) {
+
+                case LOGTYPE_TIME:
+                    if(flag_powerlog)
+                        timestamp_ptr = &powerlog.timestamp;
+                    else
+                        timestamp_ptr = &caffelog->timestamp;
+                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, *timestamp_ptr, info.start_time);
+                    break;
+
+                case LOGTYPE_TIMESTAMP:
+                    if(flag_powerlog)
+                        timestamp_ptr = &powerlog.timestamp;
+                    else
+                        timestamp_ptr = &caffelog->timestamp;
+                    num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, *timestamp_ptr);
+                    break;
 
                 case LOGTYPE_POWERLOG:
                     if(flag_powerlog)

@@ -28,6 +28,8 @@ typedef struct rawdata_info_struct {
 
 enum logtype_t {
     LOGTYPE_NA = 0,
+    LOGTYPE_TIME,
+    LOGTYPE_TIMESTAMP,
     LOGTYPE_POWERLOG,
     LOGTYPE_POWERLOG_SUMMARY,
     LOGTYPE_CAFFELOG,
@@ -251,7 +253,7 @@ typedef struct measurement_info_struct {
 
     // Informations used by measure_rawdata()
     struct tm calendar_start_time;   // GMT
-    struct timeval     start_time;   // GMT
+    struct timespec    start_time;   // GMT
 
     //  In order to use sysfs interface easily.
     //  See addsysfs(), read_sysfs(), rawdata_to_stat()

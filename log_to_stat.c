@@ -8,10 +8,41 @@
 // Header Row
 //void register_column(measurement_info_struct *info, const char *colname, const int colwidth) {}
 
-// Powerlog to Statistics
-ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+// Timestamp to Statistics
+ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp, const struct timespec baseline) {
 
-    // @powerlog.timestamp: struct timespec
+    // return value
+    ssize_t num_written_bytes;
+    time_t sec;
+    int32_t nsec;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    sec  = timestamp.tv_sec  - baseline.tv_sec;
+    nsec = timestamp.tv_nsec - baseline.tv_nsec;
+
+    if(nsec < 0) {
+        --sec;
+        nsec += ONE_SECOND_TO_NANOSECOND;
+    }
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09ld", (colwidth-9), sec, nsec);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp) {
+
     ssize_t num_written_bytes;
     struct tm *calendar_timestamp;
     char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH], buff3[MAX_COLWIDTH];
@@ -21,9 +52,9 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    calendar_timestamp = localtime(&powerlog.timestamp.tv_sec);
+    calendar_timestamp = localtime(&timestamp.tv_sec);
     strftime(buff1, MAX_COLWIDTH, "%H:%M:%S", calendar_timestamp);
-    snprintf(buff2, MAX_COLWIDTH, "'%s.%09ld", buff1, powerlog.timestamp.tv_nsec);
+    snprintf(buff2, MAX_COLWIDTH, "'%s.%09ld", buff1, timestamp.tv_nsec);
     buff3_len = snprintf(buff3, MAX_COLWIDTH, "%*s", colwidth, buff2);
     num_written_bytes = write(stat_fd, buff3, buff3_len);
 
@@ -36,6 +67,7 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const powerlog_
     return num_written_bytes;
 }
 
+// Powerlog to Statistics
 ssize_t gpupower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 
     // @powerlog.gpu_power: mW
@@ -108,38 +140,6 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
 }
 
 // Powerlog Summary to Statistics
-ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
-
-    // return value
-    ssize_t num_written_bytes;
-    time_t sec;
-    int32_t nsec;
-    char buff[MAX_COLWIDTH];
-    int buff_len;
-
-#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG or DEBUG_LOG_TO_STAT
-
-    sec = powerlog_summary.finish_timestamp.tv_sec - powerlog_summary.start_timestamp.tv_sec;
-    nsec = powerlog_summary.finish_timestamp.tv_nsec - powerlog_summary.start_timestamp.tv_nsec;
-
-    if(nsec < 0) {
-        --sec;
-        nsec += ONE_SECOND_TO_NANOSECOND;
-    }
-
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09ld", (colwidth-9), sec, nsec);
-    num_written_bytes = write(stat_fd, buff, buff_len);
-
-#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
-    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
-    if(num_written_bytes < 0)
-        perror("Error while write()");
-#endif   // DEBUG or DEBUG_LOG_TO_STAT
-    return num_written_bytes;
-}
-
 ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
 
     // return value
