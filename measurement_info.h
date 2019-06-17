@@ -106,7 +106,7 @@ typedef struct caffelog_struct {
      *  HMS: Hour, Minute, Second
      *  Note that year, month, day are ignored to be 0
      */
-    struct tm date_hms;   // GMT, HH:MM:SS
+    struct tm calendar_date;   // GMT, HH:MM:SS
     char event[MAX_COLWIDTH];
 } caffelog_struct;
 

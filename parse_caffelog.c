@@ -62,12 +62,12 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     }
 
     // Copy calendar informations
-    caffelog->date_hms.tm_isdst = calendar.tm_isdst;
-    caffelog->date_hms.tm_yday  = calendar.tm_yday;
-    caffelog->date_hms.tm_wday  = calendar.tm_wday;
-    caffelog->date_hms.tm_year  = calendar.tm_year;
-    caffelog->date_hms.tm_mon   = calendar.tm_mon;
-    caffelog->date_hms.tm_mday  = calendar.tm_mday;
+    caffelog->calendar_date.tm_isdst = calendar.tm_isdst;
+    caffelog->calendar_date.tm_yday  = calendar.tm_yday;
+    caffelog->calendar_date.tm_wday  = calendar.tm_wday;
+    caffelog->calendar_date.tm_year  = calendar.tm_year;
+    caffelog->calendar_date.tm_mon   = calendar.tm_mon;
+    caffelog->calendar_date.tm_mday  = calendar.tm_mday;
 
 read_a_line:
     read_bytes = pread(caffelog_fd, buff, 256, new_offset);
@@ -115,7 +115,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->date_hms.tm_hour = atoi(timebuff);
+    caffelog->calendar_date.tm_hour = atoi(timebuff);
 
     // Minute
     start_ptr += 3;
@@ -124,7 +124,7 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff min: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->date_hms.tm_min = atoi(timebuff);
+    caffelog->calendar_date.tm_min = atoi(timebuff);
 
     // Second
     start_ptr += 3;
@@ -133,8 +133,8 @@ read_a_line:
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
-    caffelog->date_hms.tm_sec = atoi(timebuff);
-    (&caffelog->timestamp)->tv_sec = mktime(&caffelog->date_hms);
+    caffelog->calendar_date.tm_sec = atoi(timebuff);
+    (&caffelog->timestamp)->tv_sec = mktime(&caffelog->calendar_date);
 
 
     // Nanosecond
