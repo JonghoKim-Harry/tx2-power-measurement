@@ -291,14 +291,10 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,             gpuutil_to_stat);
     register_stat(info,  "Timestamp",           19,
                     LOGTYPE_TIMESTAMP,            timestamp_to_stat);
-
-    register_stat(info,  "Caffe-Event",         35,
-                    LOGTYPE_CAFFELOG,             caffeevent_to_stat);
-
-    /*
     register_stat(info,  "Batch#",               6,
                     LOGTYPE_CAFFELOG,             batchnum_to_stat);
-    */
+    register_stat(info,  "Caffe-Event",         35,
+                    LOGTYPE_CAFFELOG,             caffeevent_to_stat);
 
     /*
     register_stat(info,  "Event:CAFFE_START",       17,
@@ -315,19 +311,7 @@ end_arg_processing:
                     LOGTYPE_POWERLOG_SUMMARY,     
     */
 
-
-    /*
-     *   Ignore the compilation warning message: 
-     *
-     *      warning: unknown escape sequence: '\]'
-     *
-     *   REG_EXTENDED supports the escape sequence '\]', thus just ignore it
-     */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wall"
-    // Produce special data structure for fast regex execution
-    regcomp(&info->caffelog_pattern, CAFFELOG_PATTERN, REG_EXTENDED);
-#pragma GCC diagnostic pop
+    init_caffelog_parser();
 
 #ifdef DEBUG
     printf("\nprepare_measurement()   FINISHED");
@@ -374,7 +358,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     INIT_LIST_HEAD(&list_caffelog.list);
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
-        caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, info.calendar_start_time, caffelog);
+        caffelog_offset = parse_caffelog(caffelog_fd, caffelog_offset, info.calendar_start_time, caffelog);
         if(caffelog_offset <= 0) {
             free(caffelog);
             break;
@@ -461,7 +445,7 @@ compare_timestamp:
                         PAD_COLUMN;
                  break;
 
-                //case LOGTYPE_TEGRALOG:
+                case LOGTYPE_TEGRALOG:
                 case LOGTYPE_NA:
                 default:
                     break;
@@ -515,8 +499,7 @@ void finish_measurement(measurement_info_struct *info) {
     if(info->userspace_gpugovernor)
         finish_gpugovernor();
 
-    // Free objects
-    regfree(&info->caffelog_pattern);
+    free_caffelog_parser();
 
     return;
 }

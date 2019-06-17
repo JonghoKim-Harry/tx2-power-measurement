@@ -5,7 +5,6 @@
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
-#include <regex.h>
 
 #include "default_values.h"
 #include "list.h"
@@ -91,15 +90,6 @@ typedef struct powerlog_summary_struct {
 /*
  *  Caffelog
  */
-// match[0]: the whole match. Do not care about it
-// match[1]: caffelog timestamp
-// match[2]: caffelog event
-#define CAFFELOG_PATTERN                                                 \
-    "[[:alpha:][:space:]]*"                                              \
-    "([[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}[.][[:digit:]]{6})"    \
-    "[^\]]*\][[:space:]]*"                                               \
-    "([^[:space:]].*)"
-
 typedef struct caffelog_struct {
     struct list_head list;
     struct timespec timestamp;   // GMT
@@ -110,6 +100,7 @@ typedef struct caffelog_struct {
      */
     struct tm calendar_date;   // GMT, HH:MM:SS
     char event[MAX_COLWIDTH];
+    int batch_idx;
 } caffelog_struct;
 
 
@@ -249,7 +240,6 @@ typedef struct measurement_info_struct {
     // Caffelog
     char caffelog_filename[128];
     int caffelog_fd;
-    regex_t caffelog_pattern;
 
     // Informations used by measure_rawdata()
     struct tm calendar_start_time;   // GMT

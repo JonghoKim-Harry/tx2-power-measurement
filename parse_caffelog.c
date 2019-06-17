@@ -2,10 +2,80 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 #include "parse_caffelog.h"
 #include "constants.h"
 
 #define NO_REGEX_EFLAGS   0
+
+typedef struct caffelog_parser_struct {
+    regex_t caffelog_basic_regex;
+    regex_t first_batch_start_regex;
+    regex_t batch_finish_regex;
+    int batch_idx;
+    int num_batch;
+    uint8_t flag_cnn;
+} caffelog_parser_struct;
+
+static caffelog_parser_struct caffelog_parser = {};
+
+#define CNN_FLAG_INITIAL_VALUE          0x0
+#define CNN_FLAG_START                    (1)
+#define CNN_FLAG_FINISH                   (1 << 1)
+#define CNN_STARTED(flag)        (flag & CNN_FLAG_START)  == CNN_FLAG_START
+#define CNN_NOT_STARTED(flag)    (flag & CNN_FLAG_START)  != CNN_FLAG_START
+#define CNN_FINISHED(flag)       (flag & CNN_FLAG_FINISH) == CNN_FLAG_FINISH
+#define CNN_NOT_FINISHED(flag)   (flag & CNN_FLAG_FINISH) != CNN_FLAG_FINISH
+
+// match[0]: The whole match. Do not care about it
+// match[1]: Timestamp
+// match[2]: Event
+#define CAFFELOG_BASIC_REGEX \
+    "[[:alpha:][:space:]]*" \
+    "([[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}[.][[:digit:]]{6})" \
+    "[^\]]*\][[:space:]]*" \
+    "([^[:space:]].*)"
+
+// For example,
+// I0617 14:59:31.418915 23665 caffe.cpp:281] Running for 50 iterations.
+//
+// match[1]: Number of batches
+#define FIRST_BATCH_START_REGEX \
+    "[[:alpha:][:space:][:digit:]]*" \
+    "Running for ([[:digit:]]+) iteration" \
+    ".*"
+
+// For example,
+// I0617 14:59:33.499068 23665 caffe.cpp:304] Batch 37, accuracy = 0.79
+//
+// match[1]: (Batch# - 1), because raw caffelog is zero-indexed
+#define BATCH_FINISH_REGEX \
+    "[[:alpha:][:space:][:digit:]]*" \
+    "Batch[[:space:]]*([[:digit:]]+), accuracy = [[:digit:]][.][[:digit:]]+" \
+    ".*"
+
+void init_caffelog_parser() {
+
+    caffelog_parser.batch_idx = -2;
+    caffelog_parser.flag_cnn = CNN_FLAG_INITIAL_VALUE;
+
+    /*
+     *   Ignore the compilation warning message:
+     *
+     *      warning: unknown escape sequence: '\]'
+     *
+     *   REG_EXTENDED supports the escape sequence '\]', thus just ignore it
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+    // Produce special data structure for fast regex execution
+    regcomp(&caffelog_parser.caffelog_basic_regex, CAFFELOG_BASIC_REGEX, REG_EXTENDED);
+    regcomp(&caffelog_parser.first_batch_start_regex, FIRST_BATCH_START_REGEX, REG_EXTENDED);
+    regcomp(&caffelog_parser.batch_finish_regex, BATCH_FINISH_REGEX, REG_EXTENDED);
+#pragma GCC diagnostic pop
+
+    return;
+}
 
 int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec timestamp2) {
 
@@ -30,7 +100,7 @@ int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec t
     return diff_ns;
 }
 
-off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, const off_t offset, const struct tm calendar, caffelog_struct *caffelog) {
+off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm calendar, caffelog_struct *caffelog) {
 
     /*
      *  This function returns end of line of parsed caffelog.
@@ -39,8 +109,8 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     off_t new_offset = offset;
 
     // Timestamp
-    const size_t num_regexmatch = 2 + 1;   // 0th is whole match
-    regmatch_t matched_regex[num_regexmatch];
+    const size_t max_regexmatch = 2 + 1;   // 0th is whole match
+    regmatch_t matched_regex[max_regexmatch];
     char timebuff[7];
     const char *start_ptr;
 
@@ -48,6 +118,11 @@ off_t parse_caffelog(const int caffelog_fd, const regex_t timestamp_pattern, con
     char buff[256];
     const char *eol;
     ssize_t read_bytes;
+
+    char event_buff[256];
+
+    // Flag
+    int detect_something;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   START");
@@ -89,7 +164,7 @@ read_a_line:
     printf("\nparse_caffelog()   Line: %s", buff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
-    if(regexec(&timestamp_pattern, buff, num_regexmatch, matched_regex, NO_REGEX_EFLAGS))
+    if(regexec(&caffelog_parser.caffelog_basic_regex, buff, (2 + 1), matched_regex, NO_REGEX_EFLAGS))
         goto read_a_line;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
@@ -156,9 +231,60 @@ read_a_line:
     printf("\nparse_caffelog()   event: %s", caffelog->event);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
+    // Batch Index
+    // Note that (batch idx) <- (detected_batch_idx + 1)
+    strcpy(event_buff, caffelog->event);
+    detect_something = 0;
+
+    if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
+        if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
+
+            detect_something = 1;
+
+            // Parse the number of batches
+            strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
+            caffelog_parser.num_batch = atoi(buff);
+            caffelog->batch_idx = 1;
+            caffelog_parser.flag_cnn |= CNN_FLAG_START;
+        }
+    }
+    else if(CNN_NOT_FINISHED(caffelog_parser.flag_cnn)) {
+        if(!regexec(&caffelog_parser.batch_finish_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
+
+            detect_something = 1;
+
+            // Parse batch index by detecting batch finishes
+            strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
+            caffelog->batch_idx = atoi(buff) + 1;
+            caffelog_parser.batch_idx = caffelog->batch_idx + 1;
+
+            if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
+                caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
+                caffelog_parser.batch_idx = -1;
+            }
+        }
+    }
+
+    if(!detect_something) // Nothing detected, thus guess batch number from previous parsing results
+       caffelog->batch_idx = caffelog_parser.batch_idx;
+
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   FINISHED");
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     return new_offset;
 }
+
+void free_caffelog_parser() {
+
+    // Free objects
+    regfree(&caffelog_parser.caffelog_basic_regex);
+    regfree(&caffelog_parser.first_batch_start_regex);
+    regfree(&caffelog_parser.batch_finish_regex);
+
+    return;
+}
+
+#undef CAFFELOG_BASIC_REGEX
+#undef FIRST_BATCH_START_REGEX
+#undef BATCH_FINISH_REGEX

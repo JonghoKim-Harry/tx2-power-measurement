@@ -19,9 +19,7 @@ ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const powerlo
 ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary);
 
 // Caffelog to Statistics
-// TODO
 ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
-// TODO
 ssize_t batchnum_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
 
 #endif   // LOG_TO_STAT_H
