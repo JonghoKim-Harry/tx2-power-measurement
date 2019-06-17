@@ -235,13 +235,17 @@ read_a_line:
     // Batch Index
     // Note that (batch idx) <- (detected_batch_idx + 1)
     strcpy(event_buff, caffelog->event);
+
     detect_something = 0;
     detect_batch_finish = 0;
+    caffelog->cnn_start = -1;
+    caffelog->cnn_finish = -1;
 
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
 
             detect_something = 1;
+            caffelog->cnn_start = 100;
 
             // Parse the number of batches
             strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
@@ -262,6 +266,7 @@ read_a_line:
             caffelog_parser.batch_idx = caffelog->batch_idx + 1;
 
             if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
+                caffelog->cnn_finish = 100;
                 caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
                 caffelog_parser.batch_idx = -1;
             }
