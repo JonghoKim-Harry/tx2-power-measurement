@@ -284,7 +284,7 @@ end_arg_processing:
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
     register_stat(info,  "GPU-energy(uJ)",      21,
-                    LOGTYPE_POWERLOG_SUMMARY,     gpuenergy_to_stat);
+                    LOGTYPE_SUMMARY,              gpuenergy_to_stat);
     register_stat(info,  "GPU-freq(MHz)",       13,
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",         11,
@@ -302,17 +302,17 @@ end_arg_processing:
 
     /*
     register_stat(info,  "Event:CAFFE_START",       17,
-                    LOGTYPE_CAFFELOG,     
+                    LOGTYPE_CAFFELOG,
     register_stat(info,  "Event:CNN_START",         15,
-                    LOGTYPE_CAFFELOG,     
+                    LOGTYPE_CAFFELOG,
     register_stat(info,  "Event:GPU_POWER_FIRST_PEAK",    20,
-                    LOGTYPE_POWERLOG_SUMMARY,     
+                    LOGTYPE_SUMMARY,
     register_stat(info,  "Event:CNN_FINISH",        16,
-                    LOGTYPE_CAFFELOG,     
+                    LOGTYPE_CAFFELOG,
     register_stat(info,  "Event:CAFFE_FINISH",      18,
-                    LOGTYPE_CAFFELOG,     
+                    LOGTYPE_CAFFELOG,
     register_stat(info,  "Event:GPU_POWER_LAG_FINISH",    20,
-                    LOGTYPE_POWERLOG_SUMMARY,     
+                    LOGTYPE_SUMMARY,
     */
 
     init_caffelog_parser();
@@ -328,7 +328,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     rawdata_info_struct            *rawdata_info;
     powerlog_struct                powerlog;
     caffelog_struct                *caffelog, list_caffelog;
-    powerlog_summary_struct        summary;
+    summary_struct                 summary;
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
@@ -438,7 +438,7 @@ compare_timestamp:
                         PAD_COLUMN;
                     break;
 
-                case LOGTYPE_POWERLOG_SUMMARY:
+                case LOGTYPE_SUMMARY:
                     if(flag_powerlog)
                         num_written_bytes = stat_info->func_log_to_stat(stat_fd, stat_info->colwidth, summary);
                     else

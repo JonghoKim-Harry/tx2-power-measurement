@@ -140,7 +140,7 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
 }
 
 // Powerlog Summary to Statistics
-ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {
+ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // return value
     ssize_t num_written_bytes;
@@ -151,7 +151,7 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%ld", powerlog_summary.gpu_energy_uJ, powerlog_summary.gpu_energy_pJ, powerlog_summary.gpu_energy_dotone_pJ);
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%ld", summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
@@ -164,7 +164,7 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const powerlog_
 }
 
 // TODO
-// ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary) {}
+// ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {}
 
 // Caffelog to Statistics
 ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {

@@ -2,7 +2,7 @@
 #include "constants.h"
 #include "summary.h"
 
-void init_summary(powerlog_summary_struct *summary) {
+void init_summary(summary_struct *summary) {
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
@@ -21,7 +21,7 @@ void init_summary(powerlog_summary_struct *summary) {
     return;
 }
 
-void update_summary(powerlog_summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
 
     int64_t sec, ms, ns;
     int64_t avg_gpupower_mW, avg_gpupower_dotone_mW;

@@ -13,10 +13,10 @@ ssize_t gpufreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 
 // Powerlog Summary to Statistics
-ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary);
+ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 
 // TODO
-ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const powerlog_summary_struct powerlog_summary);
+ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary);
 
 // Caffelog to Statistics
 ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);

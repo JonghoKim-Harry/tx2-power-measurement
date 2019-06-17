@@ -11,6 +11,9 @@
 
 struct rawdata_info_struct;
 struct powerlog_struct;
+struct summary_struct;
+struct caffelog_struct;
+struct tegralog_struct;
 
 /*
  *  Rawdata
@@ -30,7 +33,7 @@ enum logtype_t {
     LOGTYPE_TIME,
     LOGTYPE_TIMESTAMP,
     LOGTYPE_POWERLOG,
-    LOGTYPE_POWERLOG_SUMMARY,
+    LOGTYPE_SUMMARY,
     LOGTYPE_CAFFELOG,
     LOGTYPE_TEGRALOG,
     NUM_LOGTYPES
@@ -61,7 +64,7 @@ typedef struct powerlog_struct {
 #endif   // TRACE_DDR
 } powerlog_struct;
 
-typedef struct powerlog_summary_struct {
+typedef struct summary_struct {
 
     struct timespec start_timestamp, finish_timestamp;
     struct powerlog_struct last_powerlog;
@@ -84,7 +87,7 @@ typedef struct powerlog_summary_struct {
     int64_t mem_energy_pWh;
     int32_t avg_mem_power;       // mW
 #endif   // TRACE_DDR
-} powerlog_summary_struct;
+} summary_struct;
 
 
 /*
