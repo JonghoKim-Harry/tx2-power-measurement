@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "constants.h"
 #include "summary.h"
 
@@ -9,6 +10,16 @@ void init_summary(summary_struct *summary) {
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->num_powerlog = 0;
+
+    // Maximum values are simply initialized to -1
+    summary->max_gpu_util  = -1;
+    summary->max_gpu_freq  = -1;
+    summary->max_gpu_power = -1;
+
+    // Minimum values are initialized to maximum possitive numbers
+    summary->min_gpu_util  = INT16_MAX;
+    summary->min_gpu_freq  = INT16_MAX;
+    summary->min_gpu_power = INT16_MAX;
 
     summary->gpu_energy_J          = 0;
     summary->gpu_energy_uJ         = 0;
@@ -36,6 +47,24 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
         summary->finish_timestamp = powerlog_ptr->timestamp;
         summary->last_powerlog = *powerlog_ptr;
     }
+
+    // Update maximum values
+    if(summary->max_gpu_util < powerlog_ptr->gpu_util)
+        summary->max_gpu_util = powerlog_ptr->gpu_util;
+    if(summary->max_gpu_freq < powerlog_ptr->gpu_freq)
+        summary->max_gpu_freq = powerlog_ptr->gpu_freq;
+    if(summary->max_gpu_power < powerlog_ptr->gpu_power)
+        summary->max_gpu_power = powerlog_ptr->gpu_power;
+
+    // Update minimum values.
+    // Note that we initialized minimum values to maximum possitive number.
+    // Thus, correct values are always less than initialized minimum values
+    if(summary->min_gpu_util > powerlog_ptr->gpu_util)
+        summary->min_gpu_util = powerlog_ptr->gpu_util;
+    if(summary->min_gpu_freq > powerlog_ptr->gpu_freq)
+        summary->min_gpu_freq = powerlog_ptr->gpu_freq;
+    if(summary->min_gpu_power > powerlog_ptr->gpu_power)
+        summary->min_gpu_power = powerlog_ptr->gpu_power;
 
     // Calculate average power
     avg_gpupower_mW = (powerlog_ptr->gpu_power + summary->last_powerlog.gpu_power) / 2;

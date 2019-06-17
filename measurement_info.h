@@ -49,9 +49,9 @@ typedef struct powerlog_struct {
 
     struct timespec timestamp;   // GMT
 
-    int16_t gpu_power;           // mW
-    int16_t gpu_freq;            // MHz
     int16_t gpu_util;            // x10%
+    int16_t gpu_freq;            // MHz
+    int16_t gpu_power;           // mW
 
 #ifdef TRACE_CPU
     int16_t allcpu_power;        // mW
@@ -72,7 +72,19 @@ typedef struct summary_struct {
     struct powerlog_struct last_powerlog;
     int                     num_powerlog;
 
-    // GPU energy
+    // GPU Utilization
+    int16_t min_gpu_util;        // x10%
+    int16_t max_gpu_util;        // x10%
+
+    // GPU Frequency
+    int16_t min_gpu_freq;        // MHz
+    int16_t max_gpu_freq;        // MHz
+
+    // GPU Power
+    int16_t min_gpu_power;       // mW
+    int16_t max_gpu_power;       // mW
+
+    // GPU Energy
     int64_t gpu_energy_J;            // joule = Watt * second
     int64_t gpu_energy_uJ;           // micro: 10^(-6)
     int64_t gpu_energy_pJ;           // pico:  10^(-12)
@@ -266,6 +278,8 @@ typedef struct measurement_info_struct {
     struct stat_info_struct stat_info[MAX_NUM_STAT];
     int num_stat;
     char stat_filename[128];
+    off_t  summary_start;
+    size_t summary_len;
     off_t metadata_end;
 
 } measurement_info_struct;
