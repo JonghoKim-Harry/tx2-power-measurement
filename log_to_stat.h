@@ -20,6 +20,7 @@ ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const powerlog
 
 // Caffelog to Statistics
 ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
-ssize_t batchnum_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
+ssize_t batch_idx_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
+ssize_t batch_finish_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog);
 
 #endif   // LOG_TO_STAT_H

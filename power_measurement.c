@@ -291,8 +291,10 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,             gpuutil_to_stat);
     register_stat(info,  "Timestamp",           19,
                     LOGTYPE_TIMESTAMP,            timestamp_to_stat);
-    register_stat(info,  "Batch#",               6,
-                    LOGTYPE_CAFFELOG,             batchnum_to_stat);
+    register_stat(info,  "Batch-idx",            9,
+                    LOGTYPE_CAFFELOG,             batch_idx_to_stat);
+    register_stat(info,  "Batch-finish",        13,
+                    LOGTYPE_CAFFELOG,             batch_finish_to_stat);
     register_stat(info,  "Caffe-Event",         35,
                     LOGTYPE_CAFFELOG,             caffeevent_to_stat);
 

@@ -101,6 +101,7 @@ typedef struct caffelog_struct {
     struct tm calendar_date;   // GMT, HH:MM:SS
     char event[MAX_COLWIDTH];
     int batch_idx;
+    int batch_finish;
 } caffelog_struct;
 
 

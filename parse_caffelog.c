@@ -123,6 +123,7 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
 
     // Flag
     int detect_something;
+    int detect_batch_finish;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   START");
@@ -235,6 +236,7 @@ read_a_line:
     // Note that (batch idx) <- (detected_batch_idx + 1)
     strcpy(event_buff, caffelog->event);
     detect_something = 0;
+    detect_batch_finish = 0;
 
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
@@ -252,6 +254,7 @@ read_a_line:
         if(!regexec(&caffelog_parser.batch_finish_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
 
             detect_something = 1;
+            detect_batch_finish = 1;
 
             // Parse batch index by detecting batch finishes
             strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
@@ -267,6 +270,11 @@ read_a_line:
 
     if(!detect_something) // Nothing detected, thus guess batch number from previous parsing results
        caffelog->batch_idx = caffelog_parser.batch_idx;
+
+    if(detect_batch_finish)
+        caffelog->batch_finish = 100;
+    else
+        caffelog->batch_finish = -1;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\nparse_caffelog()   FINISHED");
