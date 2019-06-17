@@ -92,7 +92,7 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     }
 
     info->start_time = walltime;
-    info->calendar_start_time = walltime_calendar;
+    info->calendar_start_time = *walltime_calendar;
 
     while((option = getopt(argc, argv, AVAILABLE_OPTIONS)) != -1) {
         switch(option) {
@@ -186,22 +186,6 @@ end_arg_processing:
     child_cmd[argc-optind] = NULL;
 
     info->child_cmd = child_cmd;
-
-    /*
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
-    time_buff_len = snprintf(time_buff, 256, "\nStart measurement at %s (GMT)", buff);
-
-    // Korea Timezone
-    walltime.tv_sec += SECONDS_GMT_TO_KOREA_TIME;
-    walltime_calendar = localtime(&walltime.tv_sec);
-    if(!walltime_calendar) {
-        perror("localtime() call error");
-        exit(-1);
-    }
- 
-    strftime(buff, 64, "%Y-%m-%d %H:%M:%S", walltime_calendar);
-    korea_time_buff_len = snprintf(korea_time_buff, 256, "\nStart measurement at %s (Korea Timezone)", buff);
-    */
 
     // Set Caffe sleep request
     info->caffe_sleep_request.tv_sec =  2;

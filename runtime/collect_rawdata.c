@@ -9,10 +9,9 @@
 #include "collect_rawdata.h"
 #include "../measurement_info.h"
 #include "../tx2_sysfs_power.h"
-#include "../constants.h"
 #include "../governor/governor.h"
-
-#define WHITESPACE   "                                                       "
+#include "../constants.h"
+#include "../default_values.h"
 
 ssize_t collect_timestamp(const int rawdata_fd) {
 

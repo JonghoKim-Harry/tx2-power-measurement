@@ -250,8 +250,8 @@ typedef struct measurement_info_struct {
     regex_t caffelog_pattern;
 
     // Informations used by measure_rawdata()
-    struct tm *calendar_start_time;   // GMT
-    struct timeval      start_time;   // GMT
+    struct tm calendar_start_time;   // GMT
+    struct timeval     start_time;   // GMT
 
     //  In order to use sysfs interface easily.
     //  See addsysfs(), read_sysfs(), rawdata_to_stat()

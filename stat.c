@@ -29,7 +29,7 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
     write(stat_fd, buff1, buff1_len);
 
     // Walltime: GMT
-    strftime(buff1, MAX_BUFFLEN, "%Y-%m-%d %H:%M:%S", info.calendar_start_time);
+    strftime(buff1, MAX_BUFFLEN, "%Y-%m-%d %H:%M:%S", &info.calendar_start_time);
     buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * Start measurement at %s (GMT)", buff1);
     write(stat_fd, buff2, buff2_len);
 

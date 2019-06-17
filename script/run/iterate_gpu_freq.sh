@@ -16,7 +16,7 @@ help() {
     echo -e "Note that you should run this script with root privilege"
 }
 
-CUSTOM_USER="nvidia:nvidia"
+CUSTOM_USER="jongho:jongho"
 
 BENCHMARK_NAME=$1
 SHELL_COMMAND="${@:2}"
@@ -83,4 +83,4 @@ echo "GPU frequency is recovered to default setting"
 
 STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
 
-$POWER_MEASUREMENT_TOOL -c gpu -f $STAT_FILE $SHELL_COMMAND
+$POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND
