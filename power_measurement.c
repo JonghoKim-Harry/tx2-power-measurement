@@ -373,7 +373,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     do {
         caffelog = malloc(sizeof(struct caffelog_struct));
         caffelog_offset = parse_caffelog(caffelog_fd, info.caffelog_pattern, caffelog_offset, info.calendar_start_time, caffelog);
-        if(caffelog_offset < 0)
+        if(caffelog_offset <= 0)
             break;
         list_add_tail(caffelog, &list_caffelog.list);
     } while(1);
