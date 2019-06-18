@@ -30,7 +30,7 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct 
         nsec += ONE_SECOND_TO_NANOSECOND;
     }
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09d", (colwidth-9), sec, nsec);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%09d", (colwidth - 1 - 9), sec, nsec);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)

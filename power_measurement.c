@@ -50,7 +50,6 @@ void help() {
 void prepare_measurement(const int argc, char *argv[], measurement_info_struct *info) {
 
     //
-    const char *message;
     int option, index;
     int cflag = 0, fflag = 0, gflag = 0, iflag = 0;
     int interval_us;
@@ -280,41 +279,26 @@ end_arg_processing:
     register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
 
     // Register statistics
-    register_stat(info,  "Time(ns)",            18,
-                    LOGTYPE_TIME,                 elapsedtime_to_stat);
-    register_stat(info,  "GPU-power(mW)",       13,
-                    LOGTYPE_POWERLOG,             gpupower_to_stat);
-    register_stat(info,  "GPU-energy(J)",       21,
-                    LOGTYPE_SUMMARY,              gpuenergy_to_stat);
-    register_stat(info,  "GPU-freq(MHz)",       13,
-                    LOGTYPE_POWERLOG,             gpufreq_to_stat);
-    register_stat(info,  "GPU-util(%)",         11,
-                    LOGTYPE_POWERLOG,             gpuutil_to_stat);
-    register_stat(info,  "Timestamp",           19,
-                    LOGTYPE_TIMESTAMP,            timestamp_to_stat);
-    register_stat(info,  "CNN-start/finish",    16,
-                    LOGTYPE_CAFFELOG,             cnn_event_to_stat);
-    register_stat(info,  "Batch-idx",            9,
-                    LOGTYPE_CAFFELOG,             batch_idx_to_stat);
-    register_stat(info,  "Batch-finish",        13,
-                    LOGTYPE_CAFFELOG,             batch_finish_to_stat);
-    register_stat(info,  "Caffe-Event",         35,
-                    LOGTYPE_CAFFELOG,             caffeevent_to_stat);
-
-    /*
-    register_stat(info,  "Event:CAFFE_START",       17,
-                    LOGTYPE_CAFFELOG,
-    register_stat(info,  "Event:CNN_START",         15,
-                    LOGTYPE_CAFFELOG,
-    register_stat(info,  "Event:GPU_POWER_FIRST_PEAK",    20,
-                    LOGTYPE_SUMMARY,
-    register_stat(info,  "Event:CNN_FINISH",        16,
-                    LOGTYPE_CAFFELOG,
-    register_stat(info,  "Event:CAFFE_FINISH",      18,
-                    LOGTYPE_CAFFELOG,
-    register_stat(info,  "Event:GPU_POWER_LAG_FINISH",    20,
-                    LOGTYPE_SUMMARY,
-    */
+    register_stat(info,  "Time(s)",            18,
+                    LOGTYPE_TIME,              elapsedtime_to_stat);
+    register_stat(info,  "GPU-power(mW)",      13,
+                    LOGTYPE_POWERLOG,          gpupower_to_stat);
+    register_stat(info,  "GPU-energy(J)",      21,
+                    LOGTYPE_SUMMARY,           gpuenergy_to_stat);
+    register_stat(info,  "GPU-freq(MHz)",      13,
+                    LOGTYPE_POWERLOG,          gpufreq_to_stat);
+    register_stat(info,  "GPU-util(%)",        11,
+                    LOGTYPE_POWERLOG,          gpuutil_to_stat);
+    register_stat(info,  "Timestamp",          19,
+                    LOGTYPE_TIMESTAMP,         timestamp_to_stat);
+    register_stat(info,  "CNN-start/finish",   16,
+                    LOGTYPE_CAFFELOG,          cnn_event_to_stat);
+    register_stat(info,  "Batch-idx",           9,
+                    LOGTYPE_CAFFELOG,          batch_idx_to_stat);
+    register_stat(info,  "Batch-finish",       13,
+                    LOGTYPE_CAFFELOG,          batch_finish_to_stat);
+    register_stat(info,  "Caffe-Event",        35,
+                    LOGTYPE_CAFFELOG,          caffeevent_to_stat);\
 
     init_caffelog_parser();
 
