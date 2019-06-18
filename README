@@ -88,9 +88,9 @@ SCRIPT USAGE EXAMPLE
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with CIFAR-10 dataset.
-   sudo ./script/run/iterate_gpu_freq.sh cifar-10 ./script/run/run_cifar10.sh
+   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch100 ./script/run/run_cifar10.sh
    # Doing same job for MNIST dataset
-   sudo ./script/run/iterate_gpu_freq.sh mnist ./script/run/run_mnist.sh
+   sudo ./script/run/iterate_gpu_freq.sh mnist-batch2000 ./script/run/run_mnist.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset

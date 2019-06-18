@@ -182,3 +182,23 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 #endif   // DEBUG or DEBUG_SUMMARY
     return;
 }
+
+struct timespec elapsed_time(const summary_struct summary) {
+
+    struct timespec ret;
+    time_t diff_sec;
+    int64_t diff_nsec;
+
+    diff_sec  = summary.finish_timestamp.tv_sec  - summary.start_timestamp.tv_sec;
+    diff_nsec = summary.finish_timestamp.tv_nsec - summary.start_timestamp.tv_nsec;
+
+    if(diff_nsec < 0) {
+        --diff_sec;
+        diff_nsec += ONE_PER_NANO;
+    }
+
+    ret.tv_sec  = diff_sec;
+    ret.tv_nsec = diff_nsec;
+
+    return ret;
+}

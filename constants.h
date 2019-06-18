@@ -3,6 +3,7 @@
 
 #define       ONE_PER_MILLI                            1000
 #define       ONE_PER_MICRO                         1000000
+#define       ONE_PER_NANO                       1000000000
 #define       MILLI_PER_PICO                     1000000000
 #define       MILLI_PER_NANO                        1000000
 extern const float PICO_PER_MILLI;        //     0.00000001
