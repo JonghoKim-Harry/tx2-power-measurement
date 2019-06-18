@@ -8,6 +8,7 @@
 static ssize_t gpugovernor_strlen;
 static char original_gpugovernor[128];
 
+// TODO: Fix max_gpufreq, min_gpufreq
 int max_gpufreq = 1122000000;
 int min_gpufreq =  140250000;
 int fd_write_gpufreq;
@@ -90,7 +91,6 @@ int32_t get_gpufreq() {
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     num_read_bytes =
 #endif   // DEBUG or DEBUG_GOVERNOR
-
     read(fd_gpufreq, buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
 
     ret = atoi(buff);
@@ -111,8 +111,18 @@ int16_t get_gpuutil() {
     int16_t ret;
     char buff[TX2_SYSFS_GPU_UTIL_MAX_STRLEN];
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    ssize_t num_read_bytes;
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
     lseek(fd_gpuutil, 0, SEEK_SET);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    num_read_bytes =
+#endif   // DEBUG or DEBUG_GOVERNOR
     read(fd_gpuutil, buff, TX2_SYSFS_GPU_UTIL_MAX_STRLEN);
+
     ret = atoi(buff);
 
     return ret;
@@ -123,8 +133,18 @@ int16_t get_gpupower() {
     int16_t ret;
     char buff[TX2_SYSFS_GPU_POWER_MAX_STRLEN];
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    ssize_t num_read_bytes;
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
     lseek(fd_gpupower, 0, SEEK_SET);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    num_read_bytes =
+#endif   // DEBUG or DEBUG_GOVERNOR
     read(fd_gpupower, buff, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
+
     ret = atoi(buff);
 
     return ret;
@@ -132,14 +152,13 @@ int16_t get_gpupower() {
 
 ssize_t set_gpufreq(const int32_t gpufreq) {
 
-    ssize_t num_written_bytes;
+    ssize_t num_written_bytes;   // return value
     char buff[TX2_SYSFS_GPU_FREQ_MAX_STRLEN];
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
     printf("\n%s() in %s:%d   gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
 #endif   // DEBUG or DEBUG_GOVERNOR
-
 
     lseek(fd_gpufreq, 0, SEEK_SET);
     snprintf(buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN, "%d", gpufreq);
