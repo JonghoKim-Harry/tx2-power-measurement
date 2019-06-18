@@ -66,10 +66,8 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     int powerlog_fd;
     char token[128], *next_token;
     char **child_cmd, child_cmd_str[256];
-    char raw_power_filename[128];
 
-    char buff[MAX_BUFFLEN], filename_buff[MAX_BUFFLEN], time_buff[256], korea_time_buff[256];
-    size_t buff_len, time_buff_len, korea_time_buff_len;
+    char buff[MAX_BUFFLEN], filename_buff[MAX_BUFFLEN];
     struct timeval walltime;
     struct tm *walltime_calendar;
 
@@ -118,12 +116,6 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 
         case 'i':   // option -i with required argument
             interval_us = atoi(optarg);
-        /*
-            if(interval_us < MIN_TIME_INTERVAL) {
-                printf("\nYou should give time interval at least 10,000 us (10 ms)\n");
-                exit(0);
-            }
-        */
             info->powertool_interval.tv_sec = interval_us / ONE_PER_MICRO;
             info->powertool_interval.tv_nsec = (interval_us % ONE_PER_MICRO) * MICRO_PER_NANO;
             iflag = 1;
@@ -152,15 +144,6 @@ end_arg_processing:
         printf("\nYou did not specify statistics file name; thus, the file name is set to the default name, stats.txt");
         strcpy(stat_filename_buff, "stats.txt");
     }
-
-/*
-    if(!cflag) {
-
-        fprintf(stderr, "\nYou should specify which component to measure");
-        help();
-        exit(-1);
-    }
-*/
 
     if(gflag) {
         info->userspace_gpugovernor = 1;
@@ -265,21 +248,27 @@ end_arg_processing:
 
     print_expinfo(stat_fd, *info);
 
-    // Reserve space to write summary
-    write(stat_fd, "\n\nGPU Stat Summary", 18);
+    // START RESERVATION
     info->summary_start = lseek(stat_fd, 0, SEEK_CUR);
     info->summary_len  = 0;
+
+    // Reserve space to write summary
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary");
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*s.%*s %s - %*s.%*s %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), "", 1, "", "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), "", 1, "", "%");
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*s MHz - %*s MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, "", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, "");
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*s mW - %*s mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, "", TX2_SYSFS_GPU_UTIL_MAX_STRLEN, "");
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*s.%6s%6s%1s J", 9, "", "", "", "");
+
+    // FINISH RESERVATION
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n");
     info->metadata_end = lseek(stat_fd, info->summary_len, SEEK_CUR);
     close(stat_fd);
 
-//#ifdef DEBUG
-    printf("\n%s() in %s:%d   info->summary_start: %d", __func__, __FILE__, __LINE__, info->summary_start);
-    printf("\n%s() in %s:%d   info->summary_len: %d", __func__, __FILE__, __LINE__, info->summary_len);
-    printf("\n%s() in %s:%d   info->metadata_end: %d", __func__, __FILE__, __LINE__, info->metadata_end);
-//#endif   // DEBUG
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   info->summary_start: %ld", __func__, __FILE__, __LINE__, info->summary_start);
+    printf("\n%s() in %s:%d   info->summary_len: %ld", __func__, __FILE__, __LINE__, info->summary_len);
+    printf("\n%s() in %s:%d   info->metadata_end: %ld", __func__, __FILE__, __LINE__, info->metadata_end);
+#endif   // DEBUG
 
     // Statistics file informations
     strcpy(info->stat_filename, stat_filename);
@@ -295,7 +284,7 @@ end_arg_processing:
                     LOGTYPE_TIME,                 elapsedtime_to_stat);
     register_stat(info,  "GPU-power(mW)",       13,
                     LOGTYPE_POWERLOG,             gpupower_to_stat);
-    register_stat(info,  "GPU-energy(uJ)",      21,
+    register_stat(info,  "GPU-energy(J)",       21,
                     LOGTYPE_SUMMARY,              gpuenergy_to_stat);
     register_stat(info,  "GPU-freq(MHz)",       13,
                     LOGTYPE_POWERLOG,             gpufreq_to_stat);
@@ -501,13 +490,23 @@ compare_timestamp:
 #undef PAD_COLUMN
 rawdata_eof_found:
 
-    // Write summary
+    // START writting summary
     lseek(stat_fd, info.summary_start, SEEK_SET);
+
+    // Write summary
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary");
+    write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary.min_gpu_util / 10), 1, (summary.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary.max_gpu_util / 10), 1, (summary.max_gpu_util % 10), "%");
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary.max_gpu_freq);
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary.max_gpu_power);
+    write(stat_fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
+    write(stat_fd, buff, buff_len);
+
+    // FINISH writting summary
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n");
     write(stat_fd, buff, buff_len);
 
     // Close and remove rawdata.bin file
@@ -519,8 +518,6 @@ rawdata_eof_found:
 }
 
 void finish_measurement(measurement_info_struct *info) {
-
-    struct timespec finish_time, overall_interval;
 
     remove(info->rawdata_filename);
     close(info->powerlog_fd);

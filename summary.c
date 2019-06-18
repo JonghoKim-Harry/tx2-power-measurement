@@ -110,6 +110,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   GPU energy before removing remainder ---|", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   GPU energy  J:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_J);
     printf("\n%s() in %s:%d   GPU energy uJ:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_uJ);
     printf("\n%s() in %s:%d   GPU energy pJ:     %ld.%ld", __func__, __FILE__, __LINE__, summary->gpu_energy_pJ, summary->gpu_energy_dotone_pJ);
 #endif   // DEBUG or DEBUG_SUMMARY
@@ -127,6 +128,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   GPU energy after removing 0.1pJ remainder ---|", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   GPU energy  J:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_J);
     printf("\n%s() in %s:%d   GPU energy uJ:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_uJ);
     printf("\n%s() in %s:%d   GPU energy pJ:     %ld.%ld", __func__, __FILE__, __LINE__, summary->gpu_energy_pJ, summary->gpu_energy_dotone_pJ);
 #endif   // DEBUG or DEBUG_SUMMARY
@@ -144,6 +146,24 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   GPU energy after removing pJ remainder ---|", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   GPU energy  J:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_J);
+    printf("\n%s() in %s:%d   GPU energy uJ:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_uJ);
+    printf("\n%s() in %s:%d   GPU energy pJ:     %ld.%ld", __func__, __FILE__, __LINE__, summary->gpu_energy_pJ, summary->gpu_energy_dotone_pJ);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of uJ
+    fraction  = summary->gpu_energy_uJ / ONE_PER_MICRO;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->gpu_energy_J  += fraction;
+    summary->gpu_energy_uJ -= (fraction * ONE_PER_MICRO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   GPU energy after removing uJ remainder ---|", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   GPU energy  J:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_J);
     printf("\n%s() in %s:%d   GPU energy uJ:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_uJ);
     printf("\n%s() in %s:%d   GPU energy pJ:     %ld.%ld", __func__, __FILE__, __LINE__, summary->gpu_energy_pJ, summary->gpu_energy_dotone_pJ);
 #endif   // DEBUG or DEBUG_SUMMARY

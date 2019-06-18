@@ -30,7 +30,7 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct 
         nsec += ONE_SECOND_TO_NANOSECOND;
     }
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09ld", (colwidth-9), sec, nsec);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld%09d", (colwidth-9), sec, nsec);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
@@ -151,7 +151,7 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_s
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%ld", summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%06ld%01ld", summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
