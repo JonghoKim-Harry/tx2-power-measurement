@@ -77,16 +77,21 @@ void finish_gpugovernor() {
 
 int32_t get_gpufreq() {
 
-    ssize_t num_read_bytes;
     int32_t ret;
     char buff[TX2_SYSFS_GPU_FREQ_MAX_STRLEN];
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    ssize_t num_read_bytes;
     printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
     lseek(fd_gpufreq, 0, SEEK_SET);
-    num_read_bytes = read(fd_gpufreq, buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    num_read_bytes =
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    read(fd_gpufreq, buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
 
     ret = atoi(buff);
 
