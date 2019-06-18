@@ -258,6 +258,13 @@ end_arg_processing:
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*s mW - %*s mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, "", TX2_SYSFS_GPU_UTIL_MAX_STRLEN, "");
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*s.%6s%6s%1s J", 9, "", "", "", "");
 
+    // Reserve space to write summary during CNN
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary during CNN");
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*s.%*s %s - %*s.%*s %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), "", 1, "", "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), "", 1, "", "%");
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*s MHz - %*s MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, "", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, "");
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*s mW - %*s mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, "", TX2_SYSFS_GPU_UTIL_MAX_STRLEN, "");
+    info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*s.%6s%6s%1s J", 9, "", "", "", "");
+
     // FINISH RESERVATION
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n");
     info->metadata_end = lseek(stat_fd, info->summary_len, SEEK_CUR);
@@ -313,7 +320,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     rawdata_info_struct            *rawdata_info;
     powerlog_struct                powerlog;
     caffelog_struct                *caffelog, list_caffelog;
-    summary_struct                 summary;
+    summary_struct                 summary, summary_cnn;
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
@@ -325,6 +332,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
     int i, j;
 
     int flag_powerlog;
+    int flag_cnnstart;
+    int flag_cnnfinish;
 
     char buff[MAX_BUFFLEN];
     size_t buff_len;
@@ -345,7 +354,9 @@ void calculate_2ndstat(const measurement_info_struct info) {
     print_header_raw(stat_fd, info);
 
     init_summary(&summary);
-
+    init_summary(&summary_cnn);
+    flag_cnnstart  = 0;
+    flag_cnnfinish = 0;
 
     // Process Caffe log file
     INIT_LIST_HEAD(&list_caffelog.list);
@@ -389,6 +400,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
         // Update summary
         update_summary(&summary, &powerlog);
+        if(flag_cnnstart & (!flag_cnnfinish))
+            update_summary(&summary_cnn, &powerlog);
 
 compare_timestamp:
         // Compare timestamps and set/unset flag
@@ -462,6 +475,12 @@ compare_timestamp:
                 caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
                 if(caffelog == &list_caffelog)
                     caffelog = NULL;
+                else {
+                    if(caffelog->cnn_start == 100)
+                        flag_cnnstart = 1;
+                    if(caffelog->cnn_finish == 100)
+                        flag_cnnfinish = 1;
+                }
 #ifdef DEBUG
                 printf("%p", caffelog);
 #endif   // DEBUG
@@ -487,6 +506,18 @@ rawdata_eof_found:
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary.max_gpu_power);
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
+    write(stat_fd, buff, buff_len);
+
+    // Write summary during CNN
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary during CNN");
+    write(stat_fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.min_gpu_util / 10), 1, (summary_cnn.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.max_gpu_util / 10), 1, (summary_cnn.max_gpu_util % 10), "%");
+    write(stat_fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.max_gpu_freq);
+    write(stat_fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary_cnn.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary_cnn.max_gpu_power);
+    write(stat_fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary_cnn.gpu_energy_J, summary_cnn.gpu_energy_uJ, summary_cnn.gpu_energy_pJ, summary_cnn.gpu_energy_dotone_pJ);
     write(stat_fd, buff, buff_len);
 
     // FINISH writting summary
