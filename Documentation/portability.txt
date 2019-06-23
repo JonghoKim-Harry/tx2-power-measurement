@@ -50,7 +50,7 @@ For portability, I used:
         - atoi()                       in <stdlib.h>
         - localtime()                  in <time.h>
 
-   * POSIX Library Data Types, Variables, Macros, and Functions:
+   * POSIX-compatible Data Types, Variables, Macros, and Functions:
 
         - regex_t                      in <regex.h>
         - regmatch_t                   in <regex.h>
@@ -63,6 +63,10 @@ For portability, I used:
         - regcomp()                    in <regex.h>
         - regexec()                    in <regex.h>
         - regfree()                    in <regex.h>
+        - dlopen()                     in <dlfcn.h>
+        - dlsym()                      in <dlfcn.h>
+        - dlclose()                    in <dlfcn.h>
+        - dlerror()                    in <dlfcn.h>
         - S_IFDIR()                    in <sys/stat.h>
 
 
