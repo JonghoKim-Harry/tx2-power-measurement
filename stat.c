@@ -81,7 +81,11 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
         if(*ptr == '\n')
             *ptr = '\0';
     }
-    buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s", buff1);
+
+    if(!strcmp(buff1, "userspace"))
+        buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s (%s)", buff1, info.gpugov_name);
+    else
+        buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s", buff1);
     write(stat_fd, buff2, buff2_len);
     close(fd);
 

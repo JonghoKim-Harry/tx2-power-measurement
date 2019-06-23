@@ -173,11 +173,10 @@ void measure_rawdata(const int pid, const measurement_info_struct info) {
         }
 
         if(info.userspace_gpugovernor)
-            determine_gpufreq();
+            curr_gpugov->get_target_freq();
 
         for(i=0; i<info.num_rawdata; i++) {
             rawdata_info = info.rawdata_info[i];
-            // TODO
             switch(rawdata_info.num_sysfs_fd) {
             case 0:
                 rawdata_info.func_read_rawdata(info.rawdata_fd);

@@ -15,6 +15,7 @@ TARGET_PATH := $(shell pwd)
 TARGET := power_measurement
 DEBUG_TARGET := $(TARGET)_debug
 
+.PHONY: all
 all: $(TARGET)
 
 HEADERS := constants.h \
@@ -36,11 +37,12 @@ OBJECTS := measurement_info.o \
 		   parse_caffelog.o \
 		   enhanced_shcmd.o \
 		   constants.o
-OBJECTS += runtime/collect_rawdata.o \
-           governor/governor.o \
-		   governor/ondemand8050.o
 
-$(TARGET): $(TARGET).o $(OBJECTS) $(HEADERS)
+SUBDIR_OBJECTS := governor/governor.o \
+	              governor/ondemand8050.o \
+				  runtime/collect_rawdata.o
+
+$(TARGET): $(SUBDIR_OBJECTS) $(TARGET).o $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 %.o: %.c
@@ -48,7 +50,7 @@ $(TARGET): $(TARGET).o $(OBJECTS) $(HEADERS)
 
 .PHONY: clean
 clean: FORCE
-	-rm $(TARGET) *.o *.txt runtime/*.o governor/*.o
+	-rm $(TARGET) *.o *.txt governor/*.o runtime/*.o
 
 .PHONY: check check-intro check-cifar10 check-mnist
 check: $(TARGET) check-intro check-cifar10 check-mnist

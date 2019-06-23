@@ -70,6 +70,7 @@ CFLAGS FOR DEBUG
 
 
 SCRIPT USAGE EXAMPLE
+============
 
    #
    sudo ./power_measurement -c gpu -i 10000 -f exp_result/cifar-10/cifar-10@10ms.txt ./script/run/run_cifar10.sh
@@ -79,8 +80,8 @@ SCRIPT USAGE EXAMPLE
    sudo ./power_measurement -c gpu -i 50000 -f exp_result/cifar-10/cifar-10@50ms.txt ./script/run/run_cifar10.sh
 
    #
-   sudo ./power_measurement -g -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -g -i 10000 -f exp_result/mnist/mnist@governor.txt ./script/run/run_mnist.sh
+   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10.sh
+   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/mnist/mnist@governor.txt ./script/run/run_mnist.sh
 
 
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
@@ -141,3 +142,9 @@ SCRIPT USAGE EXAMPLE
 
    # Crop caffelog files in a directory
    ./script/log/caffetime_forward.sh test_result/cifar-10/ > cifar-10.time.csv
+
+
+HOW TO DEBUG?
+============
+
+   sudo gdb -ex=r --args ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10.sh

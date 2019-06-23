@@ -8,6 +8,7 @@
 #define DEFAULT_GID   1001   // nvidia
 
 #define MAX_BUFFLEN   256
+#define GPU_GOVERNOR_NAME_LEN   64
 
 // sysfs fds
 #define MAX_NUM_SYSFS_FD     8

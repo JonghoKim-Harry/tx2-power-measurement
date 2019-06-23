@@ -248,6 +248,7 @@ typedef struct measurement_info_struct {
 
     // GPU Governor
     int userspace_gpugovernor;
+    char gpugov_name[GPU_GOVERNOR_NAME_LEN];
 
     // Powerlog
     char powerlog_filename[128];

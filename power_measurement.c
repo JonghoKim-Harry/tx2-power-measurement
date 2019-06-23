@@ -27,7 +27,7 @@
 #include "governor/governor.h"
 
 #define HELP_FIRST_COLWIDTH         30
-#define AVAILABLE_OPTIONS   "-"   "c:f:g::hi:"
+#define AVAILABLE_OPTIONS   "-"   "c:f:g:hi:"
 
 void help() {
 
@@ -38,7 +38,7 @@ void help() {
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "", "Supported components: all, cpu, gpu, ddr, wifi, soc");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-f <file name>",
                     "An execution file");
-    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-g [<governor>]",
+    printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-g <governor>",
                     "Set an userspace governor");
     printf("\n\t%-*s%s", HELP_FIRST_COLWIDTH, "-h",
             "Print help message");
@@ -107,6 +107,7 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 
         case 'g':   // option -g with optional argument
             gflag = 1;
+            strcpy(info->gpugov_name, optarg);
             break;
 
         case 'h':   // option -h without argument
@@ -146,7 +147,8 @@ end_arg_processing:
 
     if(gflag) {
         info->userspace_gpugovernor = 1;
-        start_gpugovernor();
+        init_gpugovernor();
+        start_gpugovernor(info->gpugov_name);
     }
 
     if(argc == optind) {
