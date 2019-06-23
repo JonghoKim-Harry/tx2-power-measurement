@@ -38,7 +38,7 @@ OBJECTS := measurement_info.o \
 		   constants.o
 OBJECTS += runtime/collect_rawdata.o \
            governor/governor.o \
-		   governor/ondemand_8050.o
+		   governor/ondemand8050.o
 
 $(TARGET): $(TARGET).o $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
