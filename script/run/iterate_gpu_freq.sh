@@ -62,12 +62,12 @@ for AVAILABLE_FREQ in $AVAILABLE_GPU_FREQ_LIST
 do
     sudo echo "$AVAILABLE_FREQ" > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/max_freq
     sudo echo "$AVAILABLE_FREQ" > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
-    echo "GPU frequency is set to $AVAILABLE_FREQ Hz"
+    echo "$0: GPU frequency is set to $AVAILABLE_FREQ Hz"
 
     FREQ_IN_MHZ=$(echo $AVAILABLE_FREQ | sed -r 's/([[:digit:]]+)[[:digit:]]{6}/\1/g')
     STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_"$FREQ_IN_MHZ"MHz.txt
-
-    $POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND
+    COMMAND="$POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND"
+    $COMMAND
     cd $POWER_MEASUREMENT_HOME
 done;
 
@@ -79,8 +79,9 @@ echo END
 sudo echo $MIN > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/min_freq
 sudo echo $MAX > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/max_freq
 sudo echo $DEFAULT_GPU_GOVERNOR > /sys/devices/17000000.gp10b/devfreq/17000000.gp10b/governor
-echo "GPU frequency is recovered to default setting"
+echo "$0: GPU frequency is recovered to default setting"
 
 STAT_FILE="$RESULT_DIR/$BENCHMARK_NAME"_gpu_default_governor.txt
 
-$POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND
+COMMAND="$POWER_MEASUREMENT_TOOL -c gpu -i 1000 -f $STAT_FILE $SHELL_COMMAND"
+$COMMAND
