@@ -108,6 +108,8 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
      */
     off_t new_offset = offset;
 
+    const size_t BUFF_SIZE = 256;
+
     // Timestamp
     const size_t max_regexmatch = 2 + 1;   // 0th is whole match
     regmatch_t matched_regex[max_regexmatch];
@@ -115,11 +117,11 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
     const char *start_ptr;
 
     // Line
-    char buff[256];
+    char buff[BUFF_SIZE];
     const char *eol;
     ssize_t read_bytes;
 
-    char event_buff[256];
+    char event_buff[BUFF_SIZE];
 
     // Flag
     int detect_something;
@@ -146,7 +148,7 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
     caffelog->calendar_date.tm_mday  = calendar.tm_mday;
 
 read_a_line:
-    read_bytes = pread(caffelog_fd, buff, 256, new_offset);
+    read_bytes = pread(caffelog_fd, buff, BUFF_SIZE, new_offset);
 
     if(read_bytes <= 0) {
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
@@ -211,7 +213,6 @@ read_a_line:
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     caffelog->calendar_date.tm_sec = atoi(timebuff);
     (&caffelog->timestamp)->tv_sec = mktime(&caffelog->calendar_date);
-
 
     // Nanosecond
     start_ptr += 3;

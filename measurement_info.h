@@ -116,7 +116,8 @@ typedef struct caffelog_struct {
      *  Note that year, month, day are ignored to be 0
      */
     struct tm calendar_date;   // GMT, HH:MM:SS
-    char event[MAX_COLWIDTH];
+//    char event[MAX_COLWIDTH];
+    char event[256];
 
     // Various Events
     int cnn_start;
