@@ -52,14 +52,15 @@ $(TARGET): $(SUBDIR_OBJECTS) $(TARGET).o $(OBJECTS) $(HEADERS)
 clean: FORCE
 	-rm $(TARGET) *.o *.txt governor/*.o runtime/*.o
 
-.PHONY: check check-intro check-cifar10 check-mnist
-check: $(TARGET) check-intro check-cifar10 check-mnist
+.PHONY: check check-intro check-cifar10 check-lenet
+check: $(TARGET) check-intro check-cifar10 check-lenet check-alexnet
 	@echo "Finished ALL Selftesting"
 
 check-intro: FORCE
 	@echo "\n"
 	@echo "Start Selftesting with:   * CIFAR-10"
-	@echo "                          * MNIST"
+	@echo "                          * LeNet"
+	@echo "                          * AlexNet"
 
 #
 # Check with CIFAR-10 dataset
@@ -73,21 +74,31 @@ check-cifar10: $(TARGET)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
-# Check with MNIST dataset and LeNet network
+# Check with LeNet and MNIST dataset
 #
-CAFFE_COMMAND_MNIST := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/mnist/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/mnist/lenet_iter_10000.caffemodel -gpu all
-EXP_RESULT_PATH_MNIST :=  $(POWER_MEASUREMENT_HOME)/exp_result/mnist
+CAFFE_COMMAND_LENET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/lenet/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/lenet/lenet_iter_10000.caffemodel -gpu all
+EXP_RESULT_PATH_LENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/lenet
 
-check-mnist: $(TARGET)
-	@echo "\n** Start selftesting with MNIST\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt -i 10000 $(CAFFE_COMMAND_MNIST)
-	@echo "\n** Finish selftesting with MNIST\n"
+check-lenet: $(TARGET)
+	@echo "\n** Start selftesting with LeNet\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_LENET)
+	@echo "\n** Finish selftesting with LeNet\n"
 
-check-plot: check-cifar10 check-mnist
+#
+# Check with AlexNet and ImageNet'2012 dataset
+#
+CAFFE_COMMAND_ALEXNET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/models/bvlc_alexnet/train_val.prototxt -weights $(CAFFE_HOME)/models/bvlc_alexnet/bvlc_alexnet.caffemodel -gpu all
+EXP_RESULT_PATH_ALEXNET :=  $(POWER_MEASUREMENT_HOME)/exp_result/alexnet
+check-alexnet: $(TARGET)
+	@echo "\n** Start selftesting with AlexNet\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_ALEXNET)
+	@echo "\n** Finish selftesting with AlexNet\n"
+
+check-plot: check-cifar10 check-lenet check-alexnet
 	@echo "\n** Drawing a plot for selftesting result with CIFAR-10\n"
 	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(EXP_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10
-	@echo "\n** Drawing a plot for selftesting result with MNIST\n"
-	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power.txt $(EXP_RESULT_PATH_MNIST)/mnist_plot.png MNIST
+	@echo "\n** Drawing a plot for selftesting result with LeNet\n"
+	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt $(EXP_RESULT_PATH_LENET)/lenet_plot.png LeNet
 
 debug: CFLAGS += -g -DDEBUG -UNDEBUG
 debug: $(TARGET)
@@ -96,10 +107,10 @@ debug: $(TARGET)
 	@if [ ! -d $(EXP_RESULT_PATH_CIFAR10) ]; then mkdir -p $(EXP_RESULT_PATH_CIFAR10); fi;
 	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10 with DEBUG VERSION\n"
-	@echo "\n** Start selftesting with MNIST with DEBUG VERSION\n"
-	@if [ ! -d $(EXP_RESULT_PATH_MNIST) ]; then mkdir -p $(EXP_RESULT_PATH_MNIST); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_MNIST)/mnist_gpu_power-debug.txt $(CAFFE_COMMAND_MNIST)
-	@echo "\n** Finish selftesting with MNIST with DEBUG VERSION\n"
+	@echo "\n** Start selftesting with LeNet with DEBUG VERSION\n"
+	@if [ ! -d $(EXP_RESULT_PATH_LENET) ]; then mkdir -p $(EXP_RESULT_PATH_LENET); fi;
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power-debug.txt $(CAFFE_COMMAND_LENET)
+	@echo "\n** Finish selftesting with LeNet with DEBUG VERSION\n"
 	@echo "\nFINISH DEBUGGING"
 
 # To prevent make from searching for an implicit rule

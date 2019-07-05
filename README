@@ -79,6 +79,9 @@ SCRIPT USAGE EXAMPLE
    sudo ./power_measurement -c gpu -i 40000 -f exp_result/cifar-10/cifar-10@40ms.txt ./script/run/run_cifar10.sh
    sudo ./power_measurement -c gpu -i 50000 -f exp_result/cifar-10/cifar-10@50ms.txt ./script/run/run_cifar10.sh
 
+   # AlexNet
+   sudo ./power_measurement -i 10000 -f exp_result/alexnet/alexnet_gpu.txt ./script/run/run_alexnet.sh
+
    #
    sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10.sh
    sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/mnist/mnist@governor.txt ./script/run/run_mnist.sh
@@ -96,6 +99,10 @@ SCRIPT USAGE EXAMPLE
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with MNIST dataset
    sudo ./script/run/iterate_gpu_freq.sh mnist /bin/bash ./script/run/run_mnist.sh
+
+   # Run experiments with all available GPU frequencies as fixed frequency
+   # and default governor setup with AlexNet and ImageNet'2012 dataset
+   sudo ./script/run/iterate_gpu_freq.sh alexnet /bin/bash ./script/run/run_alexnet.sh
 
    #
    sudo ./script/run/iterate_gpu_freq.sh caffenet-cat /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
