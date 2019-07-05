@@ -102,16 +102,6 @@ check-plot: check-cifar10 check-lenet check-alexnet
 
 debug: CFLAGS += -g -DDEBUG -UNDEBUG
 debug: $(TARGET)
-	@echo "\nSTART DEBUGGING"
-	@echo "\n** Start selftesting with CIFAR-10 with DEBUG VERSION\n"
-	@if [ ! -d $(EXP_RESULT_PATH_CIFAR10) ]; then mkdir -p $(EXP_RESULT_PATH_CIFAR10); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power-debug.txt $(CAFFE_COMMAND_CIFAR10)
-	@echo "\n** Finish selftesting with CIFAR-10 with DEBUG VERSION\n"
-	@echo "\n** Start selftesting with LeNet with DEBUG VERSION\n"
-	@if [ ! -d $(EXP_RESULT_PATH_LENET) ]; then mkdir -p $(EXP_RESULT_PATH_LENET); fi;
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power-debug.txt $(CAFFE_COMMAND_LENET)
-	@echo "\n** Finish selftesting with LeNet with DEBUG VERSION\n"
-	@echo "\nFINISH DEBUGGING"
 
 # To prevent make from searching for an implicit rule
 .PHONY: FORCE
