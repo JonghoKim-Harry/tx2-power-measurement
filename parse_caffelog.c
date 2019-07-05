@@ -126,12 +126,12 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
     int detect_batch_finish;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   START");
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     if(offset < 0) {
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   FINISHED: Maybe end of file reached");
+    printf("\n%s() in %s:%d   FINISHED: Maybe end of file reached", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
         return -1;
@@ -162,19 +162,19 @@ read_a_line:
     new_offset += (eol-buff+1);
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   Line: %s", buff);
+    printf("\n%s() in %s:%d   Line: %s", __func__, __FILE__, __LINE__, buff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     if(regexec(&caffelog_parser.caffelog_basic_regex, buff, (2 + 1), matched_regex, NO_REGEX_EFLAGS))
         goto read_a_line;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   matched_regex[0].rm_so: %u", matched_regex[0].rm_so);
-    printf("\nparse_caffelog()   matched_regex[0].rm_eo: %u", matched_regex[0].rm_eo);
-    printf("\nparse_caffelog()   matched_regex[1].rm_so: %u", matched_regex[1].rm_so);
-    printf("\nparse_caffelog()   matched_regex[1].rm_eo: %u", matched_regex[1].rm_eo);
-    printf("\nparse_caffelog()   matched_regex[2].rm_so: %u", matched_regex[2].rm_so);
-    printf("\nparse_caffelog()   matched_regex[2].rm_eo: %u", matched_regex[2].rm_eo);
+    printf("\n%s() in %s:%d   matched_regex[0].rm_so: %u", __func__, __FILE__, __LINE__, matched_regex[0].rm_so);
+    printf("\n%s() in %s:%d   matched_regex[0].rm_eo: %u", __func__, __FILE__, __LINE__, matched_regex[0].rm_eo);
+    printf("\n%s() in %s:%d   matched_regex[1].rm_so: %u", __func__, __FILE__, __LINE__, matched_regex[1].rm_so);
+    printf("\n%s() in %s:%d   matched_regex[1].rm_eo: %u", __func__, __FILE__, __LINE__, matched_regex[1].rm_eo);
+    printf("\n%s() in %s:%d   matched_regex[2].rm_so: %u", __func__, __FILE__, __LINE__, matched_regex[2].rm_so);
+    printf("\n%s() in %s:%d   matched_regex[2].rm_eo: %u", __func__, __FILE__, __LINE__, matched_regex[2].rm_eo);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     if(matched_regex[0].rm_so == matched_regex[0].rm_eo) {
@@ -189,7 +189,7 @@ read_a_line:
     strncpy(timebuff, start_ptr, 2);
     timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   timebuff hour: %s", timebuff);
+    printf("\n%s() in %s:%d   timebuff hour: %s", __func__, __FILE__, __LINE__, timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     caffelog->calendar_date.tm_hour = atoi(timebuff);
 
@@ -198,7 +198,7 @@ read_a_line:
     strncpy(timebuff, start_ptr, 2);
     timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   timebuff min: %s", timebuff);
+    printf("\n%s() in %s:%d   timebuff min: %s", __func__, __FILE__, __LINE__, timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     caffelog->calendar_date.tm_min = atoi(timebuff);
 
@@ -207,7 +207,7 @@ read_a_line:
     strncpy(timebuff, start_ptr, 2);
     timebuff[2] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   timebuff sec: %s", timebuff);
+    printf("\n%s() in %s:%d   timebuff sec: %s", __func__, __FILE__, __LINE__, timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     caffelog->calendar_date.tm_sec = atoi(timebuff);
     (&caffelog->timestamp)->tv_sec = mktime(&caffelog->calendar_date);
@@ -218,7 +218,7 @@ read_a_line:
     strncpy(timebuff, start_ptr, 6);
     timebuff[6] = '\0';
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   timebuff ns: %s", timebuff);
+    printf("\n%s() in %s:%d   timebuff ns: %s", __func__, __FILE__, __LINE__, timebuff);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
     (&caffelog->timestamp)->tv_nsec = MICROSECOND_TO_NANOSECOND * atoi(timebuff);
 
@@ -229,7 +229,7 @@ read_a_line:
     strcat(caffelog->event, buff + matched_regex[2].rm_so);
     strcat(caffelog->event, "\"");
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   event: %s", caffelog->event);
+    printf("\n%s() in %s:%d   event: %s", __func__, __FILE__, __LINE__, caffelog->event);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     // Batch Index
@@ -282,7 +282,7 @@ read_a_line:
         caffelog->batch_finish = -1;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
-    printf("\nparse_caffelog()   FINISHED");
+    printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_PARSE_CAFFELOG
 
     return new_offset;

@@ -342,6 +342,10 @@ void calculate_2ndstat(const measurement_info_struct info) {
     char buff[MAX_BUFFLEN];
     size_t buff_len;
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
     // Rawdata
     rawdata_fd = open(info.rawdata_filename, O_RDONLY | O_NONBLOCK);
     lseek(rawdata_fd, 0, SEEK_SET);
@@ -353,14 +357,21 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
     // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY);
-    printf("\nSTART calculating 2nd stats\n");
     lseek(stat_fd, info.metadata_end, SEEK_SET);
     print_header_raw(stat_fd, info);
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   Start initializing summary", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
     init_summary(&summary);
     init_summary(&summary_cnn);
     flag_cnnstart  = 0;
     flag_cnnfinish = 0;
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   Finish initializing summary", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   Start parsing caffelogs", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
 
     // Process Caffe log file
     INIT_LIST_HEAD(&list_caffelog.list);
@@ -383,6 +394,10 @@ void calculate_2ndstat(const measurement_info_struct info) {
         caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
     else
         caffelog = NULL;
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   Finish parsing caffelogs", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
 
     // Process rawdata and write to stat file.
     // Note that making powerlogs to linked list is unreasonable,
@@ -535,8 +550,10 @@ rawdata_eof_found:
     // Close and remove rawdata.bin file
     close(rawdata_fd);
     close(stat_fd);
-    printf("\nEnd Jetson TX2 power measurement\n");
 
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
     return;
 }
 
