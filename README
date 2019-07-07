@@ -102,7 +102,7 @@ SCRIPT USAGE EXAMPLE
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with AlexNet and ImageNet'2012 dataset
-   sudo ./script/run/iterate_gpu_freq.sh alexnet /bin/bash ./script/run/run_alexnet.sh
+   sudo ./script/run/iterate_gpu_freq.sh alexnet ./script/run/run_alexnet.sh
 
    #
    sudo ./script/run/iterate_gpu_freq.sh caffenet-cat /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg

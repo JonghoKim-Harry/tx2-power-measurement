@@ -7,3 +7,6 @@
 
 * Intentionally beginning each rows with one whitespace,
   because MS Excel recognizes whitespace as a delimiter
+
+* Excel values have upper bound about: 9.99999E+307
+  Please use this value as infinite
