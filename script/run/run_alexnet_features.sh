@@ -21,4 +21,6 @@ if [ -d "$DEST_DIR" ]; then
     rm -rf $DEST_DIR
 fi
 
-$CAFFE_ROOT/build/tools/extract_features $CAFFE_ROOT/models/bvlc_alexnet/bvlc_alexnet.caffemodel $CAFFE_ROOT/models/bvlc_alexnet/train_val.prototxt $LAYER $DEST_DIR 10 lmdb GPU all
+BATCH_SIZE=50
+
+$CAFFE_ROOT/build/tools/extract_features $CAFFE_ROOT/models/bvlc_alexnet/bvlc_alexnet.caffemodel $CAFFE_ROOT/models/bvlc_alexnet/train_val.prototxt $LAYER $DEST_DIR $BATCH_SIZE lmdb GPU all
