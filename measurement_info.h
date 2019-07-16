@@ -49,7 +49,7 @@ typedef struct powerlog_struct {
 
     struct timespec timestamp;   // GMT
 
-    int16_t gpu_util;            // x10%
+    int16_t gpu_util;            // x0.1%
     int16_t gpu_freq;            // MHz
     int16_t gpu_power;           // mW
 
@@ -73,8 +73,13 @@ typedef struct summary_struct {
     int                     num_powerlog;
 
     // GPU Utilization
-    int16_t min_gpu_util;        // x10%
-    int16_t max_gpu_util;        // x10%
+    int16_t min_gpu_util;        // x0.1%
+    int16_t max_gpu_util;        // x0.1%
+
+    // Area of time-utilization graph
+    // in order to calculate average utilization
+    int64_t area_gpu_util_sec;   // 0.1 % * sec
+    int64_t area_gpu_util_ns;    // 0.1 % * ns
 
     // GPU Frequency
     int16_t min_gpu_freq;        // MHz

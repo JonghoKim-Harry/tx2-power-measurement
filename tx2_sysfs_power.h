@@ -11,17 +11,18 @@
 //   * TX2_SYSFS_EMC_FREQ
 //   * TX2_SYSFS_APE_FREQ
 
-// I assume that CPU/GPU/DDR power < 100W
+// I assume that CPU/GPU/MEM power < 100W
 #define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1300
 #define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
 #define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5       // mW
-#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5       // x10%, up to 1000
-#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7       // x1000%, up to 1000000
+#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5       // x0.1%, up to 1000
+#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7       // x0.001 Celsius degree,
+                                                  // up to 1000000
 #define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1       // Boolean: 0, 1
 #define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7       // kHz, up to 2035200
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5       // mW
-#define TX2_SYSFS_DDR_POWER_MAX_STRLEN    5       // mW
-#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x10000%, up to 1000000
+#define TX2_SYSFS_MEM_POWER_MAX_STRLEN    5       // mW
+#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x0.0001%, up to 1000000
 
 // Thermal Informations (x1000 degree Celsius)
 //   * BCPU-therm
@@ -50,11 +51,11 @@
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
 
 // Power Measurement II (mW, integer)
-#define TX2_SYSFS_POWER_ALL    \
+#define TX2_SYSFS_ALL_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power0_input"
-#define TX2_SYSFS_POWER_CPU    \
+#define TX2_SYSFS_CPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power1_input"
-#define TX2_SYSFS_POWER_DDR    \
+#define TX2_SYSFS_MEM_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power2_input"
 
 // CPU Governor Informations

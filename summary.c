@@ -26,45 +26,20 @@ void init_summary(summary_struct *summary) {
     summary->gpu_energy_pJ         = 0;
     summary->gpu_energy_dotone_pJ  = 0;
 
+    summary->area_gpu_util_sec      = 0;
+    summary->area_gpu_util_ns       = 0;
+
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_SUMMARY
     return;
 }
 
-void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+static void update_gpuenergy(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
 
     int64_t sec, ms, ns;
     int64_t avg_gpupower_mW, avg_gpupower_dotone_mW;
     int64_t fraction, remainder;
-
-#if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-#endif   // DEBUG or DEBUG_SUMMARY
-
-    if(!summary->num_powerlog) {
-        summary->start_timestamp = powerlog_ptr->timestamp;
-        summary->finish_timestamp = powerlog_ptr->timestamp;
-        summary->last_powerlog = *powerlog_ptr;
-    }
-
-    // Update maximum values
-    if(summary->max_gpu_util < powerlog_ptr->gpu_util)
-        summary->max_gpu_util = powerlog_ptr->gpu_util;
-    if(summary->max_gpu_freq < powerlog_ptr->gpu_freq)
-        summary->max_gpu_freq = powerlog_ptr->gpu_freq;
-    if(summary->max_gpu_power < powerlog_ptr->gpu_power)
-        summary->max_gpu_power = powerlog_ptr->gpu_power;
-
-    // Update minimum values.
-    // Note that we initialized minimum values to maximum possitive number.
-    // Thus, correct values are always less than initialized minimum values
-    if(summary->min_gpu_util > powerlog_ptr->gpu_util)
-        summary->min_gpu_util = powerlog_ptr->gpu_util;
-    if(summary->min_gpu_freq > powerlog_ptr->gpu_freq)
-        summary->min_gpu_freq = powerlog_ptr->gpu_freq;
-    if(summary->min_gpu_power > powerlog_ptr->gpu_power)
-        summary->min_gpu_power = powerlog_ptr->gpu_power;
 
     // Calculate average power
     avg_gpupower_mW = (powerlog_ptr->gpu_power + summary->last_powerlog.gpu_power) / 2;
@@ -167,6 +142,68 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
     printf("\n%s() in %s:%d   GPU energy uJ:     %ld", __func__, __FILE__, __LINE__, summary->gpu_energy_uJ);
     printf("\n%s() in %s:%d   GPU energy pJ:     %ld.%ld", __func__, __FILE__, __LINE__, summary->gpu_energy_pJ, summary->gpu_energy_dotone_pJ);
 #endif   // DEBUG or DEBUG_SUMMARY
+
+    return;
+}
+
+static void update_area_gpuutil(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+    int64_t sec, ns;
+    int64_t fraction;
+
+    // Calculate elapsed time in: sec, ns
+    sec = powerlog_ptr->timestamp.tv_sec  - summary->finish_timestamp.tv_sec;
+    ns  = powerlog_ptr->timestamp.tv_nsec - summary->finish_timestamp.tv_nsec;
+
+    if(ns < 0) {
+        --sec;
+        ns += ONE_PER_NANO;
+    }
+
+    summary->area_gpu_util_sec += (powerlog_ptr->gpu_util * sec);
+    summary->area_gpu_util_ns  += (powerlog_ptr->gpu_util * ns);
+
+    fraction = summary->area_gpu_util_ns / ONE_PER_NANO;
+    if(fraction > 0) {
+        summary->area_gpu_util_sec += fraction;
+        summary->area_gpu_util_ns -= (fraction * ONE_PER_NANO);
+    }
+
+    return;
+}
+
+void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    if(!summary->num_powerlog) {
+        summary->start_timestamp = powerlog_ptr->timestamp;
+        summary->finish_timestamp = powerlog_ptr->timestamp;
+        summary->last_powerlog = *powerlog_ptr;
+    }
+
+    // Update maximum values
+    if(summary->max_gpu_util < powerlog_ptr->gpu_util)
+        summary->max_gpu_util = powerlog_ptr->gpu_util;
+    if(summary->max_gpu_freq < powerlog_ptr->gpu_freq)
+        summary->max_gpu_freq = powerlog_ptr->gpu_freq;
+    if(summary->max_gpu_power < powerlog_ptr->gpu_power)
+        summary->max_gpu_power = powerlog_ptr->gpu_power;
+
+    // Update minimum values.
+    // Note that we initialized minimum values to maximum possitive number.
+    // Thus, correct values are always less than initialized minimum values
+    if(summary->min_gpu_util > powerlog_ptr->gpu_util)
+        summary->min_gpu_util = powerlog_ptr->gpu_util;
+    if(summary->min_gpu_freq > powerlog_ptr->gpu_freq)
+        summary->min_gpu_freq = powerlog_ptr->gpu_freq;
+    if(summary->min_gpu_power > powerlog_ptr->gpu_power)
+        summary->min_gpu_power = powerlog_ptr->gpu_power;
+
+    update_gpuenergy(summary, powerlog_ptr);
+    update_area_gpuutil(summary, powerlog_ptr);
 
     // Count number of powerlogs
     ++(summary->num_powerlog);

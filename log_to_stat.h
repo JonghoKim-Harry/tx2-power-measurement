@@ -14,6 +14,8 @@ ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 
 // Powerlog Summary to Statistics
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t area_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
 
 // TODO
 ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary);

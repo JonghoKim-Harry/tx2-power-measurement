@@ -114,7 +114,7 @@ ssize_t gpufreq_to_stat(const int stat_fd, const int colwidth, const powerlog_st
 
 ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 
-    // @powerlog.gpu_util: x10%
+    // @powerlog.gpu_util: x0.1%
     ssize_t num_written_bytes;
     char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
     int buff2_len;
@@ -154,6 +154,82 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_s
     snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%06ld%01ld", summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+// Prints area of GPU time-utilization. Unit: sec * %
+ssize_t area_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // Return value
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    size_t buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    if(colwidth <= 10) {
+        perror("The column width for area of GPU time-util should be larger than 10");
+        return -1;
+    }
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%01ld%08ld%01ld", (colwidth-10), summary.area_gpu_util_sec / 10, summary.area_gpu_util_sec % 10, summary.area_gpu_util_ns / 10, summary.area_gpu_util_ns % 10);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // Return value
+    ssize_t num_written_bytes;
+
+    // Area of time-utilization
+    double area;
+
+    // Elapsed time
+    time_t sec_int;
+    int32_t ns_int;
+    double elapsed_time;    // ns
+
+    // Buffer
+    char buff[MAX_COLWIDTH];
+    size_t buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    // Calculate and convert elapsed time in ns
+    sec_int = summary.finish_timestamp.tv_sec  - summary.start_timestamp.tv_sec;
+    ns_int  = summary.finish_timestamp.tv_nsec - summary.start_timestamp.tv_nsec;
+    elapsed_time = sec_int * 1e9 + ns_int;
+
+    if(elapsed_time == 0) {
+
+        buff_len = snprintf(buff, MAX_COLWIDTH, "%*s", colwidth, "#N/A");
+        goto write_avg_gpu_util;
+    }
+
+    // Calculate and convert area of time-utilization.
+    // Note that area is divided by 10 because its unit is 0.1%*ns
+    area = summary.area_gpu_util_sec * 1e8 + summary.area_gpu_util_ns * 1e-1;
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", area / elapsed_time);
+write_avg_gpu_util:
+    num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
