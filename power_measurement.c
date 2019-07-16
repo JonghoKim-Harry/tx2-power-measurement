@@ -515,7 +515,11 @@ compare_timestamp:
 #undef PAD_COLUMN
 rawdata_eof_found:
 
-    // START writting summary
+    write(stat_fd, "\n\nAvg.GPU Utilization during CNN: ", 34);
+    avg_gpuutil_to_stat(stat_fd, 18, summary_cnn);
+    write(stat_fd, "%", 1);
+
+    // START writting summary on reserverd space
     lseek(stat_fd, info.summary_start, SEEK_SET);
 
     // Write summary
