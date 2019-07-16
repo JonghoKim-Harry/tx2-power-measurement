@@ -52,15 +52,26 @@ $(TARGET): $(SUBDIR_OBJECTS) $(TARGET).o $(OBJECTS) $(HEADERS)
 clean: FORCE
 	-rm $(TARGET) *.o *.txt governor/*.o runtime/*.o
 
-.PHONY: check check-intro check-cifar10 check-lenet
-check: $(TARGET) check-intro check-cifar10 check-lenet check-alexnet
+.PHONY: check check-intro check-lenet check-cifar10 check-alexnet
+check: $(TARGET) check-intro check-lenet check-cifar10 check-alexnet
 	@echo "Finished ALL Selftesting"
 
 check-intro: FORCE
 	@echo "\n"
-	@echo "Start Selftesting with:   * CIFAR-10"
-	@echo "                          * LeNet"
+	@echo "Start Selftesting with:   * LeNet"
+	@echo "                          * CIFAR-10 Network"
 	@echo "                          * AlexNet"
+
+#
+# Check with LeNet and MNIST dataset
+#
+CAFFE_COMMAND_LENET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/lenet/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/mnist/lenet_iter_10000.caffemodel -gpu all
+EXP_RESULT_PATH_LENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/lenet
+
+check-lenet: $(TARGET)
+	@echo "\n** Start selftesting with LeNet\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_LENET)
+	@echo "\n** Finish selftesting with LeNet\n"
 
 #
 # Check with CIFAR-10 dataset
@@ -72,17 +83,6 @@ check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10\n"
 	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 $(CAFFE_COMMAND_CIFAR10)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
-
-#
-# Check with LeNet and MNIST dataset
-#
-CAFFE_COMMAND_LENET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/lenet/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/lenet/lenet_iter_10000.caffemodel -gpu all
-EXP_RESULT_PATH_LENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/lenet
-
-check-lenet: $(TARGET)
-	@echo "\n** Start selftesting with LeNet\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_LENET)
-	@echo "\n** Finish selftesting with LeNet\n"
 
 #
 # Check with AlexNet and ImageNet'2012 dataset
