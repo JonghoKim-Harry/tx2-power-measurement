@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include "measurement_info.h"
+#include "powerlog.h"
 
 #ifdef DEBUG
 void print_info(const struct measurement_info_struct info) {
@@ -43,7 +44,7 @@ void init_info(measurement_info_struct *info) {
 void register_rawdata
     (measurement_info_struct *info,
      ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),
-     ssize_t (*func_rawdata_to_powerlog)(powerlog_struct *powerlog, const int rawdata_fd),
+     ssize_t (*func_rawdata_to_powerlog)(struct powerlog_struct *powerlog, const int rawdata_fd),
      const int num_sysfs_file, ...) {
 
     const int idx = info->num_rawdata;

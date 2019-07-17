@@ -2,6 +2,7 @@
 #define UPDATE_SUMMARY_H
 
 #include "measurement_info.h"
+#include "powerlog.h"
 
 typedef struct summary_struct {
 

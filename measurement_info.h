@@ -6,11 +6,11 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
+struct powerlog_struct;
 #include "default_values.h"
 #include "list.h"
 
 struct rawdata_info_struct;
-struct powerlog_struct;
 struct caffelog_struct;
 struct tegralog_struct;
 struct stat_info_struct;
@@ -27,31 +27,6 @@ typedef struct rawdata_info_struct {
     int num_sysfs_fd;
     int sysfs_fd[MAX_NUM_SYSFS_FD];
 } rawdata_info_struct;
-
-
-/*
- *  Powerlog
- */
-typedef struct powerlog_struct {
-
-    struct timespec timestamp;   // GMT
-
-    int16_t gpu_util;            // x0.1%
-    int16_t gpu_freq;            // MHz
-    int16_t gpu_power;           // mW
-
-#ifdef TRACE_CPU
-    int16_t allcpu_power;        // mW
-    int group0_cpus[6];
-    int16_t cpu_group0_freq;     // MHz
-    int16_t cpu_group1_freq;     // MHz
-#endif   // TRACE_CPU
-
-#ifdef TRACE_DDR
-    int32_t mem_power;           // mW
-    int16_t emc_freq;            // MHz
-#endif   // TRACE_DDR
-} powerlog_struct;
 
 
 /*
@@ -258,7 +233,7 @@ void init_info(measurement_info_struct *info);
 void register_rawdata(
      measurement_info_struct *info,
      ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),
-     ssize_t (*func_rawdata_to_powerlog)(powerlog_struct *powerlog, const int rawdata_fd),
+     ssize_t (*func_rawdata_to_powerlog)(struct powerlog_struct *powerlog, const int rawdata_fd),
      const int num_sysfs_file, ...
 );
 

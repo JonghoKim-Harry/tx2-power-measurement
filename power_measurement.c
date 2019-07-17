@@ -12,7 +12,7 @@
 #include <errno.h>
 
 #include "measurement_info.h"
-#include "rawdata_to_powerlog.h"
+#include "powerlog.h"
 #include "summary.h"
 #include "parse_caffelog.h"
 #include "log_to_stat.h"

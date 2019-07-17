@@ -24,13 +24,13 @@ HEADERS := constants.h \
 		   log_to_stat.h \
 		   measurement_info.h \
 		   parse_caffelog.h \
-		   rawdata_to_powerlog.h \
+		   powerlog.h \
 		   stat.h \
 		   summary.h \
 		   tx2_sysfs_power.h
 
 OBJECTS := measurement_info.o \
-           rawdata_to_powerlog.o \
+           powerlog.o \
 		   summary.o \
 	       log_to_stat.o \
 		   stat.o \

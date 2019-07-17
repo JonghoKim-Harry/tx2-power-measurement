@@ -2,6 +2,7 @@
 #define LOG_TO_STAT_H
 
 #include "measurement_info.h"
+#include "powerlog.h"
 #include "summary.h"
 
 // Timestamp to Statistics

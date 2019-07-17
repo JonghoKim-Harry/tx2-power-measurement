@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "rawdata_to_powerlog.h"
+#include "powerlog.h"
 #include "tx2_sysfs_power.h"
 
 #define IS_WHITESPACE(x)   (x == 0x20 || x == 0x09 || x == 0x0a)
