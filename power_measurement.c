@@ -301,8 +301,8 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,          gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",        11,
                     LOGTYPE_POWERLOG,          gpuutil_to_stat);
-    register_stat(info,  "GPU-area_util(s*%)", 18,
-                    LOGTYPE_SUMMARY,           area_gpuutil_to_stat);
+    register_stat(info,  "GPU-psum_util(s*%)", 18,
+                    LOGTYPE_SUMMARY,           psum_gpuutil_to_stat);
     register_stat(info,  "Timestamp",          19,
                     LOGTYPE_TIMESTAMP,         timestamp_to_stat);
     register_stat(info,  "CNN-start/finish",   16,

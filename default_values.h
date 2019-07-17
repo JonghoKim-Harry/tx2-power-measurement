@@ -1,6 +1,7 @@
 #ifndef DEFAULT_VALUES_H
 #define DEFAULT_VALUES_H
 
+#include <stdint.h>
 #define MIN_TIME_INTERVAL        10000   // 10000 us = 10 ms
 
 // If you want to set owner of result directory, modify these values:
@@ -9,6 +10,11 @@
 
 #define MAX_BUFFLEN   256
 #define GPU_GOVERNOR_NAME_LEN   64
+
+// For initialization
+#define INIT_MAX            -1   // Maximum values are simply initialized to (-1)
+#define INIT_MIN     INT16_MAX   // Minimum values are initialized to maximum possitive numbers
+#define INIT_SUM             0   // Summation values should be initialized to 0
 
 // sysfs fds
 #define MAX_NUM_SYSFS_FD     8

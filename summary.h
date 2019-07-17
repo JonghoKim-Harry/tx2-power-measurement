@@ -9,40 +9,58 @@ typedef struct summary_struct {
     struct powerlog_struct last_powerlog;
     int                     num_powerlog;
 
-    // GPU Utilization
+    // GPU utilization and product-sum of utilization-time
     int16_t min_gpu_util;        // x0.1%
     int16_t max_gpu_util;        // x0.1%
+    int64_t psum_gpu_util_sec;   // % * sec
+    int64_t psum_gpu_util_ns;    // % * ns
 
-    // Area of time-utilization graph
-    // in order to calculate average utilization
-    int64_t area_gpu_util_sec;   // 0.1 % * sec
-    int64_t area_gpu_util_ns;    // 0.1 % * ns
-
-    // GPU Frequency
+    // GPU frequency
     int16_t min_gpu_freq;        // MHz
     int16_t max_gpu_freq;        // MHz
 
-    // GPU Power
-    int16_t min_gpu_power;       // mW
-    int16_t max_gpu_power;       // mW
-
-    // GPU Energy
-    int64_t gpu_energy_J;            // joule = Watt * second
-    int64_t gpu_energy_uJ;           // micro: 10^(-6)
-    int64_t gpu_energy_pJ;           // pico:  10^(-12)
-    int64_t gpu_energy_dotone_pJ;    // 0.1 pJ for remainder calculation
+    // GPU power and energy
+    int16_t min_gpu_power;             // mW
+    int16_t max_gpu_power;             // mW
+    int64_t gpu_energy_J;              // joule = Watt * second
+    int64_t gpu_energy_uJ;             // micro: 10^(-6)
+    int64_t gpu_energy_pJ;             // pico:  10^(-12)
+    int64_t gpu_energy_dotone_pJ;      // 0.1 pJ for remainder calculation
 
 #ifdef TRACE_CPU
-    int32_t allcpu_energy_Wh;
-    int64_t allcpu_energy_pWh;
-    int32_t avg_allcpu_power;    // mW
+    // Note that CPUs can be power-gated; therefore,
+    // avgerage utilization/frequency should be calculated carefully
+    int16_t min_cpu_util[NUM_CPUS];    // x0.1%
+    int16_t max_cpu_util[NUM_CPUS];    // x0.1%
+    int32_t min_cpu_freq[NUM_CPUS];    // MHz
+    int32_t max_cpu_freq[NUM_CPUS];    // MHz
+
+    // The power consumptions of CPUs are measured together
+    int16_t min_allcpu_power;          // mW
+    int16_t max_allcpu_power;          // mW
+    int32_t allcpu_energy_J;
+    int64_t allcpu_energy_pJ;
 #endif   // TRACE_CPU
 
-#ifdef TRACE_DDR
-    int32_t mem_energy_Wh;
-    int64_t mem_energy_pWh;
-    int32_t avg_mem_power;       // mW
-#endif   // TRACE_DDR
+#ifdef TRACE_MEM
+    // EMC utilization and product-sum of utilization-time
+    int32_t min_emc_util;        // x0.0001%
+    int32_t max_emc_util;        // x0.0001%
+    int64_t psum_emc_util_ms;    //
+    int64_t psum_emc_util_fs;    //
+
+    // EMC frequency and product-sum of frequency-time
+    int16_t min_emc_freq;        // MHz
+    int16_t max_emc_freq;        // MHz
+    int64_t psum_emc_freq_sec;   //
+    int64_t psum_emc_freq_ns;    //
+
+    // Memory power consumption
+    int16_t min_mem_power;       // mW
+    int16_t max_mem_power;       // mW
+    int32_t mem_energy_J;
+    int64_t mem_energy_pJ;
+#endif   // TRACE_MEM
 } summary_struct;
 
 void init_summary(summary_struct *summary);

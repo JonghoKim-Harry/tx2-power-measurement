@@ -160,8 +160,8 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_s
     return num_written_bytes;
 }
 
-// Prints area of GPU time-utilization. Unit: sec * %
-ssize_t area_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
+// Prints product-sum of GPU utilization-time. Unit: sec * %
+ssize_t psum_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // Return value
     ssize_t num_written_bytes;
@@ -173,11 +173,11 @@ ssize_t area_gpuutil_to_stat (const int stat_fd, const int colwidth, const summa
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
     if(colwidth <= 10) {
-        perror("The column width for area of GPU time-util should be larger than 10");
+        perror("The column width for product-sum of GPU utilization-time should be larger than 10");
         return -1;
     }
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%01ld%08ld%01ld", (colwidth-10), summary.area_gpu_util_sec / 10, summary.area_gpu_util_sec % 10, summary.area_gpu_util_ns / 10, summary.area_gpu_util_ns % 10);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%01ld%08ld%01ld", (colwidth-10), summary.psum_gpu_util_sec / 10, summary.psum_gpu_util_sec % 10, summary.psum_gpu_util_ns / 10, summary.psum_gpu_util_ns % 10);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
@@ -193,8 +193,8 @@ ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summar
     // Return value
     ssize_t num_written_bytes;
 
-    // Area of time-utilization
-    double area;
+    // Product-sum of time-utilization
+    double psum;
 
     // Elapsed time
     time_t sec_int;
@@ -220,11 +220,11 @@ ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summar
         goto write_avg_gpu_util;
     }
 
-    // Calculate and convert area of time-utilization.
-    // Note that area is divided by 10 because its unit is 0.1%*ns
-    area = summary.area_gpu_util_sec * 1e8 + summary.area_gpu_util_ns * 1e-1;
+    // Calculate and convert product-sum of utilization-time.
+    // Note that psum is divided by 10 because its unit is 0.1%*ns
+    psum = summary.psum_gpu_util_sec * 1e8 + summary.psum_gpu_util_ns * 1e-1;
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", area / elapsed_time);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", psum / elapsed_time);
 write_avg_gpu_util:
     num_written_bytes = write(stat_fd, buff, buff_len);
 

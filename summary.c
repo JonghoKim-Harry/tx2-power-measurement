@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdint.h>
+#include "default_values.h"
 #include "constants.h"
 #include "summary.h"
 
 void init_summary(summary_struct *summary) {
+
+#ifdef TRACE_CPU
+    int i;
+#endif   // TRACE_CPU
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
@@ -11,23 +16,59 @@ void init_summary(summary_struct *summary) {
 
     summary->num_powerlog = 0;
 
-    // Maximum values are simply initialized to -1
-    summary->max_gpu_util  = -1;
-    summary->max_gpu_freq  = -1;
-    summary->max_gpu_power = -1;
+    // Maximum values are initialized to INIT_MAX
+    summary->max_gpu_util        = INIT_MAX;
+    summary->max_gpu_freq        = INIT_MAX;
+    summary->max_gpu_power       = INIT_MAX;
+#ifdef TRACE_CPU
+    for(i=0; i<NUM_CPUS; ++i) {
+        summary->max_cpu_util[i] = INIT_MAX;
+        summary->max_cpu_freq[i] = INIT_MAX;
+    }
+    summary->max_allcpu_power    = INIT_MAX;
+#endif   // TRACE_CPU
+#ifdef TRACE_MEM
+    summary->max_emc_util        = INIT_MAX;
+    summary->max_emc_freq        = INIT_MAX;
+    summary->max_mem_power       = INIT_MAX;
+#endif   // TRACE_MEM
 
-    // Minimum values are initialized to maximum possitive numbers
-    summary->min_gpu_util  = INT16_MAX;
-    summary->min_gpu_freq  = INT16_MAX;
-    summary->min_gpu_power = INT16_MAX;
+    // Minimum values are initialized to INIT_MIN
+    summary->min_gpu_util        = INIT_MIN;
+    summary->min_gpu_freq        = INIT_MIN;
+    summary->min_gpu_power       = INIT_MIN;
+#ifdef TRACE_CPU
+    for(i=0; i<NUM_CPUS; ++i) {
+        summary->min_cpu_util[i] = INIT_MIN;
+        summary->min_cpu_freq[i] = INIT_MIN;
+    }
+    summary->min_allcpu_power    = INIT_MIN;
+#endif   // TRACE_CPU
+#ifdef TRACE_MEM
+    summary->min_emc_util        = INIT_MIN;
+    summary->min_emc_freq        = INIT_MIN;
+    summary->min_mem_power       = INIT_MIN;
+#endif   // TRACE_MEM
 
-    summary->gpu_energy_J          = 0;
-    summary->gpu_energy_uJ         = 0;
-    summary->gpu_energy_pJ         = 0;
-    summary->gpu_energy_dotone_pJ  = 0;
-
-    summary->area_gpu_util_sec      = 0;
-    summary->area_gpu_util_ns       = 0;
+    // Summation values are initialized to INIT_SUM
+    summary->psum_gpu_util_sec      = INIT_SUM;
+    summary->psum_gpu_util_ns       = INIT_SUM;
+    summary->gpu_energy_J           = INIT_SUM;
+    summary->gpu_energy_uJ          = INIT_SUM;
+    summary->gpu_energy_pJ          = INIT_SUM;
+    summary->gpu_energy_dotone_pJ   = INIT_SUM;
+#ifdef TRACE_CPU
+    summary->allcpu_energy_J        = INIT_SUM;
+    summary->allcpu_energy_pJ       = INIT_SUM;
+#endif   // TRACE_CPU
+#ifdef TRACE_MEM
+    summary->psum_emc_util_ms       = INIT_SUM;
+    summary->psum_emc_util_fs       = INIT_SUM;
+    summary->psum_emc_freq_sec      = INIT_SUM;
+    summary->psum_emc_freq_ns       = INIT_SUM;
+    summary->mem_energy_J           = INIT_SUM;
+    summary->mem_energy_pJ          = INIT_SUM;
+#endif   // TRACE_MEM
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
@@ -146,7 +187,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     return;
 }
 
-static void update_area_gpuutil(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
 
     int64_t sec, ns;
     int64_t fraction;
@@ -160,13 +201,13 @@ static void update_area_gpuutil(summary_struct *summary, const powerlog_struct *
         ns += ONE_PER_NANO;
     }
 
-    summary->area_gpu_util_sec += (powerlog_ptr->gpu_util * sec);
-    summary->area_gpu_util_ns  += (powerlog_ptr->gpu_util * ns);
+    summary->psum_gpu_util_sec += (powerlog_ptr->gpu_util * sec);
+    summary->psum_gpu_util_ns  += (powerlog_ptr->gpu_util * ns);
 
-    fraction = summary->area_gpu_util_ns / ONE_PER_NANO;
+    fraction = summary->psum_gpu_util_ns / ONE_PER_NANO;
     if(fraction > 0) {
-        summary->area_gpu_util_sec += fraction;
-        summary->area_gpu_util_ns -= (fraction * ONE_PER_NANO);
+        summary->psum_gpu_util_sec += fraction;
+        summary->psum_gpu_util_ns -= (fraction * ONE_PER_NANO);
     }
 
     return;
@@ -203,7 +244,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
         summary->min_gpu_power = powerlog_ptr->gpu_power;
 
     update_gpuenergy(summary, powerlog_ptr);
-    update_area_gpuutil(summary, powerlog_ptr);
+    update_psum_gpuutil(summary, powerlog_ptr);
 
     // Count number of powerlogs
     ++(summary->num_powerlog);
