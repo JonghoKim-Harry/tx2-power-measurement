@@ -4,6 +4,7 @@
 #include "measurement_info.h"
 #include "powerlog.h"
 #include "summary.h"
+#include "caffelog.h"
 
 // Timestamp to Statistics
 ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp);

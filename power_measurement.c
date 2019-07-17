@@ -14,7 +14,7 @@
 #include "measurement_info.h"
 #include "powerlog.h"
 #include "summary.h"
-#include "parse_caffelog.h"
+#include "caffelog.h"
 #include "log_to_stat.h"
 #include "stat.h"
 #include "tx2_sysfs_power.h"

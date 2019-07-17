@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
-#include "parse_caffelog.h"
+#include "caffelog.h"
 #include "constants.h"
 
 #define NO_REGEX_EFLAGS   0

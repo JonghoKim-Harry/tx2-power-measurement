@@ -23,7 +23,7 @@ HEADERS := constants.h \
 		   enhanced_shcmd.h \
 		   log_to_stat.h \
 		   measurement_info.h \
-		   parse_caffelog.h \
+		   caffelog.h \
 		   powerlog.h \
 		   stat.h \
 		   summary.h \
@@ -34,7 +34,7 @@ OBJECTS := measurement_info.o \
 		   summary.o \
 	       log_to_stat.o \
 		   stat.o \
-		   parse_caffelog.o \
+		   caffelog.o \
 		   enhanced_shcmd.o \
 		   constants.o
 

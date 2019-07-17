@@ -11,7 +11,6 @@ struct powerlog_struct;
 #include "list.h"
 
 struct rawdata_info_struct;
-struct caffelog_struct;
 struct tegralog_struct;
 struct stat_info_struct;
 struct measurement_info_struct;
@@ -27,29 +26,6 @@ typedef struct rawdata_info_struct {
     int num_sysfs_fd;
     int sysfs_fd[MAX_NUM_SYSFS_FD];
 } rawdata_info_struct;
-
-
-/*
- *  Caffelog
- */
-typedef struct caffelog_struct {
-    struct list_head list;
-    struct timespec timestamp;   // GMT
-
-    /*
-     *  HMS: Hour, Minute, Second
-     *  Note that year, month, day are ignored to be 0
-     */
-    struct tm calendar_date;   // GMT, HH:MM:SS
-//    char event[MAX_COLWIDTH];
-    char event[256];
-
-    // Various Events
-    int cnn_start;
-    int cnn_finish;
-    int batch_idx;
-    int batch_finish;
-} caffelog_struct;
 
 
 /*
