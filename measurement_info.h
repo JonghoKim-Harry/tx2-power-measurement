@@ -6,11 +6,12 @@
 #include <sys/types.h>
 #include <stdarg.h>
 #include "rawdata.h"
+#include "stat.h"
 #include "default_values.h"
 #include "list.h"
 struct powerlog_struct;
 struct tegralog_struct;
-struct stat_info_struct;
+//struct stat_info_struct;
 struct measurement_info_struct;
 
 /*
@@ -102,28 +103,6 @@ typedef struct tegralog_struct {
     //int ram_lfb;
 
 } tegralog_struct;
-
-/*
- *  Statistics
- */
-enum logtype_t {
-    LOGTYPE_NA = 0,
-    LOGTYPE_TIME,
-    LOGTYPE_TIMESTAMP,
-    LOGTYPE_POWERLOG,
-    LOGTYPE_SUMMARY,
-    LOGTYPE_CAFFELOG,
-    LOGTYPE_TEGRALOG,
-    NUM_LOGTYPES
-};
-
-typedef struct stat_info_struct {
-
-    char colname[MAX_COLWIDTH];
-    int  colwidth;
-    enum logtype_t logtype;
-    ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...);
-} stat_info_struct;
 
 
 /*

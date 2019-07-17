@@ -3,10 +3,11 @@
 #include <string.h>
 #include <time.h>
 
+#include "stat.h"
 #include "tx2_sysfs_power.h"
 #include "constants.h"
 #include "default_values.h"
-#include "stat.h"
+#include "measurement_info.h"
 
 off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
 
