@@ -5,9 +5,6 @@
 #include "constants.h"
 #include "log_to_stat.h"
 
-// Header Row
-//void register_column(measurement_info_struct *info, const char *colname, const int colwidth) {}
-
 // Timestamp to Statistics
 ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp, const struct timespec baseline) {
 

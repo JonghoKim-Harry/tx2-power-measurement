@@ -2,6 +2,7 @@
 #define LOG_TO_STAT_H
 
 #include "measurement_info.h"
+#include "summary.h"
 
 // Timestamp to Statistics
 ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp);
