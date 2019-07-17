@@ -66,29 +66,33 @@ check-intro: FORCE
 # Check with LeNet and MNIST dataset
 #
 EXP_RESULT_PATH_LENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/lenet
+LENET_SELFTEST_CMD :=  $(POWER_MEASUREMENT_HOME)/script/run/run_lenet-batch100.sh
 
 check-lenet: $(TARGET)
 	@echo "\n** Start selftesting with LeNet (default batch size: 100)\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 ./script/run/run_lenet-batch100.sh
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 $(LENET_SELFTEST_CMD)
 	@echo "\n** Finish selftesting with LeNet\n"
 
 #
 # Check with CIFAR-10 dataset
 #
 EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar10
+CIFAR10_SELFTEST_CMD := $(POWER_MEASUREMENT_HOME)/script/run/run_cifar10-batch100.sh
 
 check-cifar10: $(TARGET)
 	@echo "\n** Start selftesting with CIFAR-10 (default batch size: 100)\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 ./script/run/run_cifar10-batch100.sh
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 $(CIFAR10_SELFTEST_CMD)
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
 # Check with AlexNet and ImageNet'2012 dataset
 #
 EXP_RESULT_PATH_ALEXNET :=  $(POWER_MEASUREMENT_HOME)/exp_result/alexnet
+ALEXNET_SELFTEST_CMD :=  $(POWER_MEASUREMENT_HOME)/script/run/run_alexnet-batch50.sh
+
 check-alexnet: $(TARGET)
 	@echo "\n** Start selftesting with AlexNet (default batch size: 50)\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 ./script/run/run_alexnet-batch50.sh
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 $(ALEXNET_SELFTEST_CMD)
 	@echo "\n** Finish selftesting with AlexNet\n"
 
 check-plot: check-cifar10 check-lenet check-alexnet
