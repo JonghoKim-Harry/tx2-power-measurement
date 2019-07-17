@@ -6,12 +6,12 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/wait.h>
-#include "collect_rawdata.h"
-#include "../measurement_info.h"
-#include "../tx2_sysfs_power.h"
-#include "../governor/governor.h"
-#include "../constants.h"
-#include "../default_values.h"
+#include "rawdata.h"
+#include "measurement_info.h"
+#include "tx2_sysfs_power.h"
+#include "governor/governor.h"
+#include "constants.h"
+#include "default_values.h"
 
 ssize_t collect_timestamp(const int rawdata_fd) {
 
@@ -122,7 +122,7 @@ ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1) {
     return num_read_bytes;
 }
 
-void measure_rawdata(const int pid, const measurement_info_struct info) {
+void measure_rawdata(const int pid, const struct measurement_info_struct info) {
 
     int i;
     int flag_childexit;

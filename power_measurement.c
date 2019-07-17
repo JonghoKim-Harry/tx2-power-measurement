@@ -12,6 +12,7 @@
 #include <errno.h>
 
 #include "measurement_info.h"
+#include "rawdata.h"
 #include "powerlog.h"
 #include "summary.h"
 #include "caffelog.h"
@@ -21,9 +22,6 @@
 #include "enhanced_shcmd.h"
 #include "constants.h"
 #include "default_values.h"
-
-// Runtime
-#include "runtime/collect_rawdata.h"
 #include "governor/governor.h"
 
 #define HELP_FIRST_COLWIDTH         30

@@ -40,7 +40,7 @@ OBJECTS := measurement_info.o \
 
 SUBDIR_OBJECTS := governor/governor.o \
 	              governor/ondemand8050.o \
-				  runtime/collect_rawdata.o
+				  rawdata.o
 
 $(TARGET): $(SUBDIR_OBJECTS) $(TARGET).o $(OBJECTS) $(HEADERS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
@@ -50,7 +50,7 @@ $(TARGET): $(SUBDIR_OBJECTS) $(TARGET).o $(OBJECTS) $(HEADERS)
 
 .PHONY: clean
 clean: FORCE
-	-rm $(TARGET) *.o *.txt governor/*.o runtime/*.o
+	-rm $(TARGET) *.o *.txt governor/*.o
 
 .PHONY: check check-intro check-lenet check-cifar10 check-alexnet
 check: $(TARGET) check-intro check-lenet check-cifar10 check-alexnet

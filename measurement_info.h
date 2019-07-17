@@ -5,28 +5,13 @@
 #include <time.h>
 #include <sys/types.h>
 #include <stdarg.h>
-
-struct powerlog_struct;
+#include "rawdata.h"
 #include "default_values.h"
 #include "list.h"
-
-struct rawdata_info_struct;
+struct powerlog_struct;
 struct tegralog_struct;
 struct stat_info_struct;
 struct measurement_info_struct;
-
-/*
- *  Rawdata
- */
-typedef struct rawdata_info_struct {
-
-    ssize_t (*func_read_rawdata)(const int rawdata_fd, ...);
-    ssize_t (*func_rawdata_to_powerlog)(struct powerlog_struct *powerlog, const int rawdata_fd);
-    ssize_t data_size;
-    int num_sysfs_fd;
-    int sysfs_fd[MAX_NUM_SYSFS_FD];
-} rawdata_info_struct;
-
 
 /*
  *  Tegralog
