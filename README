@@ -72,43 +72,34 @@ CFLAGS FOR DEBUG
 SCRIPT USAGE EXAMPLE
 ============
 
-   #
-   sudo ./power_measurement -c gpu -i 10000 -f exp_result/cifar-10/cifar-10@10ms.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -c gpu -i 20000 -f exp_result/cifar-10/cifar-10@20ms.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -c gpu -i 30000 -f exp_result/cifar-10/cifar-10@30ms.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -c gpu -i 40000 -f exp_result/cifar-10/cifar-10@40ms.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -c gpu -i 50000 -f exp_result/cifar-10/cifar-10@50ms.txt ./script/run/run_cifar10.sh
-
    # AlexNet
    sudo ./power_measurement -i 10000 -f exp_result/alexnet/alexnet_gpu.txt ./script/run/run_alexnet.sh
 
    #
-   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10.sh
-   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/mnist/mnist@governor.txt ./script/run/run_mnist.sh
-
+   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10-batch100.sh
+   sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/lenet/lenet@governor.txt ./script/run/run_lenet-batch100.sh
 
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
    sudo ./script/run/fix_gpu_freq 1122000000
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with CIFAR-10 dataset.
-   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch100 ./script/run/run_cifar10.sh
-   # Doing same job for MNIST dataset
-   sudo ./script/run/iterate_gpu_freq.sh mnist-batch2000 ./script/run/run_mnist.sh
+   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch100 ./script/run/run_cifar10-batch100.sh
+   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch500 ./script/run/run_cifar10-batch500.sh
 
-   # Run experiments with all available GPU frequencies as fixed frequency
-   # and default governor setup with MNIST dataset
-   sudo ./script/run/iterate_gpu_freq.sh mnist /bin/bash ./script/run/run_mnist.sh
+   # Doing same job for LeNet
+   sudo ./script/run/iterate_gpu_freq.sh lenet-batch100 ./script/run/run_lenet-batch100.sh
+   sudo ./script/run/iterate_gpu_freq.sh lenet-batch2000 ./script/run/run_lenet-batch2000.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with AlexNet and ImageNet'2012 dataset
    sudo ./script/run/iterate_gpu_freq.sh alexnet ./script/run/run_alexnet.sh
 
    #
-   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 
    #
-   sudo ./script/run/iterate_gpu_freq.sh caffenet-fishbike /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/fish-bike.jpg
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-fishbike ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/fish-bike.jpg
 
 
    # Use tegrastats to measure power, etc.
@@ -118,7 +109,7 @@ SCRIPT USAGE EXAMPLE
    sudo ./script/run/use_tegrastats.sh 10 exp_result/cifar10-tegralog-10ms.txt sudo ./power_measurement -c gpu -f exp_result/cifar10-powerlog-10ms.txt ./script/run/run_cifar10.sh
 
    #
-   sudo ./script/run/iterate_gpu_freq_tegrastats.sh 1>exp_log.txt mnist 30 ./script/run/run_mnist.sh 2>>caffelog.txt
+   sudo ./script/run/iterate_gpu_freq_tegrastats.sh 1>exp_log.txt lenet 30 ./script/run/run_lenet-batch100.sh 2>>caffelog.txt
 
    # Run CaffeNet
    ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg

@@ -65,33 +65,30 @@ check-intro: FORCE
 #
 # Check with LeNet and MNIST dataset
 #
-CAFFE_COMMAND_LENET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/lenet/lenet_train_test.prototxt -weights $(CAFFE_HOME)/examples/mnist/lenet_iter_10000.caffemodel -gpu all
 EXP_RESULT_PATH_LENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/lenet
 
 check-lenet: $(TARGET)
-	@echo "\n** Start selftesting with LeNet\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_LENET)
+	@echo "\n** Start selftesting with LeNet (default batch size: 100)\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_LENET)/lenet_gpu_power.txt -i 10000 ./script/run/run_lenet-batch100.sh
 	@echo "\n** Finish selftesting with LeNet\n"
 
 #
 # Check with CIFAR-10 dataset
 #
-CAFFE_COMMAND_CIFAR10 := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/examples/cifar10/cifar10_full_train_test.prototxt -weights $(CAFFE_HOME)/examples/cifar10/cifar10_full_iter_70000.caffemodel.h5 -gpu all
-EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar-10
+EXP_RESULT_PATH_CIFAR10 :=  $(POWER_MEASUREMENT_HOME)/exp_result/cifar10
 
 check-cifar10: $(TARGET)
-	@echo "\n** Start selftesting with CIFAR-10\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 $(CAFFE_COMMAND_CIFAR10)
+	@echo "\n** Start selftesting with CIFAR-10 (default batch size: 100)\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt -i 10000 ./script/run/run_cifar10-batch100.sh
 	@echo "\n** Finish selftesting with CIFAR-10\n"
 
 #
 # Check with AlexNet and ImageNet'2012 dataset
 #
-CAFFE_COMMAND_ALEXNET := $(CAFFE_HOME)/build/tools/caffe test -model $(CAFFE_HOME)/models/bvlc_alexnet/train_val.prototxt -weights $(CAFFE_HOME)/models/bvlc_alexnet/bvlc_alexnet.caffemodel -gpu all
 EXP_RESULT_PATH_ALEXNET :=  $(POWER_MEASUREMENT_HOME)/exp_result/alexnet
 check-alexnet: $(TARGET)
-	@echo "\n** Start selftesting with AlexNet\n"
-	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 $(CAFFE_COMMAND_ALEXNET)
+	@echo "\n** Start selftesting with AlexNet (default batch size: 50)\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 ./script/run/run_alexnet-batch50.sh
 	@echo "\n** Finish selftesting with AlexNet\n"
 
 check-plot: check-cifar10 check-lenet check-alexnet
