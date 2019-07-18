@@ -429,7 +429,7 @@ ssize_t batch_finish_to_stat(const int stat_fd, const int colwidth, const caffel
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    if(caffelog.batch_finish <= 0) {
+    if(!caffelog.batch_finish) {
         num_written_bytes = write(stat_fd, WHITESPACE, colwidth-4);
         num_written_bytes = write(stat_fd, "#N/A", 4);
     }

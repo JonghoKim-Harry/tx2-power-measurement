@@ -4,6 +4,7 @@
 #include <string.h>
 #include <regex.h>
 #include "caffelog.h"
+#include "default_values.h"
 #include "constants.h"
 
 #define NO_REGEX_EFLAGS   0
@@ -239,14 +240,15 @@ read_a_line:
 
     detect_something = 0;
     detect_batch_finish = 0;
-    caffelog->cnn_start = -1;
-    caffelog->cnn_finish = -1;
+    caffelog->cnn_start = 0;
+    caffelog->cnn_finish = 0;
 
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
 
             detect_something = 1;
-            caffelog->cnn_start = 100;
+            caffelog->cnn_start = INFINITE;
+            caffelog->batch_finish = 0;
 
             // Parse the number of batches
             strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
@@ -267,7 +269,7 @@ read_a_line:
             caffelog_parser.batch_idx = caffelog->batch_idx + 1;
 
             if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
-                caffelog->cnn_finish = 100;
+                caffelog->cnn_finish = INFINITE;
                 caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
                 caffelog_parser.batch_idx = -1;
             }
@@ -278,9 +280,9 @@ read_a_line:
        caffelog->batch_idx = caffelog_parser.batch_idx;
 
     if(detect_batch_finish)
-        caffelog->batch_finish = 100;
+        caffelog->batch_finish = INFINITE;
     else
-        caffelog->batch_finish = -1;
+        caffelog->batch_finish = 0;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);

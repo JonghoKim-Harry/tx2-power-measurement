@@ -16,6 +16,9 @@
 #define INIT_MIN     INT16_MAX   // Minimum values are initialized to maximum possitive numbers
 #define INIT_SUM             0   // Summation values should be initialized to 0
 
+// For MS Excel
+#define INFINITE           100
+
 // sysfs fds
 #define MAX_NUM_SYSFS_FD     8
 #define  NO_SYSFS_FILE       0
