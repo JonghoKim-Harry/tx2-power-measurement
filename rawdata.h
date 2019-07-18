@@ -5,6 +5,7 @@
 
 // Do NOT include measurement_info.h
 struct measurement_info_struct;
+struct powerlog_struct;
 
 typedef struct rawdata_info_struct {
 
