@@ -14,11 +14,17 @@ ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct 
 ssize_t gpupower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpufreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+#ifdef TRACE_MEM
+ssize_t mempower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+ssize_t emcfreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+#endif   // TRACE_MEM
 
 // Powerlog Summary to Statistics
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t psum_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 
 // TODO
 ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary);

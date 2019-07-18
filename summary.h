@@ -59,8 +59,11 @@ typedef struct summary_struct {
     // Memory power consumption
     int16_t min_mem_power;       // mW
     int16_t max_mem_power;       // mW
-    int32_t mem_energy_J;
-    int64_t mem_energy_pJ;
+    int32_t mem_energy_J ;
+    int32_t mem_energy_mJ;       // milli: 10^(-3)
+    int32_t mem_energy_uJ;       // micro: 10^(-6)
+    int64_t mem_energy_pJ;       // pico:  10^(-12)
+    int64_t mem_energy_fJ;       // femto: 10^(-15)
 #endif   // TRACE_MEM
 } summary_struct;
 

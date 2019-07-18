@@ -122,6 +122,93 @@ ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1) {
     return num_read_bytes;
 }
 
+ssize_t collect_mempower(const int rawdata_fd, const int sysfs_fd1) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_MEM_POWER_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    lseek(sysfs_fd1, 0, SEEK_SET);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_MEM_POWER_MAX_STRLEN);
+
+    if(num_read_bytes < 0)
+        return num_read_bytes;
+
+    if(buff[num_read_bytes-1] == '\n' || buff[num_read_bytes-1] == EOF || buff[num_read_bytes-1] == ' ') {
+        buff[num_read_bytes-1] = '\0';
+        --num_read_bytes;
+    }
+
+    write(rawdata_fd, buff, num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_MEM_POWER_MAX_STRLEN - num_read_bytes);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+
+ssize_t collect_emcfreq(const int rawdata_fd, const int sysfs_fd1) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_EMC_FREQ_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    lseek(sysfs_fd1, 0, SEEK_SET);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_EMC_FREQ_MAX_STRLEN);
+
+    if(num_read_bytes < 0)
+        return num_read_bytes;
+
+    if(buff[num_read_bytes-1] == '\n' || buff[num_read_bytes-1] == EOF || buff[num_read_bytes-1] == ' ') {
+        buff[num_read_bytes-1] = '\0';
+        --num_read_bytes;
+    }
+
+    write(rawdata_fd, buff, num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_EMC_FREQ_MAX_STRLEN- num_read_bytes);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+
+ssize_t collect_emcutil(const int rawdata_fd, const int sysfs_fd1) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_EMC_UTIL_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    lseek(sysfs_fd1, 0, SEEK_SET);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_EMC_UTIL_MAX_STRLEN);
+
+    if(num_read_bytes < 0)
+        return num_read_bytes;
+
+    if(buff[num_read_bytes-1] == '\n' || buff[num_read_bytes-1] == EOF || buff[num_read_bytes-1] == ' ') {
+        buff[num_read_bytes-1] = '\0';
+        --num_read_bytes;
+    }
+
+    write(rawdata_fd, buff, num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_EMC_UTIL_MAX_STRLEN - num_read_bytes);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+
 void measure_rawdata(const int pid, const struct measurement_info_struct info) {
 
     int i;

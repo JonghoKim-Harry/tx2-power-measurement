@@ -67,7 +67,10 @@ void init_summary(summary_struct *summary) {
     summary->psum_emc_freq_sec      = INIT_SUM;
     summary->psum_emc_freq_ns       = INIT_SUM;
     summary->mem_energy_J           = INIT_SUM;
+    summary->mem_energy_mJ          = INIT_SUM;
+    summary->mem_energy_uJ          = INIT_SUM;
     summary->mem_energy_pJ          = INIT_SUM;
+    summary->mem_energy_fJ          = INIT_SUM;
 #endif   // TRACE_MEM
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
@@ -212,6 +215,124 @@ static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *
 
     return;
 }
+
+#ifdef TRACE_MEM
+static inline void print_memenergy(summary_struct summary) {
+
+    printf("\n%s() in %s:%d   MEM energy  J:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_J);
+    printf("\n%s() in %s:%d   MEM energy mJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_mJ);
+    printf("\n%s() in %s:%d   MEM energy uJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_uJ);
+    printf("\n%s() in %s:%d   MEM energy pJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_pJ);
+    printf("\n%s() in %s:%d   MEM energy fJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_fJ);
+
+    return;
+}
+
+static void update_memenergy(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+    int64_t sec, ns;
+    int64_t avg_mempower_mW, avg_mempower_uW;
+    int64_t fraction, remainder;
+
+    // Calculate average power
+    avg_mempower_mW = (powerlog_ptr->mem_power + summary->last_powerlog.mem_power) / 2;
+    avg_mempower_uW = (((powerlog_ptr->mem_power + summary->last_powerlog.mem_power) % 2) * MILLI_PER_MICRO) / 2;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   given MEM power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->mem_power);
+    printf("\n%s() in %s:%d   last MEM power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.mem_power);
+    printf("\n%s() in %s:%d   avg.MEM power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_mempower_mW, avg_mempower_uW);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Calculate elapsed time in: sec, ns
+    sec = powerlog_ptr->timestamp.tv_sec  - summary->finish_timestamp.tv_sec;
+    ns  = powerlog_ptr->timestamp.tv_nsec - summary->finish_timestamp.tv_nsec;
+    if(ns < 0) {
+        --sec;
+        ns += ONE_PER_NANO;
+    }
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Sum the calculated energy
+    summary->mem_energy_mJ += sec * avg_mempower_mW;
+    summary->mem_energy_uJ += sec * avg_mempower_uW;
+    summary->mem_energy_pJ += ns  * avg_mempower_mW;
+    summary->mem_energy_fJ += ns  * avg_mempower_uW;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   MEM energy before removing remainder ---|", __func__, __FILE__, __LINE__);
+    print_memenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of fJ
+    fraction  = summary->mem_energy_fJ / PICO_PER_FEMTO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->mem_energy_pJ   += fraction;
+    summary->mem_energy_fJ   -= (fraction * PICO_PER_FEMTO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   MEM energy after removing fJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_memenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of pJ
+    fraction  = summary->mem_energy_pJ / MICRO_PER_PICO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->mem_energy_uJ += fraction;
+    summary->mem_energy_pJ -= (fraction * MICRO_PER_PICO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   MEM energy after removing pJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_memenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of uJ
+    fraction  = summary->mem_energy_uJ / MILLI_PER_MICRO;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->mem_energy_mJ  += fraction;
+    summary->mem_energy_uJ -= (fraction * MILLI_PER_MICRO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   MEM energy after removing uJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_memenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of mJ
+    fraction  = summary->mem_energy_mJ / ONE_PER_MILLI;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->mem_energy_J   += fraction;
+    summary->mem_energy_mJ -= (fraction * ONE_PER_MILLI);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   MEM energy after removing mJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_memenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    return;
+}
+#endif   // TRACE_MEM
 
 void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
 

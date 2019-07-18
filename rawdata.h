@@ -19,6 +19,11 @@ ssize_t collect_timestamp(const int rawdata_fd);
 ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_gpufreq(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1);
+
+ssize_t collect_mempower(const int rawdata_fd, const int sysfs_fd1);
+ssize_t collect_emcfreq(const int rawdata_fd, const int sysfs_fd1);
+ssize_t collect_emcutil(const int rawdata_fd, const int sysfs_fd1);
+
 void measure_rawdata(const int pid, const struct measurement_info_struct info);
 
 #endif   // RAWDATA_H

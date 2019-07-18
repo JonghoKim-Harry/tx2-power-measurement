@@ -136,6 +136,81 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
     return num_written_bytes;
 }
 
+#ifdef TRACE_MEM
+ssize_t mempower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @powerlog.mem_power: mW
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth, powerlog.mem_power);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+ssize_t emcfreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @powerlog.emc_freq: MHz
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth, powerlog.emc_freq);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    return num_written_bytes;
+}
+
+ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @powerlog.emc_util: x0.0001%
+    ssize_t num_written_bytes;
+    char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
+    int buff2_len;
+    int upper, lower;
+    const int TO_PERCENT = 10000;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    upper = powerlog.emc_util / TO_PERCENT;
+    lower = powerlog.emc_util % TO_PERCENT;
+
+    snprintf(buff1, MAX_COLWIDTH, "%3d.%4d", upper, lower);
+    buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
+    num_written_bytes = write(stat_fd, buff2, buff2_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+#endif   // TRACE_MEM
+
 // Powerlog Summary to Statistics
 ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {
 
@@ -227,6 +302,25 @@ ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summar
     buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", psum / elapsed_time);
 write_avg_gpu_util:
     num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // return value
+    ssize_t num_written_bytes;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
