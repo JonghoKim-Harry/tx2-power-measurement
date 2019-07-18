@@ -198,7 +198,7 @@ ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_
     upper = powerlog.emc_util / TO_PERCENT;
     lower = powerlog.emc_util % TO_PERCENT;
 
-    snprintf(buff1, MAX_COLWIDTH, "%3d.%4d", upper, lower);
+    snprintf(buff1, MAX_COLWIDTH, "%3d.%04d", upper, lower);
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
