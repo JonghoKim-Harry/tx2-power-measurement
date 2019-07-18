@@ -9,6 +9,8 @@
 //   * TX2_SYSFS_EMC_MINFREQ
 //   * TX2_SYSFS_EMC_MAXFREQ
 //   * TX2_SYSFS_EMC_FREQ
+//   * TX2_SYSFS_EMC_UTIL
+//   * TX2_SYSFS_MEM_POWER
 //   * TX2_SYSFS_APE_FREQ
 
 // I assume that CPU/GPU/MEM power < 100W
@@ -23,8 +25,8 @@
 #define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5       // mW
 #define TX2_SYSFS_MEM_POWER_MAX_STRLEN    5       // mW
 #define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x0.0001%, up to 1000000
-#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN    10 + 1   // MHz, up to 1300
-#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1300
+#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN    10 + 1   // Hz, up to 1600000000
+#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1600
 
 // Thermal Informations (x1000 degree Celsius)
 //   * BCPU-therm
