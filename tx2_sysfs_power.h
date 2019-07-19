@@ -13,20 +13,38 @@
 //   * TX2_SYSFS_MEM_POWER
 //   * TX2_SYSFS_APE_FREQ
 
-// I assume that CPU/GPU/MEM power < 100W
-#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1300
+// Power maximum string lengths
+// I assume that CPU/GPU/MEM power < 100000 mW
+#define TX2_SYSFS_MWPOWER_MAX_STRLEN      5   // mW
+#define TX2_SYSFS_ALL_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_GPU_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_CPU_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_MEM_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
+
+// Frequency maximum string lengths
+#define TX2_SYSFS_MHZFREQ_MAX_STRLEN      4       // MHz
+#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  TX2_SYSFS_MHZFREQ_MAX_STRLEN
+#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN  TX2_SYSFS_MHZFREQ_MAX_STRLEN
 #define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
-#define TX2_SYSFS_GPU_POWER_MAX_STRLEN    5       // mW
+#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7       // kHz
+#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
+
+// Utilization maximum string lengths
 #define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5       // x0.1%, up to 1000
+#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x0.0001%, up to 1000000
+
+// Temperature maximum string lengths
 #define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7       // x0.001 Celsius degree,
                                                   // up to 1000000
+
+// Power-gating information maximum string lengths
 #define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1       // Boolean: 0, 1
-#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7       // kHz, up to 2035200
-#define TX2_SYSFS_CPU_POWER_MAX_STRLEN    5       // mW
-#define TX2_SYSFS_MEM_POWER_MAX_STRLEN    5       // mW
-#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x0.0001%, up to 1000000
-#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN    10 + 1   // Hz, up to 1600000000
-#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN  4       // MHz, up to 1600
+
+/**
+  *  Sysfs files
+  *
+  *  Sysfs files depend on device
+  */
 
 // Thermal Informations (x1000 degree Celsius)
 //   * BCPU-therm
@@ -88,14 +106,14 @@
     TX2_SYSFS_CPU(n) "/online"
 
 // GPU Governor Informations
-// Note that GPU utilization is given by x10%, integer
+// Note that GPU utilization is given by x0.1%, integer
 #define TX2_SYSFS_GPU     \
     "/sys/devices/17000000.gp10b"
 #define TX2_SYSFS_GPU_GOVERNOR    \
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/governor"
 #define TX2_SYSFS_GPU_RAILGATE   \
     TX2_SYSFS_GPU "/railgate_enable"
-#define TX2_SYSFS_NUM_AVAILABLE_GPUFREQ    14
+//#define TX2_SYSFS_NUM_AVAILABLE_GPUFREQ    14
 #define TX2_SYSFS_AVAILABLE_GPUFREQ    \
     TX2_SYSFS_GPU "/devfreq/17000000.gp10b/available_frequencies"
 #define TX2_SYSFS_GPU_MINFREQ   \

@@ -219,9 +219,9 @@ static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *
 #ifdef TRACE_MEM
 static inline void print_memenergy(summary_struct summary) {
 
-    printf("\n%s() in %s:%d   MEM energy  J:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_J);
-    printf("\n%s() in %s:%d   MEM energy mJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_mJ);
-    printf("\n%s() in %s:%d   MEM energy uJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_uJ);
+    printf("\n%s() in %s:%d   MEM energy  J:     %d", __func__, __FILE__, __LINE__, summary.mem_energy_J);
+    printf("\n%s() in %s:%d   MEM energy mJ:     %d", __func__, __FILE__, __LINE__, summary.mem_energy_mJ);
+    printf("\n%s() in %s:%d   MEM energy uJ:     %d", __func__, __FILE__, __LINE__, summary.mem_energy_uJ);
     printf("\n%s() in %s:%d   MEM energy pJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_pJ);
     printf("\n%s() in %s:%d   MEM energy fJ:     %ld", __func__, __FILE__, __LINE__, summary.mem_energy_fJ);
 
@@ -232,7 +232,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
 
     int64_t sec, ns;
     int64_t avg_mempower_mW, avg_mempower_uW;
-    int64_t fraction, remainder;
+    int64_t fraction;
 
     // Calculate average power
     avg_mempower_mW = (powerlog_ptr->mem_power + summary->last_powerlog.mem_power) / 2;

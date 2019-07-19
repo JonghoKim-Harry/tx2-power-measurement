@@ -11,6 +11,7 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp, const struct timespec baseline);
 
 // Powerlog to Statistics
+ssize_t allpower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpupower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpufreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);

@@ -65,6 +65,28 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 }
 
 // Powerlog to Statistics
+ssize_t allpower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @powerlog.all_power: mW
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth,  powerlog.all_power);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
 ssize_t gpupower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 
     // @powerlog.gpu_power: mW
