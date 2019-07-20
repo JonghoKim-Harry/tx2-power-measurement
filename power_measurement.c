@@ -299,19 +299,19 @@ end_arg_processing:
                     LOGTYPE_POWERLOG,          allpower_to_stat);
     register_stat(info,  "GPU-power(mW)",      13,
                     LOGTYPE_POWERLOG,          gpupower_to_stat);
+    register_stat(info,  "MEM-power(mW)",      13,
+                    LOGTYPE_POWERLOG,          mempower_to_stat);
     register_stat(info,  "GPU-energy(J)",      21,
                     LOGTYPE_SUMMARY,           gpuenergy_to_stat);
+    register_stat(info,  "MEM-energy(J)",      19,
+                    LOGTYPE_SUMMARY,           memenergy_to_stat);
     register_stat(info,  "GPU-freq(MHz)",      13,
                     LOGTYPE_POWERLOG,          gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",        11,
                     LOGTYPE_POWERLOG,          gpuutil_to_stat);
     register_stat(info,  "GPU-psum_util(s*%)", 18,
                     LOGTYPE_SUMMARY,           psum_gpuutil_to_stat);
-    register_stat(info,  "MEM-power(mW)",      13,
-                    LOGTYPE_POWERLOG,          mempower_to_stat);
     /*
-    register_stat(info,  "MEM-energy(J)",      21,
-                    LOGTYPE_SUMMARY,           memenergy_to_stat);
     register_stat(info,  "EMC-freq(MHz)",      13,
                     LOGTYPE_POWERLOG,          emcfreq_to_stat);
     */

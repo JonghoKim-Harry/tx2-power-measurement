@@ -302,12 +302,13 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
 
     // Remove remainder of uJ
     fraction  = summary->mem_energy_uJ / MILLI_PER_MICRO;
+    if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
-    summary->mem_energy_mJ  += fraction;
+    summary->mem_energy_mJ += fraction;
     summary->mem_energy_uJ -= (fraction * MILLI_PER_MICRO);
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
@@ -317,12 +318,13 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
 
     // Remove remainder of mJ
     fraction  = summary->mem_energy_mJ / ONE_PER_MILLI;
+    if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
-    summary->mem_energy_J   += fraction;
+    summary->mem_energy_J  += fraction;
     summary->mem_energy_mJ -= (fraction * ONE_PER_MILLI);
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
@@ -366,6 +368,9 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 
     update_gpuenergy(summary, powerlog_ptr);
     update_psum_gpuutil(summary, powerlog_ptr);
+#ifdef TRACE_MEM
+    update_memenergy(summary, powerlog_ptr);
+#endif   // TRACE_MEM
 
     // Count number of powerlogs
     ++(summary->num_powerlog);
