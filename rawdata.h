@@ -28,6 +28,13 @@ ssize_t collect_emcfreq(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_emcutil(const int rawdata_fd, const int sysfs_fd1);
 #endif   // TRACE_MEM
 
+void register_rawdata(
+     struct measurement_info_struct *info,
+     ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),
+     ssize_t (*func_rawdata_to_powerlog)(struct powerlog_struct *powerlog, const int rawdata_fd),
+     const int num_sysfs_file, ...
+);
+
 void measure_rawdata(const int pid, const struct measurement_info_struct info);
 
 #endif   // RAWDATA_H

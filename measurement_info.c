@@ -29,7 +29,6 @@ void print_rawdata_info(const rawdata_info_struct rawdata_info) {
     }
     printf("\n-----------------\n");
 }
-
 #endif   // DEBUG
 
 void init_info(measurement_info_struct *info) {
@@ -41,60 +40,6 @@ void init_info(measurement_info_struct *info) {
     return;
 }
 
-void register_rawdata
-    (measurement_info_struct *info,
-     ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),
-     ssize_t (*func_rawdata_to_powerlog)(struct powerlog_struct *powerlog, const int rawdata_fd),
-     const int num_sysfs_file, ...) {
-
-    const int idx = info->num_rawdata;
-    rawdata_info_struct *rawdata_info = &info->rawdata_info[idx];
-    va_list sysfs_file_list;
-    int i;
-    char buff[128];
-
-#ifdef DEBUG
-    printf("\nregister_rawdata()   START");
-    printf("\nregister_rawdata()   given parameters");
-    printf("\n * func_read_rawdata: %p", func_read_rawdata);
-    printf("\n * func_rawdata_to_powerlog: %p", func_rawdata_to_powerlog);
-    printf("\n * num_sysfs_file: %d", num_sysfs_file);
-#endif   // DEBUG
-
-    // Register to rawdata_info:
-    //  1) A function pointer to read rawdata: (ex) read_rawdata_1
-    //  2) A function pointer to conver rawdata to powerlog: (ex) rawdata_to_powerlog_1
-    //  3) Data size in bytes
-    //  4) The number of sysfs files to read, sysfs files' fds,
-    //     and maximum lengths of strings to read from sysfs files
-    rawdata_info->func_read_rawdata = func_read_rawdata;
-    rawdata_info->func_rawdata_to_powerlog = func_rawdata_to_powerlog;
-    rawdata_info->num_sysfs_fd = num_sysfs_file;
-
-    va_start(sysfs_file_list, num_sysfs_file);
-
-    for(i=0; i<num_sysfs_file; i++) {
-        strcpy(buff, va_arg(sysfs_file_list, char*));
-        rawdata_info->sysfs_fd[i] = open(buff, O_RDONLY | O_NONBLOCK);
-    }
-
-    va_end(sysfs_file_list);
-
-#ifdef DEBUG
-    for(i=0; i<num_sysfs_file; i++) {
-        printf("\nregister_rawdata()   rawdata_info->sysfs_fd[%d]: %d", i, rawdata_info->sysfs_fd[i]);
-    }
-#endif   // DEBUG
-
-    // Register to info: the number of rawdata
-    ++(info->num_rawdata);
-
-#ifdef DEBUG
-    printf("\nregister_rawdata()   FINISHED");
-#endif   // DEBUG
-
-    return;
-}
 
 void close_sysfs_files(measurement_info_struct info) {
 
