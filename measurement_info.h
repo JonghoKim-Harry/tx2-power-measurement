@@ -177,14 +177,6 @@ void register_rawdata(
      const int num_sysfs_file, ...
 );
 
-void register_stat(
-     measurement_info_struct *info,
-     const char *colname,
-     const int colwidth,
-     enum logtype_t logtype,
-     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...)
-);
-
 void close_sysfs_files(struct measurement_info_struct info);
 
 #endif   // MEASUREMENT_INFO_H

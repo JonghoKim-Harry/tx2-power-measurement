@@ -96,26 +96,6 @@ void register_rawdata
     return;
 }
 
-void register_stat
-    (measurement_info_struct *info,
-     const char *colname,
-     const int colwidth,
-     enum logtype_t logtype,
-     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...)) {
-
-    const int idx = info->num_stat;
-    stat_info_struct *stat_info = &info->stat_info[idx];
-
-    strcpy(stat_info->colname, colname);
-    stat_info->colwidth = colwidth;
-    stat_info->logtype = logtype;
-    stat_info->func_log_to_stat = func_log_to_stat;
-
-    ++(info->num_stat);
-
-    return;
-}
-
 void close_sysfs_files(measurement_info_struct info) {
 
     int i, j;
@@ -140,4 +120,3 @@ void close_sysfs_files(measurement_info_struct info) {
     printf("\nclose_sysfs_files()   FINISHED");
 #endif   // DEBUG
 };
-

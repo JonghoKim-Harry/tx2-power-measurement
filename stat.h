@@ -26,6 +26,15 @@ typedef struct stat_info_struct {
     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...);
 } stat_info_struct;
 
+void register_stat(
+     struct measurement_info_struct *info,
+     const char *colname,
+     const int colwidth,
+     enum logtype_t logtype,
+     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...)
+);
+
+
 off_t print_expinfo(const int stat_fd, const struct measurement_info_struct info);
 ssize_t print_header_raw(const int stat_fd, const struct measurement_info_struct info);
 
