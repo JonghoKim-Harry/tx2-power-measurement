@@ -35,6 +35,7 @@ void init_info(measurement_info_struct *info) {
 
     info->userspace_gpugovernor = 0;
     info->num_rawdata = 0;
+    info->num_row  = 0;
     info->num_stat = 0;
 
     return;

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -8,6 +9,96 @@
 #include "constants.h"
 #include "default_values.h"
 #include "measurement_info.h"
+#include "log_to_stat.h"
+
+const struct row_info_struct avg_gpu_util = {
+    .message = "\n   * Avg.GPU-utilization: ",
+    .func_log_to_stat = avg_gpuutil_to_stat,
+    .colwidth = 11,
+    .unit = "%"
+};
+
+void register_row_message(
+        struct measurement_info_struct *info,
+        const char *message
+) {
+    const idx = info->num_row;
+    char buff[MAX_ROWWIDTH];
+    size_t buff_len;
+
+    if(MAX_NUM_ROW > idx + 1)
+        perror("Number of rows too large");
+
+    //
+    strcpy(info->row[idx].message, message);
+    info->row[idx].data = NULL;
+    info->row[idx].colwidth = 0;
+    //memcpy(info->row[idx].unit, NULL, MAX_UNIT_STRLEN);
+
+    // Offset
+    buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", message);
+    info->summary_len += buff_len;
+
+    // Count the number of the row
+    ++info->num_row;
+
+    return;
+}
+
+void register_row(
+     struct measurement_info_struct *info,
+     struct row_info_struct row_info,
+     void *data
+) {
+    const idx = info->num_row;
+    char buff[MAX_ROWWIDTH];
+    size_t buff_len;
+
+    if(MAX_NUM_ROW > idx + 1)
+        perror("Number of rows too large");
+
+    // Copy
+    info->row[idx] = row_info;
+    info->row[idx].data = data;
+
+    // Offset
+    buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", row_info.message);
+    info->summary_len += buff_len;
+    info->summary_len += row_info.colwidth;
+    info->summary_len += strlen(row_info.unit);
+
+    // Count the number of the row
+    ++info->num_row;
+
+    return;
+}
+
+void print_registered_rows(const int stat_fd, const struct measurement_info_struct info) {
+
+    int i;
+    char buff[MAX_ROWWIDTH];
+    size_t buff_len;
+
+    lseek(stat_fd, info.summary_start, SEEK_SET);
+
+    for(i=0; i<info.num_row; i++) {
+        // Message
+        buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", info.row[i].message);
+        write(stat_fd, buff, buff_len);
+
+        // Data
+        if(info.row[i].data)
+            info.row[i].func_log_to_stat(stat_fd, info.row[i].colwidth, info.row[i].data);
+
+        // Unit
+        if(info.row[i].unit) {
+            buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", info.row[i].unit);
+            write(stat_fd, buff, buff_len);
+        }
+    }
+
+    return;
+}
 
 void register_stat
     (measurement_info_struct *info,

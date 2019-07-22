@@ -153,12 +153,17 @@ typedef struct measurement_info_struct {
     int rawdata_fd;
     int rawdata_linesize;
 
-    struct stat_info_struct stat_info[MAX_NUM_STAT];
-    int num_stat;
-    char stat_filename[128];
+    // Rows
+    struct row_info_struct row[MAX_NUM_ROW];
+    int num_row;
     off_t  summary_start;
     size_t summary_len;
     off_t metadata_end;
+
+    // Statistics
+    struct stat_info_struct stat_info[MAX_NUM_STAT];
+    int num_stat;
+    char stat_filename[128];
 
 } measurement_info_struct;
 

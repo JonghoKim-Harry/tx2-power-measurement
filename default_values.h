@@ -32,11 +32,15 @@
 #define EIGHT_SYSFS_FILES    8
 
 #define MAX_NUM_RAWDATA     20
+#define MAX_NUM_ROW         40
 #define MAX_NUM_STAT        20
 #define RAWDATA_BUFFSIZE    64
 
 /* CAUTION: Do NOT decrease this value */
 #define MAX_COLWIDTH       128
+#define MAX_ROWWIDTH       128
+#define MAX_DATA_STRLEN     30
+#define MAX_UNIT_STRLEN     10
 
 #define NUM_CPUS             6
 

@@ -27,6 +27,9 @@
 #define HELP_FIRST_COLWIDTH         30
 #define AVAILABLE_OPTIONS   "-"   "c:f:g:hi:"
 
+ 
+static summary_struct   summary, summary_cnn;
+
 void help() {
 
     printf("\nJetson TX2 Power Measurement Script");
@@ -282,6 +285,10 @@ end_arg_processing:
     // Statistics file informations
     strcpy(info->stat_filename, stat_filename);
 
+    // TODO: Register rows
+    register_row_message(info, "\n\nGPU Statistics during CNN");
+    register_row(info, avg_gpu_util, &summary_cnn);
+
     // Register rawdata to collect
     register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
     register_rawdata(info,  collect_allpower,   allpower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_ALL_POWER);
@@ -341,7 +348,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
     rawdata_info_struct            *rawdata_info;
     powerlog_struct                powerlog;
     caffelog_struct                *caffelog, list_caffelog;
-    summary_struct                 summary, summary_cnn;
     stat_info_struct               *stat_info;
     ssize_t num_read_bytes, num_written_bytes;
 
@@ -534,7 +540,11 @@ rawdata_eof_found:
     write(stat_fd, "%", 1);
 
     // START writting summary on reserverd space
-    lseek(stat_fd, info.summary_start, SEEK_SET);
+    // TODO: Remove this line - included in printed_registered_rows()
+    //lseek(stat_fd, info.summary_start, SEEK_SET);
+
+    // TODO: Write registered rows
+    print_registered_rows(stat_fd, info);
 
     // Write summary
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary");
