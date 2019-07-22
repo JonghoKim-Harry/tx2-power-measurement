@@ -11,11 +11,18 @@
 #include "measurement_info.h"
 #include "log_to_stat.h"
 
-const struct row_info_struct avg_gpu_util = {
+const struct row_info_struct row_avg_gpu_util = {
     .message = "\n   * Avg.GPU-utilization: ",
     .func_log_to_stat = avg_gpuutil_to_stat,
     .colwidth = 11,
     .unit = "%"
+};
+
+const struct row_info_struct row_gpu_energy = {
+    .message = "\n   * GPU-energy: ",
+    .func_log_to_stat = gpuenergy_to_stat,
+    .colwidth = 21,
+    .unit = "J"
 };
 
 void register_row_message(

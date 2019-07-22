@@ -285,9 +285,15 @@ end_arg_processing:
     // Statistics file informations
     strcpy(info->stat_filename, stat_filename);
 
-    // TODO: Register rows
+    // Register rows
+    register_row_message(info, "\n\nGPU Statistics during Caffe");
+    register_row(info, row_avg_gpu_util, &summary);
+    register_row(info, row_gpu_energy, &summary);
+
     register_row_message(info, "\n\nGPU Statistics during CNN");
-    register_row(info, avg_gpu_util, &summary_cnn);
+    register_row(info, row_avg_gpu_util, &summary_cnn);
+    register_row(info, row_gpu_energy, &summary_cnn);
+
 
     // Register rawdata to collect
     register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
@@ -535,15 +541,7 @@ compare_timestamp:
 #undef PAD_COLUMN
 rawdata_eof_found:
 
-    write(stat_fd, "\n\nAvg.GPU Utilization during CNN: ", 34);
-    avg_gpuutil_to_stat(stat_fd, 18, summary_cnn);
-    write(stat_fd, "%", 1);
-
-    // START writting summary on reserverd space
-    // TODO: Remove this line - included in printed_registered_rows()
-    //lseek(stat_fd, info.summary_start, SEEK_SET);
-
-    // TODO: Write registered rows
+    // Write registered rows
     print_registered_rows(stat_fd, info);
 
     // Write summary
@@ -567,13 +565,6 @@ rawdata_eof_found:
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.min_gpu_util / 10), 1, (summary_cnn.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.max_gpu_util / 10), 1, (summary_cnn.max_gpu_util % 10), "%");
     write(stat_fd, buff, buff_len);
-
-    /*
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Avg. GPU Utilization: ");
-    write(stat_fd, buff, buff_len);
-    avg_gpuutil_to_stat(stat_fd, 9, summary_cnn);
-    write(stat_fd, "%", 1);
-    */
 
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.max_gpu_freq);
     write(stat_fd, buff, buff_len);

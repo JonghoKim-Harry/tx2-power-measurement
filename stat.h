@@ -35,8 +35,12 @@ struct row_info_struct {
     char unit[MAX_UNIT_STRLEN];
 } row_info;
 
-// TODO
-extern const struct row_info_struct avg_gpu_util;
+// For registering rows
+//extern const struct row_info_struct row_minmax_gpu_util;
+//extern const struct row_info_struct row_minmax_gpu_freq;
+//extern const struct row_info_struct row_minmax_gpu_power;
+extern const struct row_info_struct row_avg_gpu_util;
+extern const struct row_info_struct row_gpu_energy;
 
 void register_row_message(
         struct measurement_info_struct *info,
