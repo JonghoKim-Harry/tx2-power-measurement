@@ -22,6 +22,10 @@ ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_gpufreq(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_gpuutil(const int rawdata_fd, const int sysfs_fd1);
 
+#ifdef TRACE_CPU
+ssize_t collect_allcpu_power(const int rawdata_fd, const int sysfs_fd1);
+#endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
 ssize_t collect_mempower(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_emcfreq(const int rawdata_fd, const int sysfs_fd1);

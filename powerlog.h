@@ -36,6 +36,10 @@ ssize_t gpupower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpufreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpuutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 
+#ifdef TRACE_CPU
+ssize_t allcpu_power_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+#endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
 ssize_t mempower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t emcfreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);

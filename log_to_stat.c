@@ -158,6 +158,30 @@ ssize_t gpuutil_to_stat(const int stat_fd, const int colwidth, const powerlog_st
     return num_written_bytes;
 }
 
+#ifdef TRACE_CPU
+ssize_t allcpu_power_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @powerlog.allcpu_power: mW
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth,  powerlog.allcpu_power);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+#endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
 ssize_t mempower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 

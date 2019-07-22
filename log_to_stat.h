@@ -15,6 +15,11 @@ ssize_t allpower_to_stat (const int stat_fd, const int colwidth, const powerlog_
 ssize_t gpupower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpufreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+
+#ifdef TRACE_CPU
+ssize_t allcpu_power_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+#endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
 ssize_t mempower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t emcfreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);

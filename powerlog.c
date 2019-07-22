@@ -112,6 +112,27 @@ ssize_t gpuutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
     return num_read_bytes;
 }
 
+#ifdef TRACE_CPU
+ssize_t allcpu_power_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_CPU_POWER_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    num_read_bytes = read(rawdata_fd, buff, TX2_SYSFS_CPU_POWER_MAX_STRLEN);
+
+    if(num_read_bytes > 0)
+        powerlog->allcpu_power = atoi(buff);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+#endif   // TRACE_CPU
 
 #ifdef TRACE_MEM
 ssize_t mempower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {

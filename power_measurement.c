@@ -273,6 +273,7 @@ end_arg_processing:
 
     // FINISH RESERVATION
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n");
+    info->summary_len += 200;   // Guard-banding
     info->metadata_end = lseek(stat_fd, info->summary_len, SEEK_CUR);
     close(stat_fd);
 
@@ -296,50 +297,71 @@ end_arg_processing:
 
 
     // Register rawdata to collect
-    register_rawdata(info,  collect_timestamp,  timestamp_to_powerlog,   NO_SYSFS_FILE);
-    register_rawdata(info,  collect_allpower,   allpower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_ALL_POWER);
-    register_rawdata(info,  collect_gpupower,   gpupower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
-    register_rawdata(info,  collect_gpufreq,    gpufreq_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_FREQ);
-    register_rawdata(info,  collect_gpuutil,    gpuutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
-    register_rawdata(info,  collect_mempower,   mempower_to_powerlog,   ONE_SYSFS_FILE,  TX2_SYSFS_MEM_POWER);
-    //register_rawdata(info,  collect_emcfreq,    emcfreq_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_EMC_FREQ);
-    register_rawdata(info,  collect_emcutil,    emcutil_to_powerlog,    ONE_SYSFS_FILE,  TX2_SYSFS_EMC_UTIL);
+    register_rawdata(info,  collect_timestamp,
+                     timestamp_to_powerlog,
+                     NO_SYSFS_FILE);
+    register_rawdata(info,  collect_allpower,
+                     allpower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_ALL_POWER);
+    register_rawdata(info,  collect_gpupower,
+                     gpupower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
+    register_rawdata(info,  collect_gpufreq,
+                     gpufreq_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_GPU_FREQ);
+    register_rawdata(info,  collect_gpuutil,
+                     gpuutil_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_GPU_UTIL);
+    register_rawdata(info,  collect_allcpu_power,
+                     allcpu_power_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_CPU_POWER);
+    register_rawdata(info,  collect_mempower,
+                     mempower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_MEM_POWER);
+    //register_rawdata(info,  collect_emcfreq,
+    //                 emcfreq_to_powerlog,
+    //                 ONE_SYSFS_FILE,  TX2_SYSFS_EMC_FREQ);
+    register_rawdata(info,  collect_emcutil,
+                     emcutil_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_EMC_UTIL);
 
     // Register statistics
     register_stat(info,  "Time(s)",            18,
-                    LOGTYPE_TIME,              elapsedtime_to_stat);
+                  LOGTYPE_TIME,                elapsedtime_to_stat);
     register_stat(info,  "ALL-power(mW)",      13,
-                    LOGTYPE_POWERLOG,          allpower_to_stat);
+                  LOGTYPE_POWERLOG,            allpower_to_stat);
     register_stat(info,  "GPU-power(mW)",      13,
-                    LOGTYPE_POWERLOG,          gpupower_to_stat);
+                  LOGTYPE_POWERLOG,            gpupower_to_stat);
+    register_stat(info,  "All-CPU-power(mW)",  17,
+                  LOGTYPE_POWERLOG,            allcpu_power_to_stat);
     register_stat(info,  "MEM-power(mW)",      13,
-                    LOGTYPE_POWERLOG,          mempower_to_stat);
+                  LOGTYPE_POWERLOG,            mempower_to_stat);
     register_stat(info,  "GPU-energy(J)",      21,
-                    LOGTYPE_SUMMARY,           gpuenergy_to_stat);
+                  LOGTYPE_SUMMARY,             gpuenergy_to_stat);
     register_stat(info,  "MEM-energy(J)",      19,
-                    LOGTYPE_SUMMARY,           memenergy_to_stat);
+                  LOGTYPE_SUMMARY,             memenergy_to_stat);
     register_stat(info,  "GPU-freq(MHz)",      13,
-                    LOGTYPE_POWERLOG,          gpufreq_to_stat);
+                  LOGTYPE_POWERLOG,            gpufreq_to_stat);
     register_stat(info,  "GPU-util(%)",        11,
-                    LOGTYPE_POWERLOG,          gpuutil_to_stat);
+                  LOGTYPE_POWERLOG,            gpuutil_to_stat);
     register_stat(info,  "GPU-psum_util(s*%)", 18,
-                    LOGTYPE_SUMMARY,           psum_gpuutil_to_stat);
+                  LOGTYPE_SUMMARY,             psum_gpuutil_to_stat);
     /*
     register_stat(info,  "EMC-freq(MHz)",      13,
-                    LOGTYPE_POWERLOG,          emcfreq_to_stat);
+                  LOGTYPE_POWERLOG,            emcfreq_to_stat);
     */
     register_stat(info,  "EMC-util(%)",        11,
-                    LOGTYPE_POWERLOG,          emcutil_to_stat);
+                  LOGTYPE_POWERLOG,            emcutil_to_stat);
     register_stat(info,  "Timestamp",          19,
-                    LOGTYPE_TIMESTAMP,         timestamp_to_stat);
+                  LOGTYPE_TIMESTAMP,           timestamp_to_stat);
     register_stat(info,  "CNN-start/finish",   16,
-                    LOGTYPE_CAFFELOG,          cnn_event_to_stat);
+                  LOGTYPE_CAFFELOG,            cnn_event_to_stat);
     register_stat(info,  "Batch-idx",           9,
-                    LOGTYPE_CAFFELOG,          batch_idx_to_stat);
+                  LOGTYPE_CAFFELOG,            batch_idx_to_stat);
     register_stat(info,  "Batch-finish",       13,
-                    LOGTYPE_CAFFELOG,          batch_finish_to_stat);
+                  LOGTYPE_CAFFELOG,            batch_finish_to_stat);
     register_stat(info,  "Caffe-Event",        35,
-                    LOGTYPE_CAFFELOG,          caffeevent_to_stat);\
+                  LOGTYPE_CAFFELOG,            caffeevent_to_stat);
 
     init_caffelog_parser();
 
