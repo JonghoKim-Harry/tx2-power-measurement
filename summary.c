@@ -20,6 +20,8 @@ void init_summary(summary_struct *summary) {
     summary->max_gpu_util        = INIT_MAX;
     summary->max_gpu_freq        = INIT_MAX;
     summary->max_gpu_power       = INIT_MAX;
+    summary->max_all_power       = INIT_MAX;
+
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
         summary->max_cpu_util[i] = INIT_MAX;
@@ -27,6 +29,7 @@ void init_summary(summary_struct *summary) {
     }
     summary->max_allcpu_power    = INIT_MAX;
 #endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
     summary->max_emc_util        = INIT_MAX;
     summary->max_emc_freq        = INIT_MAX;
@@ -37,6 +40,8 @@ void init_summary(summary_struct *summary) {
     summary->min_gpu_util        = INIT_MIN;
     summary->min_gpu_freq        = INIT_MIN;
     summary->min_gpu_power       = INIT_MIN;
+    summary->min_all_power       = INIT_MIN;
+
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
         summary->min_cpu_util[i] = INIT_MIN;
@@ -44,6 +49,7 @@ void init_summary(summary_struct *summary) {
     }
     summary->min_allcpu_power    = INIT_MIN;
 #endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
     summary->min_emc_util        = INIT_MIN;
     summary->min_emc_freq        = INIT_MIN;
@@ -57,10 +63,17 @@ void init_summary(summary_struct *summary) {
     summary->gpu_energy_uJ          = INIT_SUM;
     summary->gpu_energy_pJ          = INIT_SUM;
     summary->gpu_energy_dotone_pJ   = INIT_SUM;
+    summary->all_energy_J           = INIT_SUM;
+    summary->all_energy_mJ          = INIT_SUM;
+    summary->all_energy_uJ          = INIT_SUM;
+    summary->all_energy_pJ          = INIT_SUM;
+    summary->all_energy_fJ          = INIT_SUM;
+
 #ifdef TRACE_CPU
     summary->allcpu_energy_J        = INIT_SUM;
     summary->allcpu_energy_pJ       = INIT_SUM;
 #endif   // TRACE_CPU
+
 #ifdef TRACE_MEM
     summary->psum_emc_util_ms       = INIT_SUM;
     summary->psum_emc_util_fs       = INIT_SUM;
@@ -212,6 +225,124 @@ static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *
         summary->psum_gpu_util_sec += fraction;
         summary->psum_gpu_util_ns -= (fraction * ONE_PER_NANO);
     }
+
+    return;
+}
+
+static inline void print_allenergy(summary_struct summary) {
+
+    printf("\n%s() in %s:%d   ALL energy  J:     %ld", __func__, __FILE__, __LINE__, summary.all_energy_J);
+    printf("\n%s() in %s:%d   ALL energy mJ:     %ld", __func__, __FILE__, __LINE__, summary.all_energy_mJ);
+    printf("\n%s() in %s:%d   ALL energy uJ:     %ld", __func__, __FILE__, __LINE__, summary.all_energy_uJ);
+    printf("\n%s() in %s:%d   ALL energy pJ:     %ld", __func__, __FILE__, __LINE__, summary.all_energy_pJ);
+    printf("\n%s() in %s:%d   ALL energy fJ:     %ld", __func__, __FILE__, __LINE__, summary.all_energy_fJ);
+
+    return;
+}
+
+static void update_allenergy(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+    int64_t sec, ns;
+    int64_t avg_allpower_mW, avg_allpower_uW;
+    int64_t fraction;
+
+    // Calculate average power
+    avg_allpower_mW = (powerlog_ptr->all_power + summary->last_powerlog.all_power) / 2;
+    avg_allpower_uW = (((powerlog_ptr->all_power + summary->last_powerlog.all_power) % 2) * MILLI_PER_MICRO) / 2;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   given ALL power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->all_power);
+    printf("\n%s() in %s:%d   last ALL power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.all_power);
+    printf("\n%s() in %s:%d   avg.ALL power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_allpower_mW, avg_allpower_uW);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Calculate elapsed time in: sec, ns
+    sec = powerlog_ptr->timestamp.tv_sec  - summary->finish_timestamp.tv_sec;
+    ns  = powerlog_ptr->timestamp.tv_nsec - summary->finish_timestamp.tv_nsec;
+    if(ns < 0) {
+        --sec;
+        ns += ONE_PER_NANO;
+    }
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Sum the calculated energy
+    summary->all_energy_mJ += sec * avg_allpower_mW;
+    summary->all_energy_uJ += sec * avg_allpower_uW;
+    summary->all_energy_pJ += ns  * avg_allpower_mW;
+    summary->all_energy_fJ += ns  * avg_allpower_uW;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   ALL energy before removing remainder ---|", __func__, __FILE__, __LINE__);
+    print_allenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of fJ
+    fraction  = summary->all_energy_fJ / PICO_PER_FEMTO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->all_energy_pJ   += fraction;
+    summary->all_energy_fJ   -= (fraction * PICO_PER_FEMTO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   ALL energy after removing fJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_allenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of pJ
+    fraction  = summary->all_energy_pJ / MICRO_PER_PICO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->all_energy_uJ += fraction;
+    summary->all_energy_pJ -= (fraction * MICRO_PER_PICO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   ALL energy after removing pJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_allenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of uJ
+    fraction  = summary->all_energy_uJ / MILLI_PER_MICRO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->all_energy_mJ += fraction;
+    summary->all_energy_uJ -= (fraction * MILLI_PER_MICRO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   ALL energy after removing uJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_allenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of mJ
+    fraction  = summary->all_energy_mJ / ONE_PER_MILLI;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->all_energy_J  += fraction;
+    summary->all_energy_mJ -= (fraction * ONE_PER_MILLI);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   ALL energy after removing mJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_allenergy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
 
     return;
 }
@@ -368,6 +499,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
 
     update_gpuenergy(summary, powerlog_ptr);
     update_psum_gpuutil(summary, powerlog_ptr);
+    update_allenergy(summary, powerlog_ptr);
 #ifdef TRACE_MEM
     update_memenergy(summary, powerlog_ptr);
 #endif   // TRACE_MEM

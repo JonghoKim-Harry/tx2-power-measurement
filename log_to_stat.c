@@ -357,6 +357,35 @@ write_avg_gpu_util:
     return num_written_bytes;
 }
 
+ssize_t allenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // return value
+    ssize_t num_written_bytes;
+    char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
+    int buff2_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    //  J: xxxx.
+    // mJ:      xxx
+    // uJ:         xxx
+    // pJ:            xxxxxx
+    // fJ:                  x
+    snprintf(buff1, MAX_COLWIDTH, "%d.%03d%03d%06ld%01ld", summary.all_energy_J, summary.all_energy_mJ, summary.all_energy_uJ, summary.all_energy_pJ, (summary.all_energy_fJ / 100) );
+    buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
+    num_written_bytes = write(stat_fd, buff2, buff2_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+
+}
+
 ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // return value

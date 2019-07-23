@@ -273,7 +273,7 @@ end_arg_processing:
 
     // FINISH RESERVATION
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n");
-    info->summary_len += 200;   // Guard-banding
+    info->summary_len += 300;   // Guard-banding
     info->metadata_end = lseek(stat_fd, info->summary_len, SEEK_CUR);
     close(stat_fd);
 
@@ -290,10 +290,12 @@ end_arg_processing:
     register_row_message(info, "\n\nGPU Statistics during Caffe");
     register_row(info, row_avg_gpu_util, &summary);
     register_row(info, row_gpu_energy, &summary);
+    register_row(info, row_all_energy, &summary);
 
     register_row_message(info, "\n\nGPU Statistics during CNN");
     register_row(info, row_avg_gpu_util, &summary_cnn);
     register_row(info, row_gpu_energy, &summary_cnn);
+    register_row(info, row_all_energy, &summary_cnn);
 
 
     // Register rawdata to collect
@@ -336,6 +338,8 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            allcpu_power_to_stat);
     register_stat(info,  "MEM-power(mW)",      13,
                   LOGTYPE_POWERLOG,            mempower_to_stat);
+    register_stat(info,  "ALL-energy(J)",      21,
+                  LOGTYPE_SUMMARY,             allenergy_to_stat);
     register_stat(info,  "GPU-energy(J)",      21,
                   LOGTYPE_SUMMARY,             gpuenergy_to_stat);
     register_stat(info,  "MEM-energy(J)",      19,

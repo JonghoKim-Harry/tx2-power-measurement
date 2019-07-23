@@ -25,6 +25,13 @@ const struct row_info_struct row_gpu_energy = {
     .unit = "J"
 };
 
+const struct row_info_struct row_all_energy = {
+    .message = "\n   * ALL-energy: ",
+    .func_log_to_stat = allenergy_to_stat,
+    .colwidth = 21,
+    .unit = "J"
+};
+
 void register_row_message(
         struct measurement_info_struct *info,
         const char *message

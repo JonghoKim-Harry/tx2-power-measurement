@@ -28,6 +28,14 @@ typedef struct summary_struct {
     int64_t gpu_energy_pJ;             // pico:  10^(-12)
     int64_t gpu_energy_dotone_pJ;      // 0.1 pJ for remainder calculation
 
+    int32_t min_all_power;             // mW
+    int32_t max_all_power;             // mW
+    int64_t all_energy_J;
+    int64_t all_energy_mJ;
+    int64_t all_energy_uJ;
+    int64_t all_energy_pJ;
+    int64_t all_energy_fJ;
+
 #ifdef TRACE_CPU
     // Note that CPUs can be power-gated; therefore,
     // avgerage utilization/frequency should be calculated carefully

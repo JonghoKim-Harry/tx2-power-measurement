@@ -30,9 +30,14 @@ ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t psum_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
-ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t allenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 
-// TODO
+#ifdef TRACE_MEM
+ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
+#endif   // TRACE_MEM
+
+//
 ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary);
 
 // Caffelog to Statistics

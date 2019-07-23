@@ -41,6 +41,7 @@ struct row_info_struct {
 //extern const struct row_info_struct row_minmax_gpu_power;
 extern const struct row_info_struct row_avg_gpu_util;
 extern const struct row_info_struct row_gpu_energy;
+extern const struct row_info_struct row_all_energy;
 
 void register_row_message(
         struct measurement_info_struct *info,
