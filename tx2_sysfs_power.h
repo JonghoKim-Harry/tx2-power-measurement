@@ -15,30 +15,30 @@
 
 // Power maximum string lengths
 // I assume that CPU/GPU/MEM power < 100000 mW
-#define TX2_SYSFS_MWPOWER_MAX_STRLEN      5   // mW
-#define TX2_SYSFS_ALL_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
-#define TX2_SYSFS_GPU_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
-#define TX2_SYSFS_CPU_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
-#define TX2_SYSFS_MEM_POWER_MAX_STRLEN    TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_MWPOWER_MAX_STRLEN       5   // mW
+#define TX2_SYSFS_BOARD_POWER_MAX_STRLEN   TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_GPU_POWER_MAX_STRLEN     TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_CPU_POWER_MAX_STRLEN     TX2_SYSFS_MWPOWER_MAX_STRLEN
+#define TX2_SYSFS_MEM_POWER_MAX_STRLEN     TX2_SYSFS_MWPOWER_MAX_STRLEN
 
 // Frequency maximum string lengths
-#define TX2_SYSFS_MHZFREQ_MAX_STRLEN      4       // MHz
-#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN  TX2_SYSFS_MHZFREQ_MAX_STRLEN
-#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN  TX2_SYSFS_MHZFREQ_MAX_STRLEN
-#define TX2_SYSFS_GPU_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
-#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN     7       // kHz
-#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN    10 + 1   // Hz and trailing '\n'
+#define TX2_SYSFS_MHZFREQ_MAX_STRLEN       4       // MHz
+#define TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN   TX2_SYSFS_MHZFREQ_MAX_STRLEN
+#define TX2_SYSFS_EMC_MHZFREQ_MAX_STRLEN   TX2_SYSFS_MHZFREQ_MAX_STRLEN
+#define TX2_SYSFS_GPU_FREQ_MAX_STRLEN     10 + 1   // Hz and trailing '\n'
+#define TX2_SYSFS_CPU_FREQ_MAX_STRLEN      7       // kHz
+#define TX2_SYSFS_EMC_FREQ_MAX_STRLEN     10 + 1   // Hz and trailing '\n'
 
 // Utilization maximum string lengths
-#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN     5       // x0.1%, up to 1000
-#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN     7       // x0.0001%, up to 1000000
+#define TX2_SYSFS_GPU_UTIL_MAX_STRLEN      5       // x0.1%, up to 1000
+#define TX2_SYSFS_EMC_UTIL_MAX_STRLEN      7       // x0.0001%, up to 1000000
 
 // Temperature maximum string lengths
-#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN     7       // x0.001 Celsius degree,
-                                                  // up to 1000000
+#define TX2_SYSFS_GPU_TEMP_MAX_STRLEN      7       // x0.001 Celsius degree,
+                                                   // up to 1000000
 
 // Power-gating information maximum string lengths
-#define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN   1       // Boolean: 0, 1
+#define TX2_SYSFS_CPU_ONLINE_MAX_STRLEN    1       // Boolean: 0, 1
 
 /**
   *  Sysfs files
@@ -73,7 +73,7 @@
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
 
 // Power Measurement II (mW, integer)
-#define TX2_SYSFS_ALL_POWER    \
+#define TX2_SYSFS_BOARD_POWER  \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power0_input"
 #define TX2_SYSFS_CPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power1_input"

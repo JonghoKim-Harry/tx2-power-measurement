@@ -35,17 +35,17 @@ ssize_t collect_timestamp(const int rawdata_fd) {
     return 0;
 }
 
-ssize_t collect_allpower(const int rawdata_fd, const int sysfs_fd1) {
+ssize_t collect_boardpower(const int rawdata_fd, const int sysfs_fd1) {
 
     ssize_t num_read_bytes;
-    char buff[TX2_SYSFS_ALL_POWER_MAX_STRLEN];
+    char buff[TX2_SYSFS_BOARD_POWER_MAX_STRLEN];
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG
 
     lseek(sysfs_fd1, 0, SEEK_SET);
-    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_ALL_POWER_MAX_STRLEN);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_BOARD_POWER_MAX_STRLEN);
 
     if(num_read_bytes < 0)
         return num_read_bytes;
@@ -56,7 +56,7 @@ ssize_t collect_allpower(const int rawdata_fd, const int sysfs_fd1) {
     }
 
     write(rawdata_fd, buff, num_read_bytes);
-    write(rawdata_fd, WHITESPACE, TX2_SYSFS_ALL_POWER_MAX_STRLEN - num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_BOARD_POWER_MAX_STRLEN - num_read_bytes);
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);

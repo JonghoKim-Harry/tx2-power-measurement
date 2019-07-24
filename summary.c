@@ -20,7 +20,7 @@ void init_summary(summary_struct *summary) {
     summary->max_gpu_util        = INIT_MAX;
     summary->max_gpu_freq        = INIT_MAX;
     summary->max_gpu_power       = INIT_MAX;
-    summary->max_all_power       = INIT_MAX;
+    summary->max_board_power       = INIT_MAX;
 
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
@@ -40,7 +40,7 @@ void init_summary(summary_struct *summary) {
     summary->min_gpu_util        = INIT_MIN;
     summary->min_gpu_freq        = INIT_MIN;
     summary->min_gpu_power       = INIT_MIN;
-    summary->min_all_power       = INIT_MIN;
+    summary->min_board_power       = INIT_MIN;
 
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
@@ -243,17 +243,17 @@ static inline void print_allenergy(summary_struct summary) {
 static void update_allenergy(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
 
     int64_t sec, ns;
-    int64_t avg_allpower_mW, avg_allpower_uW;
+    int64_t avg_boardpower_mW, avg_boardpower_uW;
     int64_t fraction;
 
     // Calculate average power
-    avg_allpower_mW = (powerlog_ptr->all_power + summary->last_powerlog.all_power) / 2;
-    avg_allpower_uW = (((powerlog_ptr->all_power + summary->last_powerlog.all_power) % 2) * MILLI_PER_MICRO) / 2;
+    avg_boardpower_mW = (powerlog_ptr->board_power + summary->last_powerlog.board_power) / 2;
+    avg_boardpower_uW = (((powerlog_ptr->board_power + summary->last_powerlog.board_power) % 2) * MILLI_PER_MICRO) / 2;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   given ALL power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->all_power);
-    printf("\n%s() in %s:%d   last ALL power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.all_power);
-    printf("\n%s() in %s:%d   avg.ALL power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_allpower_mW, avg_allpower_uW);
+    printf("\n%s() in %s:%d   given ALL power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->board_power);
+    printf("\n%s() in %s:%d   last ALL power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.board_power);
+    printf("\n%s() in %s:%d   avg.ALL power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_boardpower_mW, avg_boardpower_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: sec, ns
@@ -270,10 +270,10 @@ static void update_allenergy(summary_struct *summary, const powerlog_struct *pow
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Sum the calculated energy
-    summary->all_energy_mJ += sec * avg_allpower_mW;
-    summary->all_energy_uJ += sec * avg_allpower_uW;
-    summary->all_energy_pJ += ns  * avg_allpower_mW;
-    summary->all_energy_fJ += ns  * avg_allpower_uW;
+    summary->all_energy_mJ += sec * avg_boardpower_mW;
+    summary->all_energy_uJ += sec * avg_boardpower_uW;
+    summary->all_energy_pJ += ns  * avg_boardpower_mW;
+    summary->all_energy_fJ += ns  * avg_boardpower_uW;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   ALL energy before removing remainder ---|", __func__, __FILE__, __LINE__);

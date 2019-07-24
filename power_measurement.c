@@ -302,9 +302,9 @@ end_arg_processing:
     register_rawdata(info,  collect_timestamp,
                      timestamp_to_powerlog,
                      NO_SYSFS_FILE);
-    register_rawdata(info,  collect_allpower,
-                     allpower_to_powerlog,
-                     ONE_SYSFS_FILE,  TX2_SYSFS_ALL_POWER);
+    register_rawdata(info,  collect_boardpower,
+                     boardpower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_BOARD_POWER);
     register_rawdata(info,  collect_gpupower,
                      gpupower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
@@ -330,8 +330,8 @@ end_arg_processing:
     // Register statistics
     register_stat(info,  "Time(s)",            18,
                   LOGTYPE_TIME,                elapsedtime_to_stat);
-    register_stat(info,  "ALL-power(mW)",      13,
-                  LOGTYPE_POWERLOG,            allpower_to_stat);
+    register_stat(info,  "BOARD-power(mW)",    15,
+                  LOGTYPE_POWERLOG,            boardpower_to_stat);
     register_stat(info,  "GPU-power(mW)",      13,
                   LOGTYPE_POWERLOG,            gpupower_to_stat);
     register_stat(info,  "All-CPU-power(mW)",  17,

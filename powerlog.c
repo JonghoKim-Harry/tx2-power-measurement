@@ -26,18 +26,18 @@ ssize_t timestamp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
     return num_read_bytes;
 }
 
-ssize_t allpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
+ssize_t boardpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
 
     ssize_t num_read_bytes;
-    char buff[TX2_SYSFS_ALL_POWER_MAX_STRLEN];
+    char buff[TX2_SYSFS_BOARD_POWER_MAX_STRLEN];
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG
-    num_read_bytes = read(rawdata_fd, buff, TX2_SYSFS_ALL_POWER_MAX_STRLEN);
+    num_read_bytes = read(rawdata_fd, buff, TX2_SYSFS_BOARD_POWER_MAX_STRLEN);
 
     if(num_read_bytes > 0)
-        powerlog->all_power = atoi(buff);
+        powerlog->board_power = atoi(buff);
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);

@@ -65,7 +65,7 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 }
 
 // Powerlog to Statistics
-ssize_t allpower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+ssize_t boardpower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 
     // @powerlog.all_power: mW
     ssize_t num_written_bytes;
@@ -76,7 +76,7 @@ ssize_t allpower_to_stat(const int stat_fd, const int colwidth, const powerlog_s
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth,  powerlog.all_power);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth,  powerlog.board_power);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)

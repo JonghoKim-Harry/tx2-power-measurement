@@ -11,7 +11,7 @@ typedef struct powerlog_struct {
 
     struct timespec timestamp;    // GMT
 
-    int32_t all_power;            // mW
+    int32_t board_power;          // mW
 
     // GPU informations
     int16_t gpu_util;             // x0.1%
@@ -31,7 +31,7 @@ typedef struct powerlog_struct {
 } powerlog_struct;
 
 ssize_t timestamp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
-ssize_t allpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+ssize_t boardpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpupower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpufreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpuutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
