@@ -288,14 +288,14 @@ end_arg_processing:
 
     // Register rows
     register_row_message(info, "\n\nGPU Statistics during Caffe");
-    register_row(info, row_avg_gpu_util, &summary);
-    register_row(info, row_gpu_energy, &summary);
-    register_row(info, row_all_energy, &summary);
+    register_row(info, row_avg_gpu_util,   &summary);
+    register_row(info, row_gpu_energy,     &summary);
+    register_row(info, row_board_energy,   &summary);
 
     register_row_message(info, "\n\nGPU Statistics during CNN");
-    register_row(info, row_avg_gpu_util, &summary_cnn);
-    register_row(info, row_gpu_energy, &summary_cnn);
-    register_row(info, row_all_energy, &summary_cnn);
+    register_row(info, row_avg_gpu_util,   &summary_cnn);
+    register_row(info, row_gpu_energy,     &summary_cnn);
+    register_row(info, row_board_energy,   &summary_cnn);
 
 
     // Register rawdata to collect

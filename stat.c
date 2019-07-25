@@ -25,7 +25,7 @@ const struct row_info_struct row_gpu_energy = {
     .unit = "J"
 };
 
-const struct row_info_struct row_all_energy = {
+const struct row_info_struct row_board_energy = {
     .message = "\n   * BOARD-energy: ",
     .func_log_to_stat = boardenergy_to_stat,
     .colwidth = 21,
@@ -151,7 +151,7 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
     buff1_len = snprintf(buff1, MAX_BUFFLEN, "            JETSON TX2 POWER MEASUREMENT STATS\n");
     write(stat_fd, buff1, buff1_len);
 
-    buff1_len = snprintf(buff1, MAX_BUFFLEN, "\n\n Measurement Informations");
+    buff1_len = snprintf(buff1, MAX_BUFFLEN, "\n\nMeasurement Informations");
     write(stat_fd, buff1, buff1_len);
 
     // Walltime: GMT
@@ -192,10 +192,6 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
     buff1_len = snprintf(buff1, MAX_BUFFLEN, "\n   * Cooldown: %ld.%09ld seconds after  Caffe FINISH",
                         info.cooldown_period.tv_sec,
                         info.cooldown_period.tv_nsec);
-    write(stat_fd, buff1, buff1_len);
-
-    // GPU Informations
-    buff1_len = snprintf(buff1, MAX_BUFFLEN, "\n\n GPU Informations");
     write(stat_fd, buff1, buff1_len);
 
     // GPU Governor
