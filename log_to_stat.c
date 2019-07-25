@@ -269,7 +269,7 @@ ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_s
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
 
-    snprintf(buff1, MAX_COLWIDTH, "%ld.%06ld%06ld%01ld", summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%03ld%03ld%06ld%01ld", summary.gpu_energy_J, summary.gpu_energy_mJ, summary.gpu_energy_uJ, summary.gpu_energy_pJ, (summary.gpu_energy_fJ / 100) );
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
@@ -357,7 +357,7 @@ write_avg_gpu_util:
     return num_written_bytes;
 }
 
-ssize_t allenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
+ssize_t boardenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // return value
     ssize_t num_written_bytes;
@@ -373,7 +373,7 @@ ssize_t allenergy_to_stat  (const int stat_fd, const int colwidth, const summary
     // uJ:         xxx
     // pJ:            xxxxxx
     // fJ:                  x
-    snprintf(buff1, MAX_COLWIDTH, "%d.%03d%03d%06ld%01ld", summary.all_energy_J, summary.all_energy_mJ, summary.all_energy_uJ, summary.all_energy_pJ, (summary.all_energy_fJ / 100) );
+    snprintf(buff1, MAX_COLWIDTH, "%d.%03d%03d%06ld%01ld", summary.board_energy_J, summary.board_energy_mJ, summary.board_energy_uJ, summary.board_energy_pJ, (summary.board_energy_fJ / 100) );
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 

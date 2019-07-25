@@ -26,8 +26,8 @@ const struct row_info_struct row_gpu_energy = {
 };
 
 const struct row_info_struct row_all_energy = {
-    .message = "\n   * ALL-energy: ",
-    .func_log_to_stat = allenergy_to_stat,
+    .message = "\n   * BOARD-energy: ",
+    .func_log_to_stat = boardenergy_to_stat,
     .colwidth = 21,
     .unit = "J"
 };

@@ -31,7 +31,7 @@ ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary
 ssize_t psum_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
-ssize_t allenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
+ssize_t boardenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 
 #ifdef TRACE_MEM
 ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
