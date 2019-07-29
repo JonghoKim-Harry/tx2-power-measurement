@@ -120,6 +120,16 @@ static void parse_caffe_start(char *event_buff, caffelog_struct *caffelog) {
     return;
 }
 
+static void init_caffelog(caffelog_struct *caffelog) {
+
+    caffelog->caffe_start  = 0;
+    caffelog->cnn_start    = 0;
+    caffelog->cnn_finish   = 0;
+    caffelog->batch_finish = 0;
+
+    return;
+}
+
 static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
 
     const size_t BUFF_SIZE = 256;
@@ -133,8 +143,6 @@ static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
 
     batch_idx_modified = 0;
     detect_batch_finish = 0;
-    caffelog->cnn_start = 0;
-    caffelog->cnn_finish = 0;
 
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
@@ -216,6 +224,9 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
 
         return -1;
     }
+
+    // Initialize caffelog
+    init_caffelog(caffelog);
 
     // Copy calendar informations
     caffelog->calendar_date.tm_isdst = calendar.tm_isdst;

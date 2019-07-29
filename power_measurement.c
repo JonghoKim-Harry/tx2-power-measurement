@@ -593,8 +593,10 @@ rawdata_eof_found:
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary.max_gpu_power);
     write(stat_fd, buff, buff_len);
-    //buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
+    /*
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary.gpu_energy_J, summary.gpu_energy_uJ, summary.gpu_energy_pJ, summary.gpu_energy_dotone_pJ);
     write(stat_fd, buff, buff_len);
+    */
 
     // Write summary during CNN
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary during CNN");
@@ -608,8 +610,10 @@ rawdata_eof_found:
     write(stat_fd, buff, buff_len);
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary_cnn.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary_cnn.max_gpu_power);
     write(stat_fd, buff, buff_len);
-    //buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary_cnn.gpu_energy_J, summary_cnn.gpu_energy_uJ, summary_cnn.gpu_energy_pJ, summary_cnn.gpu_energy_dotone_pJ);
+    /*
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary_cnn.gpu_energy_J, summary_cnn.gpu_energy_uJ, summary_cnn.gpu_energy_pJ, summary_cnn.gpu_energy_dotone_pJ);
     write(stat_fd, buff, buff_len);
+    */
 
     // FINISH writting summary
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n");
