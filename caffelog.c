@@ -101,6 +101,66 @@ int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec t
     return diff_ns;
 }
 
+static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
+
+    const size_t BUFF_SIZE = 256;
+    char buff[BUFF_SIZE];
+    const size_t max_regexmatch = 2 + 1;   // 0th is whole match
+    regmatch_t event_regmatch[max_regexmatch];
+
+    // Flags
+    int detect_something;
+    int detect_batch_finish;
+
+    detect_something = 0;
+    detect_batch_finish = 0;
+    caffelog->cnn_start = 0;
+    caffelog->cnn_finish = 0;
+
+    if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
+        if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
+
+            detect_something = 1;
+            caffelog->cnn_start = INFINITE;
+            caffelog->batch_finish = 0;
+
+            // Parse the number of batches
+            strncpy(buff, event_buff + event_regmatch[1].rm_so, (event_regmatch[1].rm_eo - event_regmatch[1].rm_so + 1));
+            caffelog_parser.num_batch = atoi(buff);
+            caffelog->batch_idx = 1;
+            caffelog_parser.flag_cnn |= CNN_FLAG_START;
+        }
+    }
+    else if(CNN_NOT_FINISHED(caffelog_parser.flag_cnn)) {
+        if(!regexec(&caffelog_parser.batch_finish_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
+
+            detect_something = 1;
+            detect_batch_finish = 1;
+
+            // Parse batch index by detecting batch finishes
+            strncpy(buff, event_buff + event_regmatch[1].rm_so, (event_regmatch[1].rm_eo - event_regmatch[1].rm_so + 1));
+            caffelog->batch_idx = atoi(buff) + 1;
+            caffelog_parser.batch_idx = caffelog->batch_idx + 1;
+
+            if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
+                caffelog->cnn_finish = INFINITE;
+                caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
+                caffelog_parser.batch_idx = -1;
+            }
+        }
+    }
+
+    if(!detect_something) // Nothing detected, thus guess batch number from previous parsing results
+       caffelog->batch_idx = caffelog_parser.batch_idx;
+
+    if(detect_batch_finish)
+        caffelog->batch_finish = INFINITE;
+    else
+        caffelog->batch_finish = 0;
+
+    return;
+}
+
 off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm calendar, caffelog_struct *caffelog) {
 
     /*
@@ -109,24 +169,19 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
      */
     off_t new_offset = offset;
 
-    const size_t BUFF_SIZE = 256;
-
     // Timestamp
     const size_t max_regexmatch = 2 + 1;   // 0th is whole match
     regmatch_t matched_regex[max_regexmatch];
     char timebuff[7];
     const char *start_ptr;
 
-    // Line
+    // Buffs
+    const size_t BUFF_SIZE = 256;
     char buff[BUFF_SIZE];
+    char event_buff[BUFF_SIZE];
     const char *eol;
     ssize_t read_bytes;
 
-    char event_buff[BUFF_SIZE];
-
-    // Flag
-    int detect_something;
-    int detect_batch_finish;
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
@@ -238,51 +293,8 @@ read_a_line:
     // Note that (batch idx) <- (detected_batch_idx + 1)
     strcpy(event_buff, caffelog->event);
 
-    detect_something = 0;
-    detect_batch_finish = 0;
-    caffelog->cnn_start = 0;
-    caffelog->cnn_finish = 0;
-
-    if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
-        if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
-
-            detect_something = 1;
-            caffelog->cnn_start = INFINITE;
-            caffelog->batch_finish = 0;
-
-            // Parse the number of batches
-            strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
-            caffelog_parser.num_batch = atoi(buff);
-            caffelog->batch_idx = 1;
-            caffelog_parser.flag_cnn |= CNN_FLAG_START;
-        }
-    }
-    else if(CNN_NOT_FINISHED(caffelog_parser.flag_cnn)) {
-        if(!regexec(&caffelog_parser.batch_finish_regex, event_buff, (1 + 1), matched_regex, NO_REGEX_EFLAGS)) {
-
-            detect_something = 1;
-            detect_batch_finish = 1;
-
-            // Parse batch index by detecting batch finishes
-            strncpy(buff, event_buff + matched_regex[1].rm_so, (matched_regex[1].rm_eo - matched_regex[1].rm_so + 1));
-            caffelog->batch_idx = atoi(buff) + 1;
-            caffelog_parser.batch_idx = caffelog->batch_idx + 1;
-
-            if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
-                caffelog->cnn_finish = INFINITE;
-                caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
-                caffelog_parser.batch_idx = -1;
-            }
-        }
-    }
-
-    if(!detect_something) // Nothing detected, thus guess batch number from previous parsing results
-       caffelog->batch_idx = caffelog_parser.batch_idx;
-
-    if(detect_batch_finish)
-        caffelog->batch_finish = INFINITE;
-    else
-        caffelog->batch_finish = 0;
+    // TODO
+    parse_caffelog_event(event_buff, caffelog);
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
