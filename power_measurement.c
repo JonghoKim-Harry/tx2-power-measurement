@@ -562,9 +562,9 @@ compare_timestamp:
                 if(caffelog == &list_caffelog)
                     caffelog = NULL;
                 else {
-                    if(caffelog->cnn_start == 100)
+                    if(caffelog->cnn_start == INFINITE)
                         flag_cnnstart = 1;
-                    if(caffelog->cnn_finish == 100)
+                    if(caffelog->cnn_finish == INFINITE)
                         flag_cnnfinish = 1;
                 }
 #ifdef DEBUG
