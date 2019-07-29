@@ -95,6 +95,17 @@ check-alexnet: $(TARGET)
 	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_ALEXNET)/alexnet_gpu_power.txt -i 10000 $(ALEXNET_SELFTEST_CMD)
 	@echo "\n** Finish selftesting with AlexNet\n"
 
+#
+# Check with GoogLeNet and ImageNet'2012 dataset
+#
+EXP_RESULT_PATH_GOOGLENET :=  $(POWER_MEASUREMENT_HOME)/exp_result/googlenet
+GOOGLENET_SELFTEST_CMD :=  $(POWER_MEASUREMENT_HOME)/script/run/run_googlenet-batch50.sh
+check-googlenet: $(TARGET)
+	@echo "\n** Start selftesting with GoogLeNet (default batch size: 50)\n"
+	cd $(CAFFE_HOME); $(TARGET_PATH)/$(TARGET) -c gpu -f $(EXP_RESULT_PATH_GOOGLENET)/googlenet_gpu_power.txt -i 10000 $(GOOGLENET_SELFTEST_CMD)
+	@echo "\n** Finish selftesting with GoogLeNet\n"
+
+
 check-plot: check-cifar10 check-lenet check-alexnet
 	@echo "\n** Drawing a plot for selftesting result with CIFAR-10\n"
 	gnuplot -c script/plot/draw_single.plot $(EXP_RESULT_PATH_CIFAR10)/cifar10_gpu_power.txt $(EXP_RESULT_PATH_CIFAR10)/cifar10_plot.png CIFAR-10

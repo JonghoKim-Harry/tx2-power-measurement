@@ -72,33 +72,41 @@ CFLAGS FOR DEBUG
 SCRIPT USAGE EXAMPLE
 ============
 
-   # AlexNet
-   sudo ./power_measurement -i 10000 -f exp_result/alexnet/alexnet_gpu.txt ./script/run/run_alexnet.sh
+   # LeNet with MNIST dataset
+   sudo ./script/run/iterate_gpu_freq.sh lenet-batch100 ./script/run/run_lenet-batch100.sh
+   sudo ./script/run/iterate_gpu_freq.sh lenet-batch2000 ./script/run/run_lenet-batch2000.sh
+
+
+   # CIFAR-10 Network with CIFAR-10 dataset
+   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch100 ./script/run/run_cifar10-batch100.sh
+   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch500 ./script/run/run_cifar10-batch500.sh
+
+
+   # AlexNet with ILSVRC'12 dataset
+   sudo ./script/run/iterate_gpu_freq.sh alexnet-batch50 ./script/run/run_alexnet-batch50.sh
+
+
+   # GoogLeNet with ILSVRC'12 dataset
+   sudo ./script/run/iterate_gpu_freq.sh googlenet-batch50 ./script/run/run_googlenet-batch50.sh
+
 
    #
    sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10-batch100.sh
    sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/lenet/lenet@governor.txt ./script/run/run_lenet-batch100.sh
 
+
    # Set GPU frequency to be fixed to 1122000000Hz (1.122GHz)
    sudo ./script/run/fix_gpu_freq 1122000000
 
-   # Run experiments with all available GPU frequencies as fixed frequency
-   # and default governor setup with CIFAR-10 dataset.
-   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch100 ./script/run/run_cifar10-batch100.sh
-   sudo ./script/run/iterate_gpu_freq.sh cifar10-batch500 ./script/run/run_cifar10-batch500.sh
-
-   # Doing same job for LeNet
-   sudo ./script/run/iterate_gpu_freq.sh lenet-batch100 ./script/run/run_lenet-batch100.sh
-   sudo ./script/run/iterate_gpu_freq.sh lenet-batch2000 ./script/run/run_lenet-batch2000.sh
 
    # Run experiments with all available GPU frequencies as fixed frequency
    # and default governor setup with AlexNet and ImageNet'2012 dataset
    sudo ./script/run/iterate_gpu_freq.sh alexnet-batch50 ./script/run/run_alexnet-batch50.sh
 
-   #
-   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 
-   #
+   # CaffeNet
+   ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
+   sudo ./script/run/iterate_gpu_freq.sh caffenet-cat ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
    sudo ./script/run/iterate_gpu_freq.sh caffenet-fishbike ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/fish-bike.jpg
 
 
@@ -108,14 +116,10 @@ SCRIPT USAGE EXAMPLE
    sudo ./script/run/use_tegrastats.sh 10 cifar10-tegralog-10ms.txt script/run/run_cifar10.sh
    sudo ./script/run/use_tegrastats.sh 10 exp_result/cifar10-tegralog-10ms.txt sudo ./power_measurement -c gpu -f exp_result/cifar10-powerlog-10ms.txt ./script/run/run_cifar10.sh
 
+
    #
-   sudo ./script/run/iterate_gpu_freq_tegrastats.sh 1>exp_log.txt lenet 30 ./script/run/run_lenet-batch100.sh 2>>caffelog.txt
+   sudo ./script/run/iterate_gpu_freq_tegrastats.sh 1>exp_log.txt lenet-batch100 30 ./script/run/run_lenet-batch100.sh 2>>caffelog.txt
 
-   # Run CaffeNet
-   ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
-
-   # Measure CaffeNet single image inference
-   ./power_measurement -c gpu -f exp_result/caffenet/caffenet-cat_power.txt /bin/bash ./script/run/run_caffenet.sh /home/nvidia/caffe/examples/images/cat.jpg
 
    # Draw GPU power and frequency plot
    gnuplot -c script/plot/gpu-power-frequency.plot \
@@ -123,20 +127,25 @@ SCRIPT USAGE EXAMPLE
               test_result/cifar-10/cifar-10_gpu_1122000000Hz.png \
               cifar-10
 
+
    # Draw CPU and GPU power and frequency plot
    gnuplot -c script/plot/cpu-gpu-power.plot \
               test_result/mnist/mnist_gpu_1122000000Hz.txt \
               test_result/mnist/mnist_cpu_gpu_1122000000Hz.png \
               mnist
 
+
    # Draw GPU power and frequency plot for all .txt file in directory
    ./script/plot/draw_all_plot.sh test_result/cifar-10/ script/plot/gpu-power-frequency.plot gpu-power-frequency cifar-10
+
 
    # Draw CPU and GPU power and frequency plot for all .txt file in directory for CIFAR-10 dataset
    ./script/plot/draw_all_plot.sh test_result/cifar-10/ script/plot/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency cifar-10
 
+
    # Draw CPU and GPU power and frequency plot for all .txt file in directory for MNIST dataset
    ./script/plot/draw_all_plot.sh test_result/mnist/ script/plot/cpu-gpu-power-frequency.plot cpu-gpu-power-frequency mnist
+
 
    # Crop caffelog files in a directory
    ./script/log/caffetime_forward.sh test_result/cifar-10/ > cifar-10.time.csv
