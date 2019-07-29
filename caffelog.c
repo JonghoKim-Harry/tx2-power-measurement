@@ -52,7 +52,7 @@ static caffelog_parser_struct caffelog_parser = {};
 // match[1]: (Batch# - 1), because raw caffelog is zero-indexed
 #define BATCH_FINISH_REGEX \
     "[[:alpha:][:space:][:digit:]]*" \
-    "Batch[[:space:]]*([[:digit:]]+), accuracy = [[:digit:]][.][[:digit:]]+" \
+    "Batch[[:space:]]*([[:digit:]]+).*" \
     ".*"
 
 void init_caffelog_parser() {
@@ -101,7 +101,7 @@ int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec t
     return diff_ns;
 }
 
-static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
+static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
 
     const size_t BUFF_SIZE = 256;
     char buff[BUFF_SIZE];
@@ -109,10 +109,10 @@ static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
     regmatch_t event_regmatch[max_regexmatch];
 
     // Flags
-    int detect_something;
+    int batch_idx_modified;
     int detect_batch_finish;
 
-    detect_something = 0;
+    batch_idx_modified = 0;
     detect_batch_finish = 0;
     caffelog->cnn_start = 0;
     caffelog->cnn_finish = 0;
@@ -120,7 +120,7 @@ static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
 
-            detect_something = 1;
+            batch_idx_modified = 1;
             caffelog->cnn_start = INFINITE;
             caffelog->batch_finish = 0;
 
@@ -134,13 +134,16 @@ static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
     else if(CNN_NOT_FINISHED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.batch_finish_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
 
-            detect_something = 1;
-            detect_batch_finish = 1;
-
-            // Parse batch index by detecting batch finishes
+            // Copy batch index from caffelog
             strncpy(buff, event_buff + event_regmatch[1].rm_so, (event_regmatch[1].rm_eo - event_regmatch[1].rm_so + 1));
+
+            if(caffelog_parser.batch_idx < (atoi(buff) + 1 )) {
+                detect_batch_finish = 1;
+                batch_idx_modified = 1;
+            }
+
             caffelog->batch_idx = atoi(buff) + 1;
-            caffelog_parser.batch_idx = caffelog->batch_idx + 1;
+            caffelog_parser.batch_idx = caffelog->batch_idx;
 
             if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
                 caffelog->cnn_finish = INFINITE;
@@ -150,7 +153,7 @@ static void parse_caffelog_event(char *event_buff, caffelog_struct *caffelog) {
         }
     }
 
-    if(!detect_something) // Nothing detected, thus guess batch number from previous parsing results
+    if(!batch_idx_modified) // Nothing detected, thus guess batch number from previous parsing results
        caffelog->batch_idx = caffelog_parser.batch_idx;
 
     if(detect_batch_finish)
@@ -293,8 +296,8 @@ read_a_line:
     // Note that (batch idx) <- (detected_batch_idx + 1)
     strcpy(event_buff, caffelog->event);
 
-    // TODO
-    parse_caffelog_event(event_buff, caffelog);
+    // Parse caffelog events
+    parse_batch_event(event_buff, caffelog);
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
