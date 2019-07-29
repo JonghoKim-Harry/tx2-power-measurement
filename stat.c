@@ -48,7 +48,9 @@ void register_row_message(
 
     //
     strcpy(info->row[idx].message, message);
-    info->row[idx].data = NULL;
+    info->row[idx].num_data = 0;
+    info->row[idx].data1 = NULL;
+    info->row[idx].data2 = NULL;
     info->row[idx].colwidth = 0;
     //memcpy(info->row[idx].unit, NULL, MAX_UNIT_STRLEN);
 
@@ -62,10 +64,10 @@ void register_row_message(
     return;
 }
 
-void register_row(
+void register_row1(
      struct measurement_info_struct *info,
      struct row_info_struct row_info,
-     void *data
+     void *data1
 ) {
     const int idx = info->num_row;
     char buff[MAX_ROWWIDTH];
@@ -79,7 +81,8 @@ void register_row(
 
     // Copy
     info->row[idx] = row_info;
-    info->row[idx].data = data;
+    info->row[idx].num_data = 1;
+    info->row[idx].data1 = data1;
 
     // Offset
     buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", row_info.message);
@@ -92,6 +95,41 @@ void register_row(
 
     return;
 }
+
+void register_row2(
+     struct measurement_info_struct *info,
+     struct row_info_struct row_info,
+     void *data1,
+     void *data2
+) {
+    const int idx = info->num_row;
+    char buff[MAX_ROWWIDTH];
+    size_t buff_len;
+
+    if(MAX_NUM_ROW <= idx) {
+        fprintf(stderr, "\n%s() in %s:%d   Error: Too many rows", __func__,  __FILE__, __LINE__);
+        fprintf(stderr, "\n%s() in %s:%d   row_info.message: %s", __func__,  __FILE__, __LINE__, row_info.message);
+        fprintf(stderr, "\n");
+    }
+
+    // Copy
+    info->row[idx] = row_info;
+    info->row[idx].num_data = 2;
+    info->row[idx].data1 = data1;
+    info->row[idx].data2 = data2;
+
+    // Offset
+    buff_len = snprintf(buff, MAX_ROWWIDTH, "%s", row_info.message);
+    info->summary_len += buff_len;
+    info->summary_len += row_info.colwidth;
+    info->summary_len += strlen(row_info.unit);
+
+    // Count the number of the row
+    ++info->num_row;
+
+    return;
+}
+
 
 void print_registered_rows(const int stat_fd, const struct measurement_info_struct info) {
 
@@ -107,8 +145,15 @@ void print_registered_rows(const int stat_fd, const struct measurement_info_stru
         write(stat_fd, buff, buff_len);
 
         // Data
-        if(info.row[i].data)
-            info.row[i].func_log_to_stat(stat_fd, info.row[i].colwidth, info.row[i].data);
+        switch(info.row[i].num_data) {
+            case 1:
+                info.row[i].func_log_to_stat(stat_fd, info.row[i].colwidth, info.row[i].data1);
+                break;
+            case 2:
+                info.row[i].func_log_to_stat(stat_fd, info.row[i].colwidth, info.row[i].data1, info.row[i].data2);
+                break;
+            default: break;
+        }
 
         // Unit
         if(info.row[i].unit) {

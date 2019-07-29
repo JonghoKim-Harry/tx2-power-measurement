@@ -30,7 +30,8 @@ typedef struct stat_info_struct {
 struct row_info_struct {
     char message[MAX_ROWWIDTH];
     ssize_t (*func_log_to_stat)(const int stat_fd, const int colwidth, ...);
-    void *data;
+    size_t num_data;
+    void *data1, *data2;
     int colwidth;
     char unit[MAX_UNIT_STRLEN];
 } row_info;
@@ -47,10 +48,18 @@ void register_row_message(
         struct measurement_info_struct *info,
         const char *message
 );
-void register_row(
+
+void register_row1(
      struct measurement_info_struct *info,
      struct row_info_struct row_info,
-     void *data
+     void *data1
+);
+
+void register_row2(
+     struct measurement_info_struct *info,
+     struct row_info_struct row_info,
+     void *data1,
+     void *data2
 );
 
 void print_registered_rows(const int stat_fd, const struct measurement_info_struct info);
