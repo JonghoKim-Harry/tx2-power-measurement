@@ -55,6 +55,7 @@ CFLAGS FOR COMPILATION
    TRACE_CPU                  ON       Trace CPU informations
    TRACE_MEM                  ON       Trace EMC/DDR/MEM informations
    TRACE_CAFFE_TIMESTAMP      OFF      Trace Caffe timestamp
+   TRACE_POWER                ON       Trace BOARD/SoC/Wifi power
 
 
 CFLAGS FOR DEBUG

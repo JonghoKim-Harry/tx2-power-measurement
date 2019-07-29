@@ -305,6 +305,14 @@ end_arg_processing:
     register_rawdata(info,  collect_boardpower,
                      boardpower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_BOARD_POWER);
+    // TODO
+    register_rawdata(info,  collect_socpower,
+                     socpower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_SOC_POWER);
+    // TODO
+    register_rawdata(info,  collect_wifipower,
+                     wifipower_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_WIFI_POWER);
     register_rawdata(info,  collect_gpupower,
                      gpupower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_GPU_POWER);
@@ -338,6 +346,12 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            allcpu_power_to_stat);
     register_stat(info,  "MEM-power(mW)",      13,
                   LOGTYPE_POWERLOG,            mempower_to_stat);
+    // TODO
+    register_stat(info,  "SoC-power(mW)",      13,
+                  LOGTYPE_POWERLOG,            socpower_to_stat);
+    // TODO
+    register_stat(info,  "Wifi-power(mW)",     14,
+                  LOGTYPE_POWERLOG,            wifipower_to_stat);
     register_stat(info,  "BOARD-energy(J)",    21,
                   LOGTYPE_SUMMARY,             boardenergy_to_stat);
     register_stat(info,  "GPU-energy(J)",      21,

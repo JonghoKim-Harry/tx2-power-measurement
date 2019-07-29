@@ -35,6 +35,7 @@ ssize_t collect_timestamp(const int rawdata_fd) {
     return 0;
 }
 
+#ifdef TRACE_POWER
 ssize_t collect_boardpower(const int rawdata_fd, const int sysfs_fd1) {
 
     ssize_t num_read_bytes;
@@ -63,6 +64,66 @@ ssize_t collect_boardpower(const int rawdata_fd, const int sysfs_fd1) {
 #endif   // DEBUG
     return num_read_bytes;
 }
+
+ssize_t collect_socpower(const int rawdata_fd, const int sysfs_fd1) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_SOC_POWER_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    lseek(sysfs_fd1, 0, SEEK_SET);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_SOC_POWER_MAX_STRLEN);
+
+    if(num_read_bytes < 0)
+        return num_read_bytes;
+
+    if(buff[num_read_bytes-1] == '\n' || buff[num_read_bytes-1] == EOF || buff[num_read_bytes-1] == ' ') {
+        buff[num_read_bytes-1] = '\0';
+        --num_read_bytes;
+    }
+
+    write(rawdata_fd, buff, num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_SOC_POWER_MAX_STRLEN - num_read_bytes);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+
+ssize_t collect_wifipower(const int rawdata_fd, const int sysfs_fd1) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_WIFI_POWER_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    lseek(sysfs_fd1, 0, SEEK_SET);
+    num_read_bytes = read(sysfs_fd1, buff, TX2_SYSFS_WIFI_POWER_MAX_STRLEN);
+
+    if(num_read_bytes < 0)
+        return num_read_bytes;
+
+    if(buff[num_read_bytes-1] == '\n' || buff[num_read_bytes-1] == EOF || buff[num_read_bytes-1] == ' ') {
+        buff[num_read_bytes-1] = '\0';
+        --num_read_bytes;
+    }
+
+    write(rawdata_fd, buff, num_read_bytes);
+    write(rawdata_fd, WHITESPACE, TX2_SYSFS_WIFI_POWER_MAX_STRLEN - num_read_bytes);
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+#endif   // TRACE_POWER
+
 
 ssize_t collect_gpupower(const int rawdata_fd, const int sysfs_fd1) {
 

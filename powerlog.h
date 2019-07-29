@@ -11,7 +11,11 @@ typedef struct powerlog_struct {
 
     struct timespec timestamp;    // GMT
 
+#ifdef TRACE_POWER
     int32_t board_power;          // mW
+    int32_t soc_power;            // mW
+    int32_t wifi_power;           // mW
+#endif   // TRACE_POWER
 
     // GPU informations
     int16_t gpu_util;             // x0.1%
@@ -30,8 +34,15 @@ typedef struct powerlog_struct {
 #endif   // TRACE_MEM
 } powerlog_struct;
 
+
 ssize_t timestamp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+
+#ifdef TRACE_POWER
 ssize_t boardpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+ssize_t socpower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+ssize_t wifipower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+#endif   // TRACE_POWER
+
 ssize_t gpupower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpufreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t gpuutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);

@@ -11,7 +11,12 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp, const struct timespec baseline);
 
 // Powerlog to Statistics
+#ifdef TRACE_POWER
 ssize_t boardpower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+ssize_t socpower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+ssize_t wifipower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+#endif   // TRACE_POWER
+
 ssize_t gpupower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpufreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t gpuutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
