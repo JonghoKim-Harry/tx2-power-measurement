@@ -36,12 +36,15 @@ void register_row_message(
         struct measurement_info_struct *info,
         const char *message
 ) {
-    const idx = info->num_row;
+    const int idx = info->num_row;
     char buff[MAX_ROWWIDTH];
     size_t buff_len;
 
-    if(MAX_NUM_ROW > idx + 1)
-        perror("Number of rows too large");
+    if(MAX_NUM_ROW <= idx) {
+        fprintf(stderr, "\n%s() in %s:%d   Error: Too many rows", __func__,  __FILE__, __LINE__);
+        fprintf(stderr, "\n%s() in %s:%d   message: %s", __func__,  __FILE__, __LINE__, message);
+        fprintf(stderr, "\n");
+    }
 
     //
     strcpy(info->row[idx].message, message);
@@ -64,12 +67,15 @@ void register_row(
      struct row_info_struct row_info,
      void *data
 ) {
-    const idx = info->num_row;
+    const int idx = info->num_row;
     char buff[MAX_ROWWIDTH];
     size_t buff_len;
 
-    if(MAX_NUM_ROW > idx + 1)
-        perror("Number of rows too large");
+    if(MAX_NUM_ROW <= idx) {
+        fprintf(stderr, "\n%s() in %s:%d   Error: Too many rows", __func__,  __FILE__, __LINE__);
+        fprintf(stderr, "\n%s() in %s:%d   row_info.message: %s", __func__,  __FILE__, __LINE__, row_info.message);
+        fprintf(stderr, "\n");
+    }
 
     // Copy
     info->row[idx] = row_info;
