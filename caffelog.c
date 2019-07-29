@@ -15,11 +15,19 @@ typedef struct caffelog_parser_struct {
     regex_t batch_finish_regex;
     int batch_idx;
     int num_batch;
+    uint8_t flag_caffe;
     uint8_t flag_cnn;
 } caffelog_parser_struct;
 
 static caffelog_parser_struct caffelog_parser = {};
 
+// Caffe flags
+#define CAFFE_FLAG_INITIAL_VALUE        0x0
+#define CAFFE_FLAG_START                  1
+#define CAFFE_STARTED(flag)      (flag & CAFFE_FLAG_START) == CAFFE_FLAG_START
+#define CAFFE_NOT_STARTED(flag)  (flag & CAFFE_FLAG_START) != CAFFE_FLAG_START
+
+// CNN flags
 #define CNN_FLAG_INITIAL_VALUE          0x0
 #define CNN_FLAG_START                    (1)
 #define CNN_FLAG_FINISH                   (1 << 1)
@@ -58,6 +66,7 @@ static caffelog_parser_struct caffelog_parser = {};
 void init_caffelog_parser() {
 
     caffelog_parser.batch_idx = -2;
+    caffelog_parser.flag_caffe = CAFFE_FLAG_INITIAL_VALUE;
     caffelog_parser.flag_cnn = CNN_FLAG_INITIAL_VALUE;
 
     /*
@@ -99,6 +108,16 @@ int64_t diff_timestamp(const struct timespec timestamp1, const struct timespec t
 
     diff_ns   = ONE_SECOND_TO_NANOSECOND * diff_sec + diff_nsec;
     return diff_ns;
+}
+
+static void parse_caffe_start(char *event_buff, caffelog_struct *caffelog) {
+
+    if( CAFFE_NOT_STARTED(caffelog_parser.flag_caffe) && (event_buff != NULL) ) {
+        caffelog->caffe_start = INFINITE;
+        caffelog_parser.flag_caffe |= CAFFE_FLAG_START;
+    }
+
+    return;
 }
 
 static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
@@ -297,6 +316,7 @@ read_a_line:
     strcpy(event_buff, caffelog->event);
 
     // Parse caffelog events
+    parse_caffe_start(event_buff, caffelog);
     parse_batch_event(event_buff, caffelog);
 
 #if defined(DEBUG) || defined(DEBUG_PARSE_CAFFELOG)

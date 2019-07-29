@@ -16,6 +16,7 @@ typedef struct caffelog_struct {
     char event[256];
 
     // Various Events
+    int caffe_start;
     int cnn_start;
     int cnn_finish;
     int batch_idx;

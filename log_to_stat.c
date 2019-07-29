@@ -487,6 +487,34 @@ ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog
     return num_written_bytes;
 }
 
+ssize_t caffe_start_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {
+
+    // return value
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    if(caffelog.caffe_start > 0) {
+        buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth, caffelog.caffe_start);
+        num_written_bytes = write(stat_fd, buff, buff_len);
+    }
+    else {
+        num_written_bytes = write(stat_fd, WHITESPACE, colwidth-4);
+        num_written_bytes = write(stat_fd, "#N/A", 4);
+    }
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
 ssize_t cnn_event_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {
 
     // return value

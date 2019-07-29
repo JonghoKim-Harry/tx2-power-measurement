@@ -305,11 +305,9 @@ end_arg_processing:
     register_rawdata(info,  collect_boardpower,
                      boardpower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_BOARD_POWER);
-    // TODO
     register_rawdata(info,  collect_socpower,
                      socpower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_SOC_POWER);
-    // TODO
     register_rawdata(info,  collect_wifipower,
                      wifipower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_WIFI_POWER);
@@ -346,10 +344,8 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            allcpu_power_to_stat);
     register_stat(info,  "MEM-power(mW)",      13,
                   LOGTYPE_POWERLOG,            mempower_to_stat);
-    // TODO
     register_stat(info,  "SoC-power(mW)",      13,
                   LOGTYPE_POWERLOG,            socpower_to_stat);
-    // TODO
     register_stat(info,  "Wifi-power(mW)",     14,
                   LOGTYPE_POWERLOG,            wifipower_to_stat);
     register_stat(info,  "BOARD-energy(J)",    21,
@@ -372,6 +368,8 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            emcutil_to_stat);
     register_stat(info,  "Timestamp",          19,
                   LOGTYPE_TIMESTAMP,           timestamp_to_stat);
+    register_stat(info,  "Caffe-start",        11,
+                  LOGTYPE_CAFFELOG,            caffe_start_to_stat);
     register_stat(info,  "CNN-start/finish",   16,
                   LOGTYPE_CAFFELOG,            cnn_event_to_stat);
     register_stat(info,  "Batch-idx",           9,
