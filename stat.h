@@ -3,20 +3,10 @@
 
 #include <stdio.h>
 #include "default_values.h"
+#include "logtype.h"
 
 // Do NOT include measurement_info.h
 struct measurement_info_struct;
-
-enum logtype_t {
-    LOGTYPE_NA = 0,
-    LOGTYPE_TIME,
-    LOGTYPE_TIMESTAMP,
-    LOGTYPE_POWERLOG,
-    LOGTYPE_SUMMARY,
-    LOGTYPE_CAFFELOG,
-    LOGTYPE_TEGRALOG,
-    NUM_LOGTYPES
-};
 
 typedef struct stat_info_struct {
 

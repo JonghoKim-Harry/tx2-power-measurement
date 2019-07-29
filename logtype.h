@@ -1,0 +1,16 @@
+#ifndef LOGTYPE_H
+#define LOGTYPE_H
+
+enum logtype_t {
+    LOGTYPE_NA = 0,
+    LOGTYPE_TIME,
+    LOGTYPE_TIMESTAMP,
+    LOGTYPE_POWERLOG,
+    LOGTYPE_SUMMARY,
+    LOGTYPE_CAFFELOG,
+    LOGTYPE_TEGRALOG,
+    NUM_LOGTYPES
+};
+
+
+#endif   // LOGTYPE_H
