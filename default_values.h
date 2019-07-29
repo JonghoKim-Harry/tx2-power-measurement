@@ -32,7 +32,7 @@
 #define EIGHT_SYSFS_FILES    8
 
 #define MAX_NUM_RAWDATA     20
-#define MAX_NUM_ROW         40
+#define MAX_NUM_ROW        100
 #define MAX_NUM_STAT        20
 #define RAWDATA_BUFFSIZE    64
 
