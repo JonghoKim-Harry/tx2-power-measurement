@@ -425,7 +425,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY);
     lseek(stat_fd, info.metadata_end, SEEK_SET);
-    print_header_raw(stat_fd, info);
+    print_header_row(stat_fd, info);
 
 #ifdef DEBUG
     printf("\n%s() in %s:%d   Start initializing summary", __func__, __FILE__, __LINE__);

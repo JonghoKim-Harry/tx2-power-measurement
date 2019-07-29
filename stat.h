@@ -73,6 +73,6 @@ void register_stat(
 );
 
 off_t print_expinfo(const int stat_fd, const struct measurement_info_struct info);
-ssize_t print_header_raw(const int stat_fd, const struct measurement_info_struct info);
+ssize_t print_header_row(const int stat_fd, const struct measurement_info_struct info);
 
 #endif   // STAT_H

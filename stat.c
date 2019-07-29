@@ -289,7 +289,7 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
     return lseek(stat_fd, 0, SEEK_CUR);
 }
 
-ssize_t print_header_raw(const int stat_fd, const measurement_info_struct info) {
+ssize_t print_header_row(const int stat_fd, const measurement_info_struct info) {
 
     ssize_t num_written_bytes, total_written_bytes;
     char buff[MAX_COLWIDTH];
