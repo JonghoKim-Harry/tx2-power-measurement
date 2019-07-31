@@ -172,7 +172,7 @@ static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
             caffelog->batch_idx = atoi(buff) + 1;
             caffelog_parser.batch_idx = caffelog->batch_idx;
 
-            if(caffelog_parser.batch_idx > caffelog_parser.num_batch) {
+            if(caffelog_parser.batch_idx >= caffelog_parser.num_batch) {
                 caffelog->cnn_finish = INFINITE;
                 caffelog_parser.flag_cnn |= CNN_FLAG_FINISH;
                 caffelog_parser.batch_idx = -1;
