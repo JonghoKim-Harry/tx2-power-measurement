@@ -65,6 +65,30 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 }
 
 // Powerlog to Statistics
+ssize_t system_power_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
+
+    // @system_power: mW
+    ssize_t num_written_bytes;
+    int32_t system_power;
+    char buff[MAX_COLWIDTH];
+    int buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    system_power = powerlog.allcpu_power + powerlog.gpu_power + powerlog.mem_power;
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*d", colwidth, system_power);
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
 #ifdef TRACE_POWER
 ssize_t boardpower_to_stat(const int stat_fd, const int colwidth, const powerlog_struct powerlog) {
 

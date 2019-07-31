@@ -11,6 +11,8 @@ ssize_t timestamp_to_stat(const int stat_fd, const int colwidth, const struct ti
 ssize_t elapsedtime_to_stat(const int stat_fd, const int colwidth, const struct timespec timestamp, const struct timespec baseline);
 
 // Powerlog to Statistics
+ssize_t system_power_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+
 #ifdef TRACE_POWER
 ssize_t boardpower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 ssize_t socpower_to_stat (const int stat_fd, const int colwidth, const powerlog_struct powerlog);

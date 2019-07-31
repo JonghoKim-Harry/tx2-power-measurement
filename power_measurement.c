@@ -338,6 +338,8 @@ end_arg_processing:
                   LOGTYPE_TIME,                elapsedtime_to_stat);
     register_stat(info,  "BOARD-power(mW)",    15,
                   LOGTYPE_POWERLOG,            boardpower_to_stat);
+    register_stat(info,  "SYSTEM-power(mW)",   16,
+                  LOGTYPE_POWERLOG,            system_power_to_stat);
     register_stat(info,  "GPU-power(mW)",      13,
                   LOGTYPE_POWERLOG,            gpupower_to_stat);
     register_stat(info,  "All-CPU-power(mW)",  17,
