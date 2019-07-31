@@ -352,7 +352,9 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            socpower_to_stat);
     register_stat(info,  "Wifi-power(mW)",     14,
                   LOGTYPE_POWERLOG,            wifipower_to_stat);
-    register_stat(info,  "GPU-energy(J)",      21,
+    register_stat(info,  "SYSTEM-energy(J)",   19,
+                  LOGTYPE_SUMMARY,             system_energy_to_stat);
+    register_stat(info,  "GPU-energy(J)",      19,
                   LOGTYPE_SUMMARY,             gpuenergy_to_stat);
     register_stat(info,  "MEM-energy(J)",      19,
                   LOGTYPE_SUMMARY,             memenergy_to_stat);
