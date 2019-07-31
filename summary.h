@@ -11,14 +11,23 @@ typedef struct summary_struct {
     int                     num_powerlog;
 
     // GPU utilization and product-sum of utilization-time
-    int16_t min_gpu_util;        // x0.1%
-    int16_t max_gpu_util;        // x0.1%
-    int64_t psum_gpu_util_sec;   // % x sec
-    int64_t psum_gpu_util_ns;    // % x ns
+    int16_t min_gpu_util;              // x0.1%
+    int16_t max_gpu_util;              // x0.1%
+    int64_t psum_gpu_util_sec;         // % x sec
+    int64_t psum_gpu_util_ns;          // % x ns
 
     // GPU frequency
-    int16_t min_gpu_freq;        // MHz
-    int16_t max_gpu_freq;        // MHz
+    int16_t min_gpu_freq;              // MHz
+    int16_t max_gpu_freq;              // MHz
+
+    // System power and energy
+    int32_t min_system_power;          // mW
+    int32_t max_system_power;          // mW
+    int64_t system_energy_J;
+    int64_t system_energy_mJ;
+    int64_t system_energy_uJ;
+    int64_t system_energy_pJ;
+    int64_t system_energy_fJ;
 
     // GPU power and energy
     int16_t min_gpu_power;             // mW
@@ -58,25 +67,25 @@ typedef struct summary_struct {
 
 #ifdef TRACE_MEM
     // EMC utilization and product-sum of utilization-time
-    int32_t min_emc_util;        // x0.0001%
-    int32_t max_emc_util;        // x0.0001%
-    int64_t psum_emc_util_ms;    //
-    int64_t psum_emc_util_fs;    //
+    int32_t min_emc_util;              // x0.0001%
+    int32_t max_emc_util;              // x0.0001%
+    int64_t psum_emc_util_ms;          //
+    int64_t psum_emc_util_fs;          //
 
     // EMC frequency and product-sum of frequency-time
-    int16_t min_emc_freq;        // MHz
-    int16_t max_emc_freq;        // MHz
-    int64_t psum_emc_freq_sec;   //
-    int64_t psum_emc_freq_ns;    //
+    int16_t min_emc_freq;              // MHz
+    int16_t max_emc_freq;              // MHz
+    int64_t psum_emc_freq_sec;         //
+    int64_t psum_emc_freq_ns;          //
 
     // Memory power consumption
-    int16_t min_mem_power;       // mW
-    int16_t max_mem_power;       // mW
-    int64_t mem_energy_J ;       // joule = Watt x second
-    int64_t mem_energy_mJ;       // milli: 10^(-3)
-    int64_t mem_energy_uJ;       // micro: 10^(-6)
-    int64_t mem_energy_pJ;       // pico:  10^(-12)
-    int64_t mem_energy_fJ;       // femto: 10^(-15)
+    int16_t min_mem_power;             // mW
+    int16_t max_mem_power;             // mW
+    int64_t mem_energy_J ;             // joule = Watt x second
+    int64_t mem_energy_mJ;             // milli: 10^(-3)
+    int64_t mem_energy_uJ;             // micro: 10^(-6)
+    int64_t mem_energy_pJ;             // pico:  10^(-12)
+    int64_t mem_energy_fJ;             // femto: 10^(-15)
 #endif   // TRACE_MEM
 } summary_struct;
 

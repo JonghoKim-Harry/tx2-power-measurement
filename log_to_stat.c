@@ -329,6 +329,29 @@ ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 #endif   // TRACE_MEM
 
 // Powerlog Summary to Statistics
+ssize_t system_energy_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // return value
+    ssize_t num_written_bytes;
+    char buff1[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
+    int buff2_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%03ld%03ld%06ld%01ld", summary.system_energy_J, summary.system_energy_mJ, summary.system_energy_uJ, summary.system_energy_pJ, (summary.system_energy_fJ / 100) );
+    buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
+    num_written_bytes = write(stat_fd, buff2, buff2_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
 ssize_t gpuenergy_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // return value

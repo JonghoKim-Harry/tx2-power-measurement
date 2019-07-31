@@ -59,6 +59,11 @@ void init_summary(summary_struct *summary) {
     // Summation values are initialized to INIT_SUM
     summary->psum_gpu_util_sec      = INIT_SUM;
     summary->psum_gpu_util_ns       = INIT_SUM;
+    summary->system_energy_J        = INIT_SUM;
+    summary->system_energy_mJ       = INIT_SUM;
+    summary->system_energy_uJ       = INIT_SUM;
+    summary->system_energy_pJ       = INIT_SUM;
+    summary->system_energy_fJ       = INIT_SUM;
     summary->gpu_energy_J           = INIT_SUM;
     summary->gpu_energy_mJ          = INIT_SUM;
     summary->gpu_energy_uJ          = INIT_SUM;
@@ -95,6 +100,131 @@ void init_summary(summary_struct *summary) {
 #endif   // DEBUG or DEBUG_SUMMARY
     return;
 }
+
+static inline void print_system_energy(summary_struct summary) {
+
+    printf("\n%s() in %s:%d   SYSTEM energy  J:     %ld", __func__, __FILE__, __LINE__, summary.system_energy_J);
+    printf("\n%s() in %s:%d   SYSTEM energy mJ:     %ld", __func__, __FILE__, __LINE__, summary.system_energy_mJ);
+    printf("\n%s() in %s:%d   SYSTEM energy uJ:     %ld", __func__, __FILE__, __LINE__, summary.system_energy_uJ);
+    printf("\n%s() in %s:%d   SYSTEM energy pJ:     %ld", __func__, __FILE__, __LINE__, summary.system_energy_pJ);
+    printf("\n%s() in %s:%d   SYSTEM energy fJ:     %ld", __func__, __FILE__, __LINE__, summary.system_energy_fJ);
+
+    return;
+}
+
+static void update_system_energy(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+    int64_t sec, ns;
+    int64_t sum_system_power_mW;
+    int64_t avg_system_power_mW, avg_system_power_uW;
+    int64_t fraction;
+
+    // Calculate average power
+    sum_system_power_mW =   powerlog_ptr->allcpu_power
+                          + powerlog_ptr->gpu_power
+                          + powerlog_ptr->mem_power
+                          + summary->last_powerlog.allcpu_power
+                          + summary->last_powerlog.gpu_power
+                          + summary->last_powerlog.mem_power;
+    avg_system_power_mW = sum_system_power_mW / 2;
+    avg_system_power_uW = ((sum_system_power_mW % 2) * MILLI_PER_MICRO) / 2;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   avg.SYSTEM power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_system_power_mW, avg_system_power_uW);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Calculate elapsed time in: ms, ns
+    sec = powerlog_ptr->timestamp.tv_sec  - summary->finish_timestamp.tv_sec;
+    ns  = powerlog_ptr->timestamp.tv_nsec - summary->finish_timestamp.tv_nsec;
+
+    if(ns < 0) {
+        --sec;
+        ns += ONE_PER_NANO;
+    }
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Sum the calculated energy
+    summary->system_energy_mJ += sec * avg_system_power_mW;
+    summary->system_energy_uJ += sec * avg_system_power_uW;
+    summary->system_energy_pJ += ns  * avg_system_power_mW;
+    summary->system_energy_fJ += ns  * avg_system_power_uW;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   SYSTEM energy before removing remainder ---|", __func__, __FILE__, __LINE__);
+    print_system_energy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of fJ
+    fraction  = summary->system_energy_fJ / PICO_PER_FEMTO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->system_energy_pJ   += fraction;
+    summary->system_energy_fJ   -= (fraction * PICO_PER_FEMTO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   SYSTEM energy after removing fJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_system_energy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of pJ
+    fraction  = summary->system_energy_pJ / MICRO_PER_PICO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->system_energy_uJ += fraction;
+    summary->system_energy_pJ -= (fraction * MICRO_PER_PICO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   SYSTEM energy after removing pJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_system_energy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of uJ
+    fraction  = summary->system_energy_uJ / MILLI_PER_MICRO;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->system_energy_mJ += fraction;
+    summary->system_energy_uJ -= (fraction * MILLI_PER_MICRO);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   SYSTEM energy after removing uJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_system_energy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    // Remove remainder of mJ
+    fraction  = summary->system_energy_mJ / ONE_PER_MILLI;
+    if(fraction < 0) --fraction;
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    summary->system_energy_J  += fraction;
+    summary->system_energy_mJ -= (fraction * ONE_PER_MILLI);
+
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    printf("\n%s() in %s:%d   SYSTEM energy after removing mJ remainder ---|", __func__, __FILE__, __LINE__);
+    print_system_energy(*summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
+    return;
+}
+
 
 static inline void print_gpuenergy(summary_struct summary) {
 
@@ -509,6 +639,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
     if(summary->min_gpu_power > powerlog_ptr->gpu_power)
         summary->min_gpu_power = powerlog_ptr->gpu_power;
 
+    update_system_energy(summary, powerlog_ptr);
     update_gpuenergy(summary, powerlog_ptr);
     update_psum_gpuutil(summary, powerlog_ptr);
     update_boardenergy(summary, powerlog_ptr);
