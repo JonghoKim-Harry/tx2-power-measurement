@@ -348,7 +348,7 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            allcpu_power_to_stat);
     register_stat(info,  "MEM-power(mW)",      13,
                   LOGTYPE_POWERLOG,            mempower_to_stat);
-    register_stat(info,  "SoC-power(mW)",      13,
+    register_stat(info,  "MiscCore-power(mW)", 18,
                   LOGTYPE_POWERLOG,            socpower_to_stat);
     register_stat(info,  "Wifi-power(mW)",     14,
                   LOGTYPE_POWERLOG,            wifipower_to_stat);
