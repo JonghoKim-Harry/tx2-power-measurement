@@ -120,7 +120,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   given GPU power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->gpu_power);
     printf("\n%s() in %s:%d   last GPU power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.gpu_power);
-    printf("\n%s() in %s:%d   avg.GPU power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_gpupower_mW, avg_gpupower_dotone_mW);
+    printf("\n%s() in %s:%d   avg.GPU power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_gpupower_mW, avg_gpupower_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: ms, ns
