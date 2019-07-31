@@ -291,13 +291,13 @@ end_arg_processing:
     register_row1(info, row_avg_gpu_util,   &summary);
     register_row1(info, row_system_energy,  &summary);
     register_row1(info, row_gpu_energy,     &summary);
-    register_row1(info, row_board_energy,   &summary);
+    register_row1(info, row_mem_energy,     &summary);
 
     register_row_message(info, "\n\nGPU Statistics during CNN");
     register_row1(info, row_avg_gpu_util,   &summary_cnn);
     register_row1(info, row_system_energy,  &summary_cnn);
     register_row1(info, row_gpu_energy,     &summary_cnn);
-    register_row1(info, row_board_energy,   &summary_cnn);
+    register_row1(info, row_mem_energy,     &summary_cnn);
 
 
     // Register rawdata to collect
@@ -352,8 +352,6 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            socpower_to_stat);
     register_stat(info,  "Wifi-power(mW)",     14,
                   LOGTYPE_POWERLOG,            wifipower_to_stat);
-    register_stat(info,  "BOARD-energy(J)",    21,
-                  LOGTYPE_SUMMARY,             boardenergy_to_stat);
     register_stat(info,  "GPU-energy(J)",      21,
                   LOGTYPE_SUMMARY,             gpuenergy_to_stat);
     register_stat(info,  "MEM-energy(J)",      19,

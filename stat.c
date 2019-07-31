@@ -11,13 +11,6 @@
 #include "measurement_info.h"
 #include "log_to_stat.h"
 
-const struct row_info_struct row_system_energy = {
-    .message = "\n   * SYSTEM-energy: ",
-    .func_log_to_stat = system_energy_to_stat,
-    .colwidth = 21,
-    .unit = "J"
-};
-
 const struct row_info_struct row_avg_gpu_util = {
     .message = "\n   * Avg.GPU-utilization: ",
     .func_log_to_stat = avg_gpuutil_to_stat,
@@ -25,9 +18,23 @@ const struct row_info_struct row_avg_gpu_util = {
     .unit = "%"
 };
 
+const struct row_info_struct row_system_energy = {
+    .message = "\n   * SYSTEM-energy: ",
+    .func_log_to_stat = system_energy_to_stat,
+    .colwidth = 21,
+    .unit = "J"
+};
+
 const struct row_info_struct row_gpu_energy = {
     .message = "\n   * GPU-energy: ",
     .func_log_to_stat = gpuenergy_to_stat,
+    .colwidth = 21,
+    .unit = "J"
+};
+
+const struct row_info_struct row_mem_energy = {
+    .message = "\n   * MEM-energy: ",
+    .func_log_to_stat = memenergy_to_stat,
     .colwidth = 21,
     .unit = "J"
 };
