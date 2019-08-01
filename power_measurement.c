@@ -490,8 +490,6 @@ void calculate_2ndstat(const measurement_info_struct info) {
 
         // Update summary
         update_summary(&summary, &powerlog);
-        if(flag_cnnstart & (!flag_cnnfinish))
-            update_summary(&summary_cnn, &powerlog);
 
 compare_timestamp:
         // Compare timestamps and set/unset flag
@@ -499,6 +497,10 @@ compare_timestamp:
             flag_powerlog = 1;
         else
             flag_powerlog = 0;
+
+        // Update summary for CNN inference
+        if(flag_powerlog & flag_cnnstart & (!flag_cnnfinish))
+            update_summary(&summary_cnn, &powerlog);
 
         // Convert rawdata to stat and write to statfile
         write(stat_fd, "\n", 1);
