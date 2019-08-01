@@ -57,8 +57,8 @@ void init_summary(summary_struct *summary) {
 #endif   // TRACE_MEM
 
     // Summation values are initialized to INIT_SUM
-    summary->psum_gpu_util_sec      = INIT_SUM;
-    summary->psum_gpu_util_ns       = INIT_SUM;
+    summary->psum_gpu_util_e2ms     = INIT_SUM;
+    summary->psum_gpu_util_e2ps     = INIT_SUM;
     summary->system_energy_J        = INIT_SUM;
     summary->system_energy_mJ       = INIT_SUM;
     summary->system_energy_uJ       = INIT_SUM;
@@ -359,13 +359,13 @@ static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *
         ns += ONE_PER_NANO;
     }
 
-    summary->psum_gpu_util_sec += (powerlog_ptr->gpu_util * sec);
-    summary->psum_gpu_util_ns  += (powerlog_ptr->gpu_util * ns);
+    summary->psum_gpu_util_e2ms += (powerlog_ptr->gpu_util * sec);
+    summary->psum_gpu_util_e2ps += (powerlog_ptr->gpu_util * ns);
 
-    fraction = summary->psum_gpu_util_ns / ONE_PER_NANO;
+    fraction = summary->psum_gpu_util_e2ps / ONE_PER_NANO;
     if(fraction > 0) {
-        summary->psum_gpu_util_sec += fraction;
-        summary->psum_gpu_util_ns -= (fraction * ONE_PER_NANO);
+        summary->psum_gpu_util_e2ms += fraction;
+        summary->psum_gpu_util_e2ps -= (fraction * ONE_PER_NANO);
     }
 
     return;

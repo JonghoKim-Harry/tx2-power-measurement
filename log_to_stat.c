@@ -392,7 +392,7 @@ ssize_t psum_gpuutil_to_stat (const int stat_fd, const int colwidth, const summa
         return -1;
     }
 
-    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%01ld%08ld%01ld", (colwidth-10), summary.psum_gpu_util_sec / 10, summary.psum_gpu_util_sec % 10, summary.psum_gpu_util_ns / 10, summary.psum_gpu_util_ns % 10);
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%*ld.%01ld%08ld%01ld", (colwidth-10), summary.psum_gpu_util_e2ms / 10, summary.psum_gpu_util_e2ms % 10, summary.psum_gpu_util_e2ps / 10, summary.psum_gpu_util_e2ps % 10);
     num_written_bytes = write(stat_fd, buff, buff_len);
 
 #if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
@@ -436,8 +436,8 @@ ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summar
     }
 
     // Calculate and convert product-sum of utilization-time.
-    // Note that psum is divided by 10 because its unit is 0.1%*ns
-    psum = summary.psum_gpu_util_sec * 1e8 + summary.psum_gpu_util_ns * 1e-1;
+    // Note that the unit for psum is %*e2ps
+    psum = summary.psum_gpu_util_e2ms * 1e8 + summary.psum_gpu_util_e2ps * 1e-1;
 
     buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", psum / elapsed_time);
 write_avg_gpu_util:

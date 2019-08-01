@@ -11,10 +11,10 @@ typedef struct summary_struct {
     int                     num_powerlog;
 
     // GPU utilization and product-sum of utilization-time
-    int16_t min_gpu_util;              // x0.1%
-    int16_t max_gpu_util;              // x0.1%
-    int64_t psum_gpu_util_sec;         // % x sec
-    int64_t psum_gpu_util_ns;          // % x ns
+    int16_t min_gpu_util;              // e-1%
+    int16_t max_gpu_util;              // e-1%
+    int64_t psum_gpu_util_e2ms;        // e2% x ms = e-1% x sec
+    int64_t psum_gpu_util_e2ps;        // e2% x ps = e-1% x ns
 
     // GPU frequency
     int16_t min_gpu_freq;              // MHz
