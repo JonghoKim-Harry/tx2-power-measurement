@@ -84,8 +84,8 @@ void init_summary(summary_struct *summary) {
 #endif   // TRACE_CPU
 
 #ifdef TRACE_MEM
-    summary->psum_emc_util_ms       = INIT_SUM;
-    summary->psum_emc_util_fs       = INIT_SUM;
+    summary->psum_emc_util_e2us     = INIT_SUM;
+    summary->psum_emc_util_e2fs     = INIT_SUM;
     summary->psum_emc_freq_sec      = INIT_SUM;
     summary->psum_emc_freq_ns       = INIT_SUM;
     summary->mem_energy_J           = INIT_SUM;
@@ -371,6 +371,32 @@ static void update_psum_gpuutil(summary_struct *summary, const powerlog_struct *
     return;
 }
 
+static void update_psum_emcutil(summary_struct *summary, const powerlog_struct *powerlog_ptr) {
+
+    int64_t sec, ns;
+    int64_t fraction;
+
+    // Calculate elapsed time in: sec, ns
+    sec = powerlog_ptr->timestamp.tv_sec  - summary->finish_timestamp.tv_sec;
+    ns  = powerlog_ptr->timestamp.tv_nsec - summary->finish_timestamp.tv_nsec;
+
+    if(ns < 0) {
+        --sec;
+        ns += ONE_PER_NANO;
+    }
+
+    summary->psum_emc_util_e2us += (powerlog_ptr->emc_util * sec);
+    summary->psum_emc_util_e2fs += (powerlog_ptr->emc_util * ns);
+
+    fraction = summary->psum_emc_util_e2fs / ONE_PER_NANO;
+    if(fraction > 0) {
+        summary->psum_emc_util_e2us += fraction;
+        summary->psum_emc_util_e2fs -= (fraction * ONE_PER_NANO);
+    }
+
+    return;
+}
+
 static inline void print_boardenergy(summary_struct summary) {
 
     printf("\n%s() in %s:%d   BOARD energy  J:     %ld", __func__, __FILE__, __LINE__, summary.board_energy_J);
@@ -642,6 +668,7 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
     update_system_energy(summary, powerlog_ptr);
     update_gpuenergy(summary, powerlog_ptr);
     update_psum_gpuutil(summary, powerlog_ptr);
+    update_psum_emcutil(summary, powerlog_ptr);
     update_boardenergy(summary, powerlog_ptr);
 #ifdef TRACE_MEM
     update_memenergy(summary, powerlog_ptr);

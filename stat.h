@@ -30,8 +30,9 @@ struct row_info_struct {
 //extern const struct row_info_struct row_minmax_gpu_util;
 //extern const struct row_info_struct row_minmax_gpu_freq;
 //extern const struct row_info_struct row_minmax_gpu_power;
-extern const struct row_info_struct row_system_energy;
 extern const struct row_info_struct row_avg_gpu_util;
+extern const struct row_info_struct row_avg_emc_util;
+extern const struct row_info_struct row_system_energy;
 extern const struct row_info_struct row_gpu_energy;
 extern const struct row_info_struct row_mem_energy;
 extern const struct row_info_struct row_board_energy;

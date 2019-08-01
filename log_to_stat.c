@@ -436,7 +436,6 @@ ssize_t avg_gpuutil_to_stat (const int stat_fd, const int colwidth, const summar
     }
 
     // Calculate and convert product-sum of utilization-time.
-    // Note that the unit for psum is %*e2ps
     psum = summary.psum_gpu_util_e2ms * 1e8 + summary.psum_gpu_util_e2ps * 1e-1;
 
     buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", psum / elapsed_time);
@@ -450,6 +449,54 @@ write_avg_gpu_util:
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
     return num_written_bytes;
 }
+
+ssize_t avg_emcutil_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // Return value
+    ssize_t num_written_bytes;
+
+    // Product-sum of time-utilization
+    double psum;
+
+    // Elapsed time
+    time_t sec_int;
+    int32_t ns_int;
+    double elapsed_time;    // ns
+
+    // Buffer
+    char buff[MAX_COLWIDTH];
+    size_t buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    // Calculate and convert elapsed time in ns
+    sec_int = summary.finish_timestamp.tv_sec  - summary.start_timestamp.tv_sec;
+    ns_int  = summary.finish_timestamp.tv_nsec - summary.start_timestamp.tv_nsec;
+    elapsed_time = sec_int * 1e9 + ns_int;
+
+    if(elapsed_time == 0) {
+
+        buff_len = snprintf(buff, MAX_COLWIDTH, "%*s", colwidth, "#N/A");
+        goto write_avg_emc_util;
+    }
+
+    // Calculate and convert product-sum of utilization-time.
+    psum = summary.psum_emc_util_e2us * 1e5 + summary.psum_emc_util_e2fs * 1e-4;
+
+    buff_len = snprintf(buff, MAX_COLWIDTH, "%lf", psum / elapsed_time);
+write_avg_emc_util:
+    num_written_bytes = write(stat_fd, buff, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
 
 ssize_t boardenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary) {
 

@@ -18,6 +18,13 @@ const struct row_info_struct row_avg_gpu_util = {
     .unit = "%"
 };
 
+const struct row_info_struct row_avg_emc_util = {
+    .message = "\n   * Avg.EMC-utilization: ",
+    .func_log_to_stat = avg_emcutil_to_stat,
+    .colwidth = 11,
+    .unit = "%"
+};
+
 const struct row_info_struct row_system_energy = {
     .message = "\n   * SYSTEM-energy: ",
     .func_log_to_stat = system_energy_to_stat,

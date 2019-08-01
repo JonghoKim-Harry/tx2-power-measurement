@@ -67,10 +67,10 @@ typedef struct summary_struct {
 
 #ifdef TRACE_MEM
     // EMC utilization and product-sum of utilization-time
-    int32_t min_emc_util;              // x0.0001%
-    int32_t max_emc_util;              // x0.0001%
-    int64_t psum_emc_util_ms;          //
-    int64_t psum_emc_util_fs;          //
+    int32_t min_emc_util;              // e-4%
+    int32_t max_emc_util;              // e-4%
+    int64_t psum_emc_util_e2us;        // % * e2us = % * e-4  sec
+    int64_t psum_emc_util_e2fs;        // % * e2fs = % * e-13 sec
 
     // EMC frequency and product-sum of frequency-time
     int16_t min_emc_freq;              // MHz
