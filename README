@@ -34,10 +34,15 @@ HOW TO USE
 
 REFERENCE
 
-   https://github.com/horizon-research/tx2-power-consumption.git
-   https://devtalk.nvidia.com/default/topic/1000830/jetson-tx2/jetson-tx2-ina226-power-monitor-with-i2c-interface-/
+   * Jetson TX2 Power Monitoring:
+        https://github.com/horizon-research/tx2-power-consumption.git
+        https://devtalk.nvidia.com/default/topic/1000830/jetson-tx2/jetson-tx2-ina226-power-monitor-with-i2c-interface-/
+
    * VGG Models:
         http://www.robots.ox.ac.uk/~vgg/research/very_deep/
+
+   * ResNet:
+        https://github.com/KaimingHe/deep-residual-networks
 
 
 DESIGN PRINCIPLE
