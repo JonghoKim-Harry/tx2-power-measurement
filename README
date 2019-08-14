@@ -101,6 +101,7 @@ SCRIPT USAGE EXAMPLE
    # ResNet with ILSVRC'12 dataset
    sudo ./script/run/iterate_gpu_freq.sh resnet50-batch25  ./script/run/run_resnet50-batch25.sh
    sudo ./script/run/iterate_gpu_freq.sh resnet101-batch10 ./script/run/run_resnet101-batch10.sh
+   sudo ./script/run/iterate_gpu_freq.sh resnet152-batch10 ./script/run/run_resnet152-batch10.sh
 
    #
    sudo ./power_measurement -g ondemand8050 -i 10000 -f exp_result/cifar-10/cifar-10@governor.txt ./script/run/run_cifar10-batch100.sh
