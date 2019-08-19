@@ -40,6 +40,7 @@ REFERENCE
 
    * VGG Models:
         http://www.robots.ox.ac.uk/~vgg/research/very_deep/
+        https://github.com/davidgengenbach/vgg-caffe
 
    * ResNet:
         https://github.com/KaimingHe/deep-residual-networks
@@ -96,6 +97,10 @@ SCRIPT USAGE EXAMPLE
 
    # GoogLeNet with ILSVRC'12 dataset
    sudo ./script/run/iterate_gpu_freq.sh googlenet-batch50 ./script/run/run_googlenet-batch50.sh
+
+
+   # VGGNet with ILSVRC'12 dataset
+   sudo ./script/run/iterate_gpu_freq.sh vggnet16-batch50 ./script/run/run_vggnet16-batch50.sh
 
 
    # ResNet with ILSVRC'12 dataset
