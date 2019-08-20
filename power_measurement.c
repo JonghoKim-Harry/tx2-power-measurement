@@ -174,7 +174,7 @@ end_arg_processing:
     info->child_cmd = child_cmd;
 
     // Set Caffe sleep request
-    info->caffe_sleep_request.tv_sec =  2;
+    info->caffe_sleep_request.tv_sec =  5;
     info->caffe_sleep_request.tv_nsec = 0;
 
     // Set powertool measurement interval
