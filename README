@@ -100,8 +100,8 @@ SCRIPT USAGE EXAMPLE
 
 
    # VGGNet with ILSVRC'12 dataset
-   sudo ./script/run/iterate_gpu_freq.sh vggnet16-batch50 ./script/run/run_vggnet16-batch50.sh
-   sudo ./script/run/iterate_gpu_freq.sh vggnet19-batch50 ./script/run/run_vggnet19-batch50.sh
+   sudo ./script/run/iterate_gpu_freq.sh vggnet16-batch25 ./script/run/run_vggnet16-batch25.sh
+   sudo ./script/run/iterate_gpu_freq.sh vggnet19-batch25 ./script/run/run_vggnet19-batch25.sh
 
 
    # ResNet with ILSVRC'12 dataset
