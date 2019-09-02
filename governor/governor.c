@@ -104,6 +104,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
     // Select by gpu governor name
     if(!strcmp(gpugov_name, "ondemand8050"))
         curr_gpugov = &ondemand8050;
+    else if(!strcmp(gpugov_name, "cnngov_a"))
+        curr_gpugov = &cnngov_a;
     else if(!strcmp(gpugov_name, "emc_conservative"))
         curr_gpugov = &emc_conservative;
     else
@@ -230,9 +232,9 @@ ssize_t set_gpufreq(int32_t gpufreq) {
     return num_written_bytes;
 }
 
-int16_t get_emcutil() {
+int64_t get_emcutil() {
 
-    int16_t ret;
+    int64_t ret;
     char buff[TX2_SYSFS_EMC_UTIL_MAX_STRLEN];
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)

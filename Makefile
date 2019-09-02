@@ -42,6 +42,7 @@ OBJECTS := measurement_info.o \
 
 SUBDIR_OBJECTS := governor/governor.o \
 	              governor/ondemand8050.o \
+				  governor/cnngov_a.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 

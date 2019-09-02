@@ -10,6 +10,7 @@
 #include "default_values.h"
 #include "measurement_info.h"
 #include "log_to_stat.h"
+#include "governor/governor.h"
 
 const struct row_info_struct row_avg_gpu_util = {
     .message = "\n   * Avg.GPU-utilization: ",
@@ -276,8 +277,11 @@ off_t print_expinfo(const int stat_fd, const measurement_info_struct info) {
             *ptr = '\0';
     }
 
-    if(!strcmp(buff1, "userspace"))
+    if(!strcmp(buff1, "userspace")) {
         buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s (%s)", buff1, info.gpugov_name);
+        if(curr_gpugov->print_gpugov)
+            curr_gpugov->print_gpugov(stat_fd);
+    }
     else
         buff2_len = snprintf(buff2, MAX_BUFFLEN, "\n   * GPU Governor: %s", buff1);
     write(stat_fd, buff2, buff2_len);

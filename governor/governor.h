@@ -40,11 +40,12 @@ struct gpugov {
     const char name[GPU_GOVERNOR_NAME_LEN];
     void (*init)(void *);
     int32_t (*get_target_freq)();
-    void (*print_governor_info)(int fd);
+    void (*print_gpugov)(int fd);
 };
 
 extern struct gpugov   *curr_gpugov;
 extern struct gpugov   ondemand8050;
+extern struct gpugov   cnngov_a;
 extern struct gpugov   emc_conservative;
 
 /**
@@ -66,7 +67,7 @@ int16_t get_gpupower();
 
 // EMC Utilization
 extern int fd_emcutil;
-int16_t get_emcutil();   // Returns in x0.0001%
+int64_t get_emcutil();   // Returns in x0.0001%
 
 /**
  *  Frequency transformation: Hz <--> frequency level
