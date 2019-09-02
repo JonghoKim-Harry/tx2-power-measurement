@@ -6,9 +6,31 @@
 #define DOWN_THRESHOLD     500
 #define SCALE_DOWN_RATIO   0.8
 
+static void ondemand8050_init(void *data);
+static int32_t ondemand8050_get_target_freq();
+
+// Global
+struct gpugov ondemand8050 = {
+
+    .name = "gpugov-ondemand8050",
+    .init = ondemand8050_init,
+    .get_target_freq = ondemand8050_get_target_freq,
+};
+
 static size_t *scale_down_table;
 
-void ondemand8050_init(void *data) {
+static int32_t reduce_gpufreq_by20(const int32_t gpufreq) {
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   get input: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n___\n%s() in %s:%d   RETURN: ", __func__, __FILE__, __LINE__, scale_down_table[level(gpufreq)]);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    return scale_down_table[level(gpufreq)];
+}
+
+static void ondemand8050_init(void *data) {
 
     const int32_t min_freq = gpugov_info.min_gpufreq;
     const int32_t *freq = gpugov_info.available_gpufreq;
@@ -47,17 +69,6 @@ fill_up_table:
     return;
 }
 
-static int32_t reduce_gpufreq_by20(const int32_t gpufreq) {
-
-#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
-    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-    printf("\n%s() in %s:%d   get input: %d", __func__, __FILE__, __LINE__, gpufreq);
-    printf("\n___\n%s() in %s:%d   RETURN: ", __func__, __FILE__, __LINE__, scale_down_table[level(gpufreq)]);
-#endif   // DEBUG or DEBUG_GOVERNOR
-
-    return scale_down_table[level(gpufreq)];
-}
-
 static int32_t ondemand8050_get_target_freq() {
 
     int16_t gpuutil;
@@ -85,11 +96,3 @@ static int32_t ondemand8050_get_target_freq() {
 #endif   // DEBUG or DEBUG_GOVERNOR
     return new_gpufreq;
 }
-
-// Global
-struct gpugov ondemand8050 = {
-
-    .name = "gpugov-ondemand8050",
-    .init = ondemand8050_init,
-    .get_target_freq = ondemand8050_get_target_freq,
-};

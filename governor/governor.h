@@ -46,15 +46,24 @@ extern struct gpugov   ondemand8050;
 extern struct gpugov   *curr_gpugov;
 
 // Helper functions and variables for GPU governor
+// GPU Frequency
 extern int fd_write_gpufreq;
 extern int fd_read_gpufreq;
-extern int fd_gpuutil;
-extern int fd_gpupower;
+int32_t get_gpufreq();   // Returns in Hz
+ssize_t set_gpufreq(int32_t gpufreq);
 int32_t gpufreq_i(int level);
 int32_t level(int32_t gpufreq);
-int32_t get_gpufreq();
-int16_t get_gpuutil();
+
+// GPU Utilization
+extern int fd_gpuutil;
+int16_t get_gpuutil();   // Returns in x0.1%
+
+// GPU Power
+extern int fd_gpupower;
 int16_t get_gpupower();
-ssize_t set_gpufreq(int32_t gpufreq);
+
+// EMC Utilization
+extern int fd_emcutil;
+int16_t get_emcutil();   // Returns in x0.1%
 
 #endif   // GOVERNOR_H
