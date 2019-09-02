@@ -54,6 +54,11 @@ DESIGN PRINCIPLE
      Linux system calls. I did NOT used any of Linux-specific system calls.
      See: Documentation/portability
 
+CFLAGS USAGE
+============
+
+   blahblah
+
 
 CFLAGS FOR COMPILATION
 ============

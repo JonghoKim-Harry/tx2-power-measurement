@@ -149,7 +149,7 @@ end_arg_processing:
     if(gflag) {
         info->userspace_gpugovernor = 1;
         init_gpugovernor();
-        start_gpugovernor(info->gpugov_name);
+        select_gpugovernor(info->gpugov_name, NULL);
     }
 
     if(argc == optind) {

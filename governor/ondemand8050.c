@@ -24,10 +24,10 @@ static int32_t reduce_gpufreq_by20(const int32_t gpufreq) {
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
     printf("\n%s() in %s:%d   get input: %d", __func__, __FILE__, __LINE__, gpufreq);
-    printf("\n___\n%s() in %s:%d   RETURN: ", __func__, __FILE__, __LINE__, scale_down_table[level(gpufreq)]);
+    printf("\n___\n%s() in %s:%d   RETURN: ", __func__, __FILE__, __LINE__, scale_down_table[gpufreq_hz_to_level(gpufreq)]);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
-    return scale_down_table[level(gpufreq)];
+    return scale_down_table[gpufreq_hz_to_level(gpufreq)];
 }
 
 static void ondemand8050_init(void *data) {

@@ -8,7 +8,7 @@
 #include "../default_values.h"
 
 void init_gpugovernor();
-void start_gpugovernor(const char *gpugov_name);
+void select_gpugovernor(const char *gpugov_name, void *data);
 void finish_gpugovernor();
 
 /**
@@ -40,19 +40,21 @@ struct gpugov {
     const char name[GPU_GOVERNOR_NAME_LEN];
     void (*init)(void *);
     int32_t (*get_target_freq)();
+    void (*print_governor_info)(int fd);
 };
 
-extern struct gpugov   ondemand8050;
 extern struct gpugov   *curr_gpugov;
+extern struct gpugov   ondemand8050;
+extern struct gpugov   emc_conservative;
 
-// Helper functions and variables for GPU governor
+/**
+ *  Informations for GPU governors
+ */
 // GPU Frequency
-extern int fd_write_gpufreq;
 extern int fd_read_gpufreq;
 int32_t get_gpufreq();   // Returns in Hz
+extern int fd_write_gpufreq;
 ssize_t set_gpufreq(int32_t gpufreq);
-int32_t gpufreq_i(int level);
-int32_t level(int32_t gpufreq);
 
 // GPU Utilization
 extern int fd_gpuutil;
@@ -64,6 +66,43 @@ int16_t get_gpupower();
 
 // EMC Utilization
 extern int fd_emcutil;
-int16_t get_emcutil();   // Returns in x0.1%
+int16_t get_emcutil();   // Returns in x0.0001%
+
+/**
+ *  Frequency transformation: Hz <--> frequency level
+ */
+int32_t gpufreq_level_to_hz(int level);
+int     gpufreq_hz_to_level(int32_t gpufreq);
+
+/**
+ *  Return frequency equal or greater than n% of given frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale down factor (integer, percent)
+ */
+int32_t scale_down_by_n(const int32_t gpufreq, int n);
+
+/**
+ *  Return frequency equal or less than n% of given frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale up factor (integer, percent)
+ */
+int32_t scale_up_by_n(const int32_t gpufreq, int n);
+
+/**
+ *  Scale down given frequency by n% of maximum frequency.
+ *  Return frequency equal or greater than the target frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale down factor (integer, percent)
+ */
+int32_t scale_down_by_n_of_max(const int32_t gpufreq, int n);
+
+/**
+ *  Scale up given frequency by n% of maximum frequency.
+ *  Return frequency equal or less than the target frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale up factor (integer, percent)
+ */
+int32_t scale_up_by_n_of_max(const int32_t gpufreq, int n);
+
 
 #endif   // GOVERNOR_H

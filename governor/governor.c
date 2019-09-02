@@ -68,12 +68,9 @@ void init_gpugovernor() {
     read(fd, buff, buffsize);
     close(fd);
     gpugov_info.max_gpufreq = atoi(buff);
-
-    // Make a list of available userspace gpu governors
-    INIT_LIST_HEAD(&ondemand8050.node);
-
-    // Initialize available gpu governors
-    ondemand8050.init(NULL);
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   @gpugov_info.max_gpufreq: %d", __func__, __FILE__, __LINE__, gpugov_info.max_gpufreq);
+#endif   // DEBUG or DEBUG_GOVERNOR
 
     // Store original GPU governor's name
     fd = open(TX2_SYSFS_GPU_GOVERNOR, O_RDWR);
@@ -100,15 +97,19 @@ void init_gpugovernor() {
     return;
 }
 
-void start_gpugovernor(const char *gpugov_name) {
+void select_gpugovernor(const char *gpugov_name, void *data) {
 
     set_gpufreq(gpugov_info.min_gpufreq);
 
     // Select by gpu governor name
     if(!strcmp(gpugov_name, "ondemand8050"))
         curr_gpugov = &ondemand8050;
+    else if(!strcmp(gpugov_name, "emc_conservative"))
+        curr_gpugov = &emc_conservative;
     else
         perror("There is no gpu governor with the given name");
+
+    curr_gpugov->init(data);
 
     return;
 }
@@ -130,26 +131,6 @@ void finish_gpugovernor() {
     if(num_written_bytes < 0)
         perror("write() fail");
     close(fd);
-}
-
-int32_t gpufreq_i(int level) {
-
-    if(level < 0 || level >= gpugov_info.num_available_gpufreq)
-        return -1;
-
-    return gpugov_info.available_gpufreq[level];
-}
-
-int32_t level(int32_t gpufreq) {
-
-    int ret;
-
-    for(ret=0; ret<gpugov_info.num_available_gpufreq; ++ret) {
-        if(gpufreq == gpugov_info.available_gpufreq[ret])
-            return ret;
-    }
-
-    return -1;
 }
 
 int32_t get_gpufreq() {
@@ -269,5 +250,165 @@ int16_t get_emcutil() {
     ret = atoi(buff);
 
     return ret;
+}
+
+int32_t gpufreq_level_to_hz(int level) {
+
+    if(level < 0 || level >= gpugov_info.num_available_gpufreq)
+        return -1;
+
+    return gpugov_info.available_gpufreq[level];
+}
+
+int gpufreq_hz_to_level(int32_t gpufreq) {
+
+    int ret;
+
+    for(ret=0; ret<gpugov_info.num_available_gpufreq; ++ret) {
+        if(gpufreq == gpugov_info.available_gpufreq[ret])
+            return ret;
+    }
+
+    return -1;
+}
+
+/**
+ *  Return frequency equal or greater than n% of given frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scaling down factor (integer, percent)
+ */
+int32_t scale_down_by_n(const int32_t gpufreq, int n) {
+
+    const int64_t target_x100 = (int64_t)gpufreq * (100-n);
+    const int num_levels = gpugov_info.num_available_gpufreq;
+    int level;
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    int32_t ret;
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   @gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n%s() in %s:%d   @n: %d", __func__, __FILE__, __LINE__, n);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    for(level=0; level<num_levels; level++) {
+        if(100 * (int64_t)gpugov_info.available_gpufreq[level] >= target_x100) {
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            ret = gpugov_info.available_gpufreq[level];
+            printf("\n%s() in %s:%d   RETURNED: %d", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+            return gpugov_info.available_gpufreq[level];
+        }
+    }
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+    return -1;
+}
+
+/**
+ *  Return frequency equal or less than n% of given frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale up factor (integer, percent)
+ */
+int32_t scale_up_by_n(const int32_t gpufreq, int n) {
+
+    const int64_t target_x100 = (int64_t)gpufreq * (100+n);
+    const int num_levels = gpugov_info.num_available_gpufreq;
+    int level;
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    int32_t ret;
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   @gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n%s() in %s:%d   @n: %d", __func__, __FILE__, __LINE__, n);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    for(level=(num_levels-1); level>=0; level--) {
+    
+        if(100 * (int64_t)gpugov_info.available_gpufreq[level] <= target_x100) {
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            ret = gpugov_info.available_gpufreq[level];
+            printf("\n%s() in %s:%d   RETURNED: %d", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+            return gpugov_info.available_gpufreq[level];
+        }
+    }
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+    return -1;
+}
+
+/**
+ *  Scale down given frequency by n% of maximum frequency.
+ *  Return frequency equal or greater than the target frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scaling down factor (integer, percent)
+ */
+int32_t scale_down_by_n_of_max(const int32_t gpufreq, int n) {
+
+    const int64_t target_x100 = (100 * (int64_t)gpufreq) - (n * (int64_t)gpugov_info.max_gpufreq);
+    const int num_levels = gpugov_info.num_available_gpufreq;
+    int level;
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    int32_t ret;
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   @gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n%s() in %s:%d   @n: %d", __func__, __FILE__, __LINE__, n);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    for(level=0; level<num_levels; level++) {
+        if(100 * (int64_t)gpugov_info.available_gpufreq[level] >= target_x100) {
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            ret = gpugov_info.available_gpufreq[level];
+            printf("\n%s() in %s:%d   RETURNED: %d", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+            return gpugov_info.available_gpufreq[level];
+        }
+    }
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+    return -1;
+}
+
+/**
+ *  Scale up given frequency by n% of maximum frequency.
+ *  Return frequency equal or less than the target frequency
+ *  @gpufreq: Given frequency in Hz
+ *  @n: Scale up factor (integer, percent)
+ */
+int32_t scale_up_by_n_of_max(const int32_t gpufreq, int n) {
+
+    const int64_t target_x100 = (100 * (int64_t)gpufreq) + (n * (int64_t)gpugov_info.max_gpufreq);
+    const int num_levels = gpugov_info.num_available_gpufreq;
+    int level;
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    int32_t ret;
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   @gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n%s() in %s:%d   @n: %d", __func__, __FILE__, __LINE__, n);
+    printf("\n%s() in %s:%d   target_x100: %ld", __func__, __FILE__, __LINE__, target_x100);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    for(level=(num_levels-1); level>=0; level--) {
+        if(100 * (int64_t)gpugov_info.available_gpufreq[level] <= target_x100) {
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            ret = gpugov_info.available_gpufreq[level];
+            printf("\n%s() in %s:%d   RETURNED: %d", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+            return gpugov_info.available_gpufreq[level];
+        }
+    }
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+            printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+    return -1;
 }
 
