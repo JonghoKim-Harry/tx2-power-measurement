@@ -142,8 +142,8 @@ end_arg_processing:
 
     if(!fflag) {
 
-        printf("\nYou did not specify statistics file name; thus, the file name is set to the default name, stats.txt");
-        strcpy(stat_filename_buff, "stats.txt");
+        strcpy(stat_filename_buff, "exp_result/stats.txt");
+        printf("\nYou did not specify statistics file name; thus, the file name is set to the default name, %s", stat_filename_buff);
     }
 
     if(gflag) {
@@ -198,7 +198,7 @@ end_arg_processing:
     strcpy(filename_buff, stat_filename);
     strcpy(given_dirname, dirname(filename_buff));
     strcpy(info->result_dirname, given_dirname);
-    basename_ptr = stat_filename + strlen(given_dirname) + 1;
+    basename_ptr = stat_filename + strlen(given_dirname);
     strcpy(token, basename_ptr);
     strtok_r(token, ".", &next_token);
     strcpy(filename_prefix, token);
