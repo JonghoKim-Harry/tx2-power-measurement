@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <unistd.h>
 #include "default_values.h"
 #include "constants.h"
 #include "summary.h"
@@ -130,7 +131,7 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     avg_system_power_uW = ((sum_system_power_mW % 2) * MILLI_PER_MICRO) / 2;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   avg.SYSTEM power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_system_power_mW, avg_system_power_uW);
+    printf("\n%s() in %s:%d   avg.SYSTEM power: %ld.%ld (mW)", __func__, __FILE__, __LINE__, avg_system_power_mW, avg_system_power_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: ms, ns
@@ -143,8 +144,8 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     }
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
-    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+    printf("\n%s() in %s:%d   diff sec:  %ld", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %ld", __func__, __FILE__, __LINE__, ns);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Sum the calculated energy
@@ -163,7 +164,7 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->system_energy_pJ   += fraction;
@@ -179,7 +180,7 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->system_energy_uJ += fraction;
@@ -195,7 +196,7 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->system_energy_mJ += fraction;
@@ -211,7 +212,7 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->system_energy_J  += fraction;
@@ -250,7 +251,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   given GPU power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->gpu_power);
     printf("\n%s() in %s:%d   last GPU power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.gpu_power);
-    printf("\n%s() in %s:%d   avg.GPU power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_gpupower_mW, avg_gpupower_uW);
+    printf("\n%s() in %s:%d   avg.GPU power: %ld.%ld (mW)", __func__, __FILE__, __LINE__, avg_gpupower_mW, avg_gpupower_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: ms, ns
@@ -263,8 +264,8 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     }
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
-    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+    printf("\n%s() in %s:%d   diff sec:  %ld", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %ld", __func__, __FILE__, __LINE__, ns);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Sum the calculated energy
@@ -283,7 +284,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->gpu_energy_pJ   += fraction;
@@ -299,7 +300,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->gpu_energy_uJ += fraction;
@@ -315,7 +316,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->gpu_energy_mJ += fraction;
@@ -331,7 +332,7 @@ static void update_gpuenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->gpu_energy_J  += fraction;
@@ -421,7 +422,7 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   given BOARD power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->board_power);
     printf("\n%s() in %s:%d   last BOARD power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.board_power);
-    printf("\n%s() in %s:%d   avg.BOARD power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_boardpower_mW, avg_boardpower_uW);
+    printf("\n%s() in %s:%d   avg.BOARD power: %ld.%ld (mW)", __func__, __FILE__, __LINE__, avg_boardpower_mW, avg_boardpower_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: sec, ns
@@ -433,8 +434,8 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
     }
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
-    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+    printf("\n%s() in %s:%d   diff sec:  %ld", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %ld", __func__, __FILE__, __LINE__, ns);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Sum the calculated energy
@@ -453,7 +454,7 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->board_energy_pJ   += fraction;
@@ -469,7 +470,7 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->board_energy_uJ += fraction;
@@ -485,7 +486,7 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->board_energy_mJ += fraction;
@@ -501,7 +502,7 @@ static void update_boardenergy(summary_struct *summary, const powerlog_struct *p
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->board_energy_J  += fraction;
@@ -540,7 +541,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     printf("\n%s() in %s:%d   given MEM power: %d (mW)", __func__, __FILE__, __LINE__, powerlog_ptr->mem_power);
     printf("\n%s() in %s:%d   last MEM power: %d (mW)", __func__, __FILE__, __LINE__, summary->last_powerlog.mem_power);
-    printf("\n%s() in %s:%d   avg.MEM power: %d.%d (mW)", __func__, __FILE__, __LINE__, avg_mempower_mW, avg_mempower_uW);
+    printf("\n%s() in %s:%d   avg.MEM power: %ld.%ld (mW)", __func__, __FILE__, __LINE__, avg_mempower_mW, avg_mempower_uW);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Calculate elapsed time in: sec, ns
@@ -552,8 +553,8 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
     }
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   diff sec:  %d", __func__, __FILE__, __LINE__, sec);
-    printf("\n%s() in %s:%d   diff nsec: %d", __func__, __FILE__, __LINE__, ns);
+    printf("\n%s() in %s:%d   diff sec:  %ld", __func__, __FILE__, __LINE__, sec);
+    printf("\n%s() in %s:%d   diff nsec: %ld", __func__, __FILE__, __LINE__, ns);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     // Sum the calculated energy
@@ -572,7 +573,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->mem_energy_pJ   += fraction;
@@ -588,7 +589,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->mem_energy_uJ += fraction;
@@ -604,7 +605,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->mem_energy_mJ += fraction;
@@ -620,7 +621,7 @@ static void update_memenergy(summary_struct *summary, const powerlog_struct *pow
     if(fraction < 0) --fraction;
 
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    printf("\n%s() in %s:%d   fraction:  %d", __func__, __FILE__, __LINE__, fraction);
+    printf("\n%s() in %s:%d   fraction: %ld", __func__, __FILE__, __LINE__, fraction);
 #endif   // DEBUG or DEBUG_SUMMARY
 
     summary->mem_energy_J  += fraction;
@@ -687,6 +688,33 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
     printf("\n%s() in %s:%d   FINISH", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_SUMMARY
     return;
+}
+
+void print_summaryptr(int fd, const summary_struct *summary) {
+
+    char buff[MAX_BUFFLEN];
+    size_t buff_len;
+
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n--- summary ---");
+    write(fd, buff, buff_len);
+
+    // Address of the summary struct
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - address: %p", (void *)summary);
+    write(fd, buff, buff_len);
+
+    // First and last timestamp
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - @start_timestamp: %ld.%ld\n - @finish_timestamp: %ld.%ld", summary->start_timestamp.tv_sec, summary->start_timestamp.tv_nsec, summary->finish_timestamp.tv_sec, summary->finish_timestamp.tv_nsec);
+    write(fd, buff, buff_len);
+
+    // Number of powerlogs
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - @num_powerlog: %d", summary->num_powerlog);
+    write(fd, buff, buff_len);
+
+    //
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - @min_gpu_util: %d", summary->min_gpu_util);
+    write(fd, buff, buff_len);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - @max_gpu_util: %d", summary->max_gpu_util);
+    write(fd, buff, buff_len);
 }
 
 struct timespec elapsed_time(const summary_struct summary) {

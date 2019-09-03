@@ -514,7 +514,7 @@ ssize_t boardenergy_to_stat  (const int stat_fd, const int colwidth, const summa
     // uJ:         xxx
     // pJ:            xxxxxx
     // fJ:                  x
-    snprintf(buff1, MAX_COLWIDTH, "%d.%03d%03d%06ld%01ld", summary.board_energy_J, summary.board_energy_mJ, summary.board_energy_uJ, summary.board_energy_pJ, (summary.board_energy_fJ / 100) );
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%03ld%03ld%06ld%01ld", summary.board_energy_J, summary.board_energy_mJ, summary.board_energy_uJ, summary.board_energy_pJ, (summary.board_energy_fJ / 100) );
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 
@@ -543,7 +543,7 @@ ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary
     // uJ:         xxx
     // pJ:            xxxxxx
     // fJ:                  x
-    snprintf(buff1, MAX_COLWIDTH, "%d.%03d%03d%06ld%01ld", summary.mem_energy_J, summary.mem_energy_mJ, summary.mem_energy_uJ, summary.mem_energy_pJ, (summary.mem_energy_fJ / 100) );
+    snprintf(buff1, MAX_COLWIDTH, "%ld.%03ld%03ld%06ld%01ld", summary.mem_energy_J, summary.mem_energy_mJ, summary.mem_energy_uJ, summary.mem_energy_pJ, (summary.mem_energy_fJ / 100) );
     buff2_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff1);
     num_written_bytes = write(stat_fd, buff2, buff2_len);
 

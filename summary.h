@@ -1,5 +1,5 @@
-#ifndef UPDATE_SUMMARY_H
-#define UPDATE_SUMMARY_H
+#ifndef SUMMARY_H
+#define SUMMARY_H
 
 #include "measurement_info.h"
 #include "powerlog.h"
@@ -91,5 +91,6 @@ typedef struct summary_struct {
 
 void init_summary(summary_struct *summary);
 void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr);
+void print_summaryptr(int fd, const summary_struct *summary);
 struct timespec elapsed_time(const summary_struct summary);
-#endif   // UPDATE_SUMMARY_H
+#endif   // SUMMARY_H
