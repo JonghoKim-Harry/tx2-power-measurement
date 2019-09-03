@@ -591,14 +591,22 @@ rawdata_eof_found:
     print_registered_rows(stat_fd, info);
 
     // Write summary
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    print_summaryptr(STDOUT_FILENO, &summary);
+#endif   // DEBUG or DEBUG_SUMMARY
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary");
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Elapsed Time:    %*ld.%09ld seconds", 9, elapsed_time(summary).tv_sec, elapsed_time(summary).tv_nsec);
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary.min_gpu_util / 10), 1, (summary.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary.max_gpu_util / 10), 1, (summary.max_gpu_util % 10), "%");
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary.max_gpu_freq);
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary.max_gpu_power);
     write(stat_fd, buff, buff_len);
     /*
@@ -607,15 +615,22 @@ rawdata_eof_found:
     */
 
     // Write summary during CNN
+#if defined(DEBUG) || defined(DEBUG_SUMMARY)
+    print_summaryptr(STDOUT_FILENO, &summary_cnn);
+#endif   // DEBUG or DEBUG_SUMMARY
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary during CNN");
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Elapsed Time:    %*ld.%09ld seconds", 9, elapsed_time(summary_cnn).tv_sec, elapsed_time(summary_cnn).tv_nsec);
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.min_gpu_util / 10), 1, (summary_cnn.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.max_gpu_util / 10), 1, (summary_cnn.max_gpu_util % 10), "%");
     write(stat_fd, buff, buff_len);
 
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.max_gpu_freq);
     write(stat_fd, buff, buff_len);
+
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary_cnn.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary_cnn.max_gpu_power);
     write(stat_fd, buff, buff_len);
     /*
