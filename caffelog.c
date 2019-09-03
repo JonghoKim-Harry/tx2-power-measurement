@@ -206,7 +206,7 @@ off_t parse_caffelog(const int caffelog_fd, const off_t offset, const struct tm 
     const char *start_ptr;
 
     // Buffs
-    const size_t BUFF_SIZE = 256;
+    const size_t BUFF_SIZE = 1024;
     char buff[BUFF_SIZE];
     char event_buff[BUFF_SIZE];
     const char *eol;
