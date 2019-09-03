@@ -22,8 +22,8 @@ struct gpugov cnngov_a = {
  */
 static int gpu_up_threshold          = 800;      // 80% (unit: x0.1%)
 static int gpu_down_threshold        = 700;      // 70% (unit: x0.1%)
-static int emc_up_threshold          = 300000;   // 30% (unit: x0.0001%)
-static int emc_down_threshold        = 400000;   // 40% (unit: x0.0001%)
+static int emc_up_threshold          = 200000;   // 20% (unit: x0.0001%)
+static int emc_down_threshold        = 600000;   // 60% (unit: x0.0001%)
 static int scale_up_factor           = 9;        // 9% (unit: %)
 static int scale_down_factor         = 9;        // 9% (unit: %)
 
@@ -41,7 +41,7 @@ static void cnngov_a_init(void *data) {
 
 static int32_t cnngov_a_get_target_freq() {
 
-    int16_t emcutil = get_emcutil();
+    int64_t emcutil = get_emcutil();
     int16_t gpuutil = get_gpuutil();
     int32_t freq = get_gpufreq();
     int32_t next_freq;

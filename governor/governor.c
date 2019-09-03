@@ -27,6 +27,7 @@ void init_gpugovernor() {
     char buff[buffsize];
     const char *ptr;
     size_t count;
+    int32_t freq;
     int32_t freq_list[100];
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
@@ -45,13 +46,22 @@ void init_gpugovernor() {
             if(!isdigit((int)*ptr))
                 lseek(fd, (ptr - buff - bufflen + 1), SEEK_CUR);
         }
-        freq_list[count] = atoi(buff);
-        ++count;
+        freq = atoi(buff);
+        if(freq) {
+            freq_list[count] = freq;
+            ++count;
+        }
     } while(bufflen > 0);
     close(fd);
     gpugov_info.available_gpufreq = malloc(count * sizeof(int32_t));
     memcpy(gpugov_info.available_gpufreq, freq_list, count * sizeof(int32_t));
     gpugov_info.num_available_gpufreq = count;
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   @gpugov_info.num_available_gpufreq: %ld", __func__, __FILE__, __LINE__, gpugov_info.num_available_gpufreq);
+    printf("\n%s() in %s:%d   @gpugov_info.available_gpufreq:", __func__, __FILE__, __LINE__);
+    for(count=0; count<gpugov_info.num_available_gpufreq; count++)
+       printf("\n%s() in %s:%d   %d", __func__, __FILE__, __LINE__, gpugov_info.available_gpufreq[count]);
+#endif   // DEBUG or DEBUG_GOVERNOR
 
     // GPU governor information: minimum gpu frequency
     fd = open(TX2_SYSFS_GPU_MINFREQ, O_RDONLY);

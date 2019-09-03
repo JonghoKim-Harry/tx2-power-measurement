@@ -6,7 +6,7 @@
 
 static void emc_conservative_init(void *data);
 static int32_t emc_conservative_get_target_freq();
-static void emc_conservative_print_governor_info(int fd);
+static void emc_conservative_print_gpugov(int fd);
 
 // Interface
 struct gpugov emc_conservative = {
@@ -14,7 +14,7 @@ struct gpugov emc_conservative = {
     .name = "gpugov-emc_conservative",
     .init = emc_conservative_init,
     .get_target_freq = emc_conservative_get_target_freq,
-    .print_governor_info = emc_conservative_print_governor_info
+    .print_gpugov = emc_conservative_print_gpugov
 };
 
 /**
@@ -63,7 +63,7 @@ static int32_t emc_conservative_get_target_freq() {
 }
 
 
-static void emc_conservative_print_governor_info(int fd) {
+static void emc_conservative_print_gpugov(int fd) {
 
     char buff[MAX_BUFFLEN];
     size_t buff_len;
