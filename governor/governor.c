@@ -112,7 +112,13 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
     set_gpufreq(gpugov_info.min_gpufreq);
 
     // Select by gpu governor name
-    if(!strcmp(gpugov_name, "scale_always"))
+    if(!strcmp(gpugov_name, "do_nothing"))
+        curr_gpugov = &do_nothing;
+    else if(!strcmp(gpugov_name, "scale_100"))
+        curr_gpugov = &scale_100;
+    else if(!strcmp(gpugov_name, "scale_10"))
+        curr_gpugov = &scale_10;
+    else if(!strcmp(gpugov_name, "scale_always"))
         curr_gpugov = &scale_always;
     else if(!strcmp(gpugov_name, "ondemand8050"))
         curr_gpugov = &ondemand8050;

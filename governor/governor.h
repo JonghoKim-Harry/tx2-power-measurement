@@ -44,6 +44,9 @@ struct gpugov {
 };
 
 extern struct gpugov   *curr_gpugov;
+extern struct gpugov   do_nothing;
+extern struct gpugov   scale_100;
+extern struct gpugov   scale_10;
 extern struct gpugov   scale_always;
 extern struct gpugov   ondemand8050;
 extern struct gpugov   cnngov_a;
