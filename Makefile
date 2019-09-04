@@ -41,6 +41,7 @@ OBJECTS := measurement_info.o \
 		   constants.o
 
 SUBDIR_OBJECTS := governor/governor.o \
+	              governor/scale_always.o \
 	              governor/ondemand8050.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
