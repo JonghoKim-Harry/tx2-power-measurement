@@ -116,6 +116,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &ondemand8050;
     else if(!strcmp(gpugov_name, "cnngov_a"))
         curr_gpugov = &cnngov_a;
+    else if(!strcmp(gpugov_name, "cnngov_b"))
+        curr_gpugov = &cnngov_b;
     else if(!strcmp(gpugov_name, "emc_conservative"))
         curr_gpugov = &emc_conservative;
     else

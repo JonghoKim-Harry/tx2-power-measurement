@@ -10,7 +10,7 @@ export CFLAGS += -Wall -DNDEBUG -DTRACE_CPU -DTRACE_MEM -DTRACE_POWER
 # Note that some caffe apps do not give timestamp
 CFLAGS += -DTRACE_CAFFE_TIMESTAMP
 
-CFLAGS += -DDEBUG_GOVERNOR
+#CFLAGS += -DDEBUG_GOVERNOR
 
 #TARGET_DEVICE := tx2
 TARGET_PATH := $(shell pwd)
@@ -43,6 +43,7 @@ OBJECTS := measurement_info.o \
 SUBDIR_OBJECTS := governor/governor.o \
 	              governor/ondemand8050.o \
 				  governor/cnngov_a.o \
+				  governor/cnngov_b.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 
