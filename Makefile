@@ -48,6 +48,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 	              governor/ondemand8050.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
+				  governor/cnngov_c.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 
