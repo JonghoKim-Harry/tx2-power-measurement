@@ -49,6 +49,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
 				  governor/cnngov_c.o \
+				  governor/cnngov_d.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 

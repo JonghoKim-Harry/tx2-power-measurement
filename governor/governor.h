@@ -52,6 +52,7 @@ extern struct gpugov   ondemand8050;
 extern struct gpugov   cnngov_a;
 extern struct gpugov   cnngov_b;
 extern struct gpugov   cnngov_c;
+extern struct gpugov   cnngov_d;
 extern struct gpugov   emc_conservative;
 
 /**
