@@ -46,11 +46,15 @@ SUBDIR_OBJECTS := governor/governor.o \
 	              governor/scale_10.o \
 	              governor/scale_100.o \
 	              governor/ondemand8050.o \
+	              governor/maxmin_cap.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
 				  governor/cnngov_c.o \
+				  governor/cnngov_c_30.o \
+				  governor/cnngov_c_40.o \
 				  governor/cnngov_d.o \
 				  governor/cnngov_e.o \
+				  governor/hilo.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 

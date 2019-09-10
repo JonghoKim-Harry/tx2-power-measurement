@@ -49,11 +49,15 @@ extern struct gpugov   scale_100;
 extern struct gpugov   scale_10;
 extern struct gpugov   scale_always;
 extern struct gpugov   ondemand8050;
+extern struct gpugov   maxmin_cap;
 extern struct gpugov   cnngov_a;
 extern struct gpugov   cnngov_b;
 extern struct gpugov   cnngov_c;
+extern struct gpugov   cnngov_c_30;
+extern struct gpugov   cnngov_c_40;
 extern struct gpugov   cnngov_d;
 extern struct gpugov   cnngov_e;
+extern struct gpugov   hilo;
 extern struct gpugov   emc_conservative;
 
 /**
