@@ -46,7 +46,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 	              governor/scale_10.o \
 	              governor/scale_100.o \
 	              governor/ondemand8050.o \
-	              governor/maxmin_cap.o \
+	              governor/maxmin_cap_b.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
 				  governor/cnngov_c.o \

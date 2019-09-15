@@ -49,7 +49,7 @@ extern struct gpugov   scale_100;
 extern struct gpugov   scale_10;
 extern struct gpugov   scale_always;
 extern struct gpugov   ondemand8050;
-extern struct gpugov   maxmin_cap;
+extern struct gpugov   maxmin_cap_b;
 extern struct gpugov   cnngov_a;
 extern struct gpugov   cnngov_b;
 extern struct gpugov   cnngov_c;
