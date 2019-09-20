@@ -46,6 +46,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 	              governor/scale_10.o \
 	              governor/scale_100.o \
 	              governor/ondemand8050.o \
+				  governor/policy_0_or_not.o \
 	              governor/maxmin_cap_b.o \
 				  governor/cnngov_a.o \
 				  governor/cnngov_b.o \
@@ -53,6 +54,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 				  governor/cnngov_c_30.o \
 				  governor/cnngov_c_40.o \
 				  governor/cnngov_d.o \
+				  governor/cnngov_20190919.o \
 				  governor/cnngov_e.o \
 				  governor/hilo.o \
 				  governor/emc_conservative.o \

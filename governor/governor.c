@@ -122,6 +122,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &scale_always;
     else if(!strcmp(gpugov_name, "ondemand8050"))
         curr_gpugov = &ondemand8050;
+    else if(!strcmp(gpugov_name, "policy_0_or_not"))
+        curr_gpugov = &policy_0_or_not;
     else if(!strcmp(gpugov_name, "maxmin_cap_b"))
         curr_gpugov = &maxmin_cap_b;
     else if(!strcmp(gpugov_name, "cnngov_a"))
@@ -136,6 +138,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &cnngov_c_40;
     else if(!strcmp(gpugov_name, "cnngov_d"))
         curr_gpugov = &cnngov_d;
+    else if(!strcmp(gpugov_name, "cnngov_20190919"))
+        curr_gpugov = &cnngov_20190919;
     else if(!strcmp(gpugov_name, "cnngov_e"))
         curr_gpugov = &cnngov_e;
     else if(!strcmp(gpugov_name, "hilo"))
