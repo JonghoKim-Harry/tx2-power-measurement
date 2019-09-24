@@ -59,6 +59,7 @@ extern struct gpugov   cnngov_c_40;
 extern struct gpugov   cnngov_d;
 extern struct gpugov   cnngov_20190919;
 extern struct gpugov   cnngov_20190920;
+extern struct gpugov   slow_scale;
 extern struct gpugov   cnngov_e;
 extern struct gpugov   hilo;
 extern struct gpugov   emc_conservative;
