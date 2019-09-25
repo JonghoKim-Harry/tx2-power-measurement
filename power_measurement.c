@@ -377,7 +377,7 @@ end_arg_processing:
     register_stat(info,  "EMC-util(%)",        11,
                   LOGTYPE_POWERLOG,            emcutil_to_stat);
 
-    register_stat(info,  "GPU-temp(celsius-degree)", 23,
+    register_stat(info,  "GPU-temp(\xB0""C)",  12,
                   LOGTYPE_POWERLOG,            gputemp_to_stat);
 
     register_stat(info,  "Timestamp",          19,
