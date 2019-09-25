@@ -337,6 +337,10 @@ end_arg_processing:
                      emcutil_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_EMC_UTIL);
 
+    register_rawdata(info,  collect_gputemp,
+                     gputemp_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_GPU_TEMP);
+
     // Register statistics
     register_stat(info,  "Time(s)",            18,
                   LOGTYPE_TIME,                elapsedtime_to_stat);
@@ -372,6 +376,10 @@ end_arg_processing:
     */
     register_stat(info,  "EMC-util(%)",        11,
                   LOGTYPE_POWERLOG,            emcutil_to_stat);
+
+    register_stat(info,  "GPU-temp(celsius-degree)", 23,
+                  LOGTYPE_POWERLOG,            gputemp_to_stat);
+
     register_stat(info,  "Timestamp",          19,
                   LOGTYPE_TIMESTAMP,           timestamp_to_stat);
     register_stat(info,  "Caffe-start",        11,

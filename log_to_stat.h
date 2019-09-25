@@ -33,6 +33,10 @@ ssize_t emcfreq_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 ssize_t emcutil_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
 #endif   // TRACE_MEM
 
+#ifdef TRACE_TEMP
+ssize_t gputemp_to_stat  (const int stat_fd, const int colwidth, const powerlog_struct powerlog);
+#endif   // TRACE_TEMP
+
 // Powerlog Summary to Statistics
 ssize_t system_energy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);
 ssize_t gpuenergy_to_stat  (const int stat_fd, const int colwidth, const summary_struct summary);

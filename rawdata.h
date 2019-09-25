@@ -38,6 +38,10 @@ ssize_t collect_emcfreq(const int rawdata_fd, const int sysfs_fd1);
 ssize_t collect_emcutil(const int rawdata_fd, const int sysfs_fd1);
 #endif   // TRACE_MEM
 
+#ifdef TRACE_TEMP
+ssize_t collect_gputemp(const int rawdata_fd, const int sysfs_fd1);
+#endif   // TRACE_TEMP
+
 void register_rawdata(
      struct measurement_info_struct *info,
      ssize_t (*func_read_rawdata)(const int rawdata_fd, ...),

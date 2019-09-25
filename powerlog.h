@@ -32,6 +32,10 @@ typedef struct powerlog_struct {
     int16_t emc_freq;             // MHz
     int32_t emc_util;             // x0.0001%
 #endif   // TRACE_MEM
+
+#ifdef TRACE_TEMP
+    int32_t gpu_temp;             // x0.001 Celsius degree
+#endif   // TRACE_TEMP
 } powerlog_struct;
 
 
@@ -56,5 +60,9 @@ ssize_t mempower_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t emcfreq_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 ssize_t emcutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
 #endif   // TRACE_MEM
+
+#ifdef TRACE_TEMP
+ssize_t gputemp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd);
+#endif   // TRACE_TEMP
 
 #endif   // POWERLOG_H

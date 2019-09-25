@@ -4,7 +4,7 @@
 export CAFFE_HOME = $(HOME)/caffe
 export POWER_MEASUREMENT_HOME = $(shell pwd)
 export POWER_MEASUREMENT_SCRIPT_HOME = $(POWER_MEASUREMENT_HOME)/script
-export CFLAGS += -Wall -DNDEBUG -DTRACE_CPU -DTRACE_MEM -DTRACE_POWER
+export CFLAGS += -Wall -DNDEBUG -DTRACE_CPU -DTRACE_MEM -DTRACE_POWER -DTRACE_TEMP
 
 # Uncomment if you trace caffe timestamp
 # Note that some caffe apps do not give timestamp

@@ -247,3 +247,27 @@ ssize_t emcutil_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
     return num_read_bytes;
 }
 #endif   // TRACE_MEM
+
+#ifdef TRACE_TEMP
+ssize_t gputemp_to_powerlog(powerlog_struct *powerlog, const int rawdata_fd) {
+
+    ssize_t num_read_bytes;
+    char buff[TX2_SYSFS_GPU_TEMP_MAX_STRLEN];
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG
+
+    num_read_bytes = read(rawdata_fd, buff, TX2_SYSFS_GPU_TEMP_MAX_STRLEN);
+
+    if(num_read_bytes > 0) {
+        // Note that GPU temperature is stored as "x0.001 Celsius degree"
+        powerlog->gpu_temp = atoi(buff);
+    }
+
+#ifdef DEBUG
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_read_bytes);
+#endif   // DEBUG
+    return num_read_bytes;
+}
+#endif   // TRACE_TEMP

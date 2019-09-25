@@ -41,9 +41,6 @@ static int32_t do_nothing_get_target_freq() {
 
     // Do nothing
 
-#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
-    printf("\n___\n%s() in %s:%d   RETURNED: %d", __func__, __FILE__, __LINE__, next_freq);
-#endif   // DEBUG or DEBUG_GOVERNOR
     return gpugov_info.max_gpufreq;
 }
 

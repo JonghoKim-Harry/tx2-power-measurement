@@ -69,6 +69,7 @@ CFLAGS FOR COMPILATION
    TRACE_MEM                  ON       Trace EMC/DDR/MEM informations
    TRACE_CAFFE_TIMESTAMP      OFF      Trace Caffe timestamp
    TRACE_POWER                ON       Trace BOARD/SoC/Wifi power
+   TRACE_TEMP                 ON       Trace GPU temperature
 
 
 CFLAGS FOR DEBUG
