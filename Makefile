@@ -29,7 +29,8 @@ HEADERS := constants.h \
 		   powerlog.h \
 		   stat.h \
 		   summary.h \
-		   tx2_sysfs_power.h
+		   tx2_sysfs_power.h \
+		   privilege.h \
 
 OBJECTS := measurement_info.o \
            powerlog.o \
@@ -38,7 +39,8 @@ OBJECTS := measurement_info.o \
 		   stat.o \
 		   caffelog.o \
 		   enhanced_shcmd.o \
-		   constants.o
+		   constants.o \
+		   privilege.o
 
 SUBDIR_OBJECTS := governor/governor.o \
 	              governor/do_nothing.o \

@@ -6,6 +6,7 @@
 #include <ctype.h>
 
 #include "governor.h"
+#include "privilege.h"
 
 static char orig_gpugov_name[GPU_GOVERNOR_NAME_LEN];
 
@@ -169,12 +170,19 @@ void finish_gpugovernor() {
     close(fd_emcutil);
 
     // Restore original gpu governor
+    push_uid();
+    push_gid();
+    get_root_privilege();
+
     fd = open(TX2_SYSFS_GPU_GOVERNOR, O_WRONLY);
     lseek(fd, 0, SEEK_SET);
     num_written_bytes = write(fd, orig_gpugov_name, strlen(orig_gpugov_name));
     if(num_written_bytes < 0)
         perror("write() fail");
     close(fd);
+
+    pop_uid();
+    pop_gid();
 }
 
 int32_t get_gpufreq() {

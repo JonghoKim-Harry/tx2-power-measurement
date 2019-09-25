@@ -70,8 +70,9 @@ For portability, I used:
         - S_IFDIR()                    in <sys/stat.h>
 
 
-Unfortunately, I used Linux functions:
+Unfortunately, I used GNU/Linux functions:
 
+        - getresuid()                  in <unistd.h> using #define _GNU_SOURCE
         - opendir()                    in <dirent.h>
         - readdir()                    in <dirent.h>
 
