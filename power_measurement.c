@@ -179,9 +179,9 @@ end_arg_processing:
 
     // Set powertool measurement interval
     if(!iflag) {
-        printf("\nSet measurement interval as default: 10 ms");
+        printf("\nSet measurement interval as default: 1 ms");
         info->powertool_interval.tv_sec = 0;
-        info->powertool_interval.tv_nsec = 10 * ONE_MILLISECOND_TO_NANOSECOND;
+        info->powertool_interval.tv_nsec = ONE_MILLISECOND_TO_NANOSECOND;
     }
 
     // Set cooldown period
