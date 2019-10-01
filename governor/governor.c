@@ -149,6 +149,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &cnngov_e;
     else if(!strcmp(gpugov_name, "hilo"))
         curr_gpugov = &hilo;
+    else if(!strcmp(gpugov_name, "pingpong"))
+        curr_gpugov = &pingpong;
     else if(!strcmp(gpugov_name, "emc_conservative"))
         curr_gpugov = &emc_conservative;
     else

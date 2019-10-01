@@ -61,6 +61,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 				  governor/slow_scale.o \
 				  governor/cnngov_e.o \
 				  governor/hilo.o \
+				  governor/pingpong.o \
 				  governor/emc_conservative.o \
 				  rawdata.o
 
