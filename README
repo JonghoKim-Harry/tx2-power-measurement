@@ -39,6 +39,12 @@ HOW TO GET SYSFS ENTRIES THAT TEGRASTATS USES
 
 REFERENCE
 
+   * Jetson stats
+        https://github.com/rbonghi/jetson_stats.git
+
+   * tegrastats
+        https://devtalk.nvidia.com/default/topic/938055/jetson-tx1/source-for-tegrastats-and-or-info-about-querying-overall-gpu-utilization-/post/4888113/#4888113
+
    * Jetson TX2 Power Monitoring:
         https://github.com/horizon-research/tx2-power-consumption.git
         https://devtalk.nvidia.com/default/topic/1000830/jetson-tx2/jetson-tx2-ina226-power-monitor-with-i2c-interface-/
