@@ -330,9 +330,9 @@ end_arg_processing:
     register_rawdata(info,  collect_mempower,
                      mempower_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_MEM_POWER);
-    //register_rawdata(info,  collect_emcfreq,
-    //                 emcfreq_to_powerlog,
-    //                 ONE_SYSFS_FILE,  TX2_SYSFS_EMC_FREQ);
+    register_rawdata(info,  collect_emcfreq,
+                     emcfreq_to_powerlog,
+                     ONE_SYSFS_FILE,  TX2_SYSFS_EMC_FREQ);
     register_rawdata(info,  collect_emcutil,
                      emcutil_to_powerlog,
                      ONE_SYSFS_FILE,  TX2_SYSFS_EMC_UTIL);
@@ -370,10 +370,8 @@ end_arg_processing:
                   LOGTYPE_POWERLOG,            gpuutil_to_stat);
     register_stat(info,  "GPU-psum_util(s*%)", 18,
                   LOGTYPE_SUMMARY,             psum_gpuutil_to_stat);
-    /*
     register_stat(info,  "EMC-freq(MHz)",      13,
                   LOGTYPE_POWERLOG,            emcfreq_to_stat);
-    */
     register_stat(info,  "EMC-util(%)",        11,
                   LOGTYPE_POWERLOG,            emcutil_to_stat);
 

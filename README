@@ -32,6 +32,11 @@ HOW TO USE
                         the old file and create new one
 
 
+HOW TO GET SYSFS ENTRIES THAT TEGRASTATS USES
+
+   sudo sh -c "strace ./tegrastats 2>&1 | grep open"
+
+
 REFERENCE
 
    * Jetson TX2 Power Monitoring:
@@ -54,14 +59,13 @@ DESIGN PRINCIPLE
      Linux system calls. I did NOT used any of Linux-specific system calls.
      See: Documentation/portability
 
+
 CFLAGS USAGE
-============
 
    blahblah
 
 
 CFLAGS FOR COMPILATION
-============
 
    CFLAG NAME               DEFAULT    EXPLANATION
    ----------               -------    -----------
@@ -73,7 +77,6 @@ CFLAGS FOR COMPILATION
 
 
 CFLAGS FOR DEBUG
-============
 
    CFLAG NAME               DEFAULT    EXPLANATION
    ----------               -------    -----------
@@ -86,7 +89,6 @@ CFLAGS FOR DEBUG
 
 
 SCRIPT USAGE EXAMPLE
-============
 
    # LeNet with MNIST dataset
    sudo ./script/run/iterate_gpu_freq.sh lenet-batch100 ./script/run/run_lenet-batch100.sh

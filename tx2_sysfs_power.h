@@ -136,7 +136,8 @@
 #define TX2_SYSFS_EMC_MINFREQ   \
     "/sys/kernel/debug/bpmp/debug/clk/emc/min_rate"
 #define TX2_SYSFS_EMC_FREQ   \
-    "/sys/kernel/debug/clk/emc/clk_rate"
+    "/sys/kernel/debug/bpmp/debug/clk/emc/rate"
+//    "/sys/kernel/debug/clk/emc/clk_rate"
 #define TX2_SYSFS_EMC_UTIL \
     "/sys/kernel/actmon_avg_activity/mc_all"
 
