@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <string.h>
-#include "tx2_sysfs_power.h"
 #include "constants.h"
 #include "summary.h"
 
@@ -769,38 +768,21 @@ void print_summary_gpu_util_range(int fd, const summary_struct *summary) {
     char buff[MAX_BUFFLEN];
     ssize_t buff_len;
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU-utilization range: %*d.%*d %c - %*d.%*d %c", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary->min_gpu_util / 10), 1, (summary->min_gpu_util % 10), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary->max_gpu_util / 10), 1, (summary->max_gpu_util % 10), '%');
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU utilization range: %*d.%*d %c - %*d.%*d %c", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary->min_gpu_util / 10), 1, (summary->min_gpu_util % 10), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary->max_gpu_util / 10), 1, (summary->max_gpu_util % 10), '%');
     write(fd, buff, buff_len);
 }
 
 void print_summary_emc_util_range(int fd, const summary_struct *summary) {
-#ifdef TRACE_MEM
 
-    char buff[MAX_BUFFLEN];
-    ssize_t buff_len;
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * EMC-utilization range: %*d.%0*d %c - %*d.%0*d %c", (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->min_emc_util / 10000), 4, (summary->min_emc_util % 10000), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 4), (summary->max_gpu_util / 10000), 4, (summary->max_gpu_util % 10000), '%');
-    write(fd, buff, buff_len);
-
-#endif   // TRACE_MEM
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary->min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary->max_gpu_freq);
 }
 
 void print_summary_gpu_freq_range(int fd, const summary_struct *summary) {
 
-    char buff[MAX_BUFFLEN];
-    ssize_t buff_len;
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU-frequency range:   %*d MHz - %*d MHz", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary->min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary->max_gpu_freq);
-    write(fd, buff, buff_len);
 }
 
 void print_summary_gpu_power_range(int fd, const summary_struct *summary) {
 
-    char buff[MAX_BUFFLEN];
-    ssize_t buff_len;
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU-power range:       %*d mW - %*d mW", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary->min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary->max_gpu_power);
-    write(fd, buff, buff_len);
 }
 
 

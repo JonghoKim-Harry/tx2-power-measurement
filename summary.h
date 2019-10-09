@@ -3,12 +3,14 @@
 
 #include "measurement_info.h"
 #include "powerlog.h"
+#include "default_values.h"
 
 typedef struct summary_struct {
 
-    struct timespec start_timestamp, finish_timestamp;
-    struct powerlog_struct last_powerlog;
-    int                     num_powerlog;
+    struct timespec          start_timestamp, finish_timestamp;
+    struct powerlog_struct   last_powerlog;
+    int                      num_powerlog;
+    char                     name[MAX_BUFFLEN];
 
     // GPU utilization and product-sum of utilization-time
     int16_t min_gpu_util;              // e-1%
@@ -89,8 +91,18 @@ typedef struct summary_struct {
 #endif   // TRACE_MEM
 } summary_struct;
 
-void init_summary(summary_struct *summary);
+/**/
+void init_summary(summary_struct *summary, const char *_name);
 void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr);
-void print_summaryptr(int fd, const summary_struct *summary);
+void print_summary(int fd, const summary_struct *summary);
 struct timespec elapsed_time(const summary_struct summary);
+
+/* Print functions */
+void print_summary_name(int fd, const summary_struct *summary);
+void print_summary_runtime(int fd, const summary_struct *summary);
+void print_summary_gpu_util_range(int fd, const summary_struct *summary);
+void print_summary_emc_util_range(int fd, const summary_struct *summary);
+void print_summary_gpu_freq_range(int fd, const summary_struct *summary);
+void print_summary_gpu_power_range(int fd, const summary_struct *summary);
+
 #endif   // SUMMARY_H

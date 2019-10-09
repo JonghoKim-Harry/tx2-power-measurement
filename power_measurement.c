@@ -442,8 +442,8 @@ void calculate_2ndstat(const measurement_info_struct info) {
 #ifdef DEBUG
     printf("\n%s() in %s:%d   Start initializing summary", __func__, __FILE__, __LINE__);
 #endif   // DEBUG
-    init_summary(&summary_caffe);
-    init_summary(&summary_cnn);
+    init_summary(&summary_caffe, "GPU statistics summary during Caffe");
+    init_summary(&summary_cnn,   "GPU statistics summary during CNN");
     flag_cnnstart  = 0;
     flag_cnnfinish = 0;
 
@@ -598,47 +598,27 @@ rawdata_eof_found:
 
     // Write summary
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
-    print_summaryptr(STDOUT_FILENO, &summary_caffe);
+    print_summary(STDOUT_FILENO, &summary_caffe);
 #endif   // DEBUG or DEBUG_SUMMARY
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary");
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Elapsed Time:    %*ld.%09ld seconds", 9, elapsed_time(summary_caffe).tv_sec, elapsed_time(summary_caffe).tv_nsec);
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_caffe.min_gpu_util / 10), 1, (summary_caffe.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_caffe.max_gpu_util / 10), 1, (summary_caffe.max_gpu_util % 10), "%");
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_caffe.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_caffe.max_gpu_freq);
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary_caffe.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary_caffe.max_gpu_power);
-    write(stat_fd, buff, buff_len);
+    print_summary_name(stat_fd, &summary_caffe);
+    print_summary_runtime(stat_fd, &summary_caffe);
+    print_summary_gpu_util_range(stat_fd, &summary_caffe);
+    print_summary_emc_util_range(stat_fd, &summary_caffe);
+    print_summary_gpu_freq_range(stat_fd, &summary_caffe);
+    print_summary_gpu_power_range(stat_fd, &summary_caffe);
 
     // Write summary during CNN
 #if defined(DEBUG) || defined(DEBUG_SUMMARY)
     print_summaryptr(STDOUT_FILENO, &summary_cnn);
 #endif   // DEBUG or DEBUG_SUMMARY
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGPU Stat Summary during CNN");
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Elapsed Time:    %*ld.%09ld seconds", 9, elapsed_time(summary_cnn).tv_sec, elapsed_time(summary_cnn).tv_nsec);
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Utilization: (MIN) %*d.%*d %s - %*d.%*d %s (MAX)", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.min_gpu_util / 10), 1, (summary_cnn.min_gpu_util % 10), "%", (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 1), (summary_cnn.max_gpu_util / 10), 1, (summary_cnn.max_gpu_util % 10), "%");
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Frequency:   (MIN) %*d MHz - %*d MHz (MAX)", TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.min_gpu_freq, TX2_SYSFS_GPU_MHZFREQ_MAX_STRLEN, summary_cnn.max_gpu_freq);
-    write(stat_fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Power:       (MIN) %*d mW - %*d mW (MAX)", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary_cnn.min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary_cnn.max_gpu_power);
-    write(stat_fd, buff, buff_len);
-    /*
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU Energy:      %*ld.%06ld%06ld%01ld J", 9, summary_cnn.gpu_energy_J, summary_cnn.gpu_energy_uJ, summary_cnn.gpu_energy_pJ, summary_cnn.gpu_energy_dotone_pJ);
-    write(stat_fd, buff, buff_len);
-    */
+    print_summary_name(stat_fd, &summary_cnn);
+    print_summary_runtime(stat_fd, &summary_cnn);
+    print_summary_gpu_util_range(stat_fd, &summary_cnn);
+    print_summary_emc_util_range(stat_fd, &summary_cnn);
+    print_summary_gpu_freq_range(stat_fd, &summary_cnn);
+    print_summary_gpu_power_range(stat_fd, &summary_cnn);
 
     // FINISH writting summary
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n");
