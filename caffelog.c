@@ -139,17 +139,16 @@ static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
 
     // Flags
     int batch_idx_modified;
-    int detect_batch_finish;
 
     batch_idx_modified = 0;
-    detect_batch_finish = 0;
+    caffelog->batch_finish = 0;
 
     if(CNN_NOT_STARTED(caffelog_parser.flag_cnn)) {
         if(!regexec(&caffelog_parser.first_batch_start_regex, event_buff, (1 + 1), event_regmatch, NO_REGEX_EFLAGS)) {
 
             batch_idx_modified = 1;
             caffelog->cnn_start = INFINITE;
-            caffelog->batch_finish = 0;
+            caffelog->batch_finish = 1;   // 1 when cnn starts
 
             // Parse the number of batches
             strncpy(buff, event_buff + event_regmatch[1].rm_so, (event_regmatch[1].rm_eo - event_regmatch[1].rm_so + 1));
@@ -165,7 +164,7 @@ static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
             strncpy(buff, event_buff + event_regmatch[1].rm_so, (event_regmatch[1].rm_eo - event_regmatch[1].rm_so + 1));
 
             if(caffelog_parser.batch_idx < (atoi(buff) + 1 )) {
-                detect_batch_finish = 1;
+                caffelog->batch_finish = INFINITE;
                 batch_idx_modified = 1;
             }
 
@@ -182,11 +181,6 @@ static void parse_batch_event(char *event_buff, caffelog_struct *caffelog) {
 
     if(!batch_idx_modified) // Nothing detected, thus guess batch number from previous parsing results
        caffelog->batch_idx = caffelog_parser.batch_idx;
-
-    if(detect_batch_finish)
-        caffelog->batch_finish = INFINITE;
-    else
-        caffelog->batch_finish = 0;
 
     return;
 }
