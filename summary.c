@@ -759,9 +759,6 @@ void print_summary_runtime(int fd, const summary_struct *summary) {
 
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Runtime: %*ld.%09ld seconds", 9, elapsed_time(*summary).tv_sec, elapsed_time(*summary).tv_nsec);
     write(fd, buff, buff_len);
-
-    buff_len = snprintf(buff, MAX_BUFFLEN, summary->name);
-    write(fd, buff, buff_len);
 }
 
 void print_summary_gpu_util_range(int fd, const summary_struct *summary) {
