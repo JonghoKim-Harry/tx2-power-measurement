@@ -177,8 +177,7 @@ void finish_gpugovernor() {
     close(fd_emcutil);
 
     // Restore original gpu governor
-    push_uid();
-    push_gid();
+    push_privilege();
     get_root_privilege();
 
     fd = open(TX2_SYSFS_GPU_GOVERNOR, O_WRONLY);
@@ -194,8 +193,7 @@ void finish_gpugovernor() {
     printf("\n%s() in %s:%d   num_written_bytes: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
-    pop_uid();
-    pop_gid();
+    pop_privilege();
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     printf("\n%s() in %s:%d   FINISHED", __func__, __FILE__, __LINE__);
