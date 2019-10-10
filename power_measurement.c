@@ -273,7 +273,7 @@ end_arg_processing:
 
     // FINISH RESERVATION
     info->summary_len += snprintf(buff, MAX_BUFFLEN, "\n");
-    info->summary_len += 400;   // Guard-banding
+    info->summary_len += 500;   // Guard-banding
     info->metadata_end = lseek(stat_fd, info->summary_len, SEEK_CUR);
     close(stat_fd);
 
