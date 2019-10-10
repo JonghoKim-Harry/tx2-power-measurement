@@ -4,25 +4,9 @@
 
 static const uid_t ROOT_UID = 0;
 static const gid_t ROOT_GID = 0;
-static uid_t ruid, euid, suid;
-static gid_t rgid, egid, sgid;
 
-int push_privilege() {
 
-    if(getresuid(&ruid, &euid, &suid) == -1) {
-        perror("Can not get user identity (UID)");
-        return -1;
-    }
-
-    if(getresgid(&rgid, &egid, &sgid) == -1) {
-        perror("Can not get group identity (GID)");
-        return -1;
-    }
-
-    return 0;
-}
-
-int get_root_privilege() {
+int restore_root_privilege() {
 
     if(seteuid(ROOT_UID) == -1) {
         perror("Can not switch to root UID");
@@ -37,14 +21,14 @@ int get_root_privilege() {
     return 0;
 }
 
-int drop_root_privilege() {
+int drop_root_privilege_temp() {
 
-    if (setgid(ROOT_GID) != 0) {
+    if (setegid(getgid()) != 0) {
         perror("setgid() failed");
         return -1;
     }
 
-    if (setuid(ROOT_UID) != 0) {
+    if (seteuid(getuid()) != 0) {
         perror("setuid() failed");
         return -1;
     }
@@ -52,16 +36,17 @@ int drop_root_privilege() {
     return 0;
 }
 
-int pop_privilege() {
+int drop_root_privilege_perm() {
 
-    if(setresgid(rgid, egid, sgid) == -1) {
-        perror("Can not return to group identity (GID)");
+    if (setgid(getgid()) != 0) {
+        perror("setgid() failed");
         return -1;
     }
 
-    if(setresuid(ruid, euid, suid) == -1) {
-        perror("Can not return to user identity (UID)");
+    if (setuid(getuid()) != 0) {
+        perror("setuid() failed");
         return -1;
     }
+
     return 0;
 }
