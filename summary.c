@@ -776,7 +776,7 @@ void print_summary_emc_util_range(int fd, const summary_struct *summary) {
     char buff[MAX_BUFFLEN];
     ssize_t buff_len;
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * EMC-utilization range: %*d.%0*d %c - %*d.%0*d %c", (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->min_emc_util / 10000), 4, (summary->min_emc_util % 10000), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 4), (summary->max_gpu_util / 10000), 4, (summary->max_gpu_util % 10000), '%');
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * EMC-utilization range: %*d.%0*d %c - %*d.%0*d %c", (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->min_emc_util / 10000), 4, (summary->min_emc_util % 10000), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 4), (summary->max_emc_util / 10000), 4, (summary->max_emc_util % 10000), '%');
     write(fd, buff, buff_len);
 
 #endif   // TRACE_MEM
