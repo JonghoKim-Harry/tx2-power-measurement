@@ -12,6 +12,7 @@
 #include "governor/governor.h"
 #include "constants.h"
 #include "default_values.h"
+#include "privilege.h"
 
 ssize_t collect_timestamp(const int rawdata_fd) {
 
@@ -352,6 +353,8 @@ void register_rawdata
     printf("\n * num_sysfs_file: %d", num_sysfs_file);
 #endif   // DEBUG
 
+    restore_root_privilege();
+
     // Register to rawdata_info:
     //  1) A function pointer to read rawdata: (ex) read_rawdata_1
     //  2) A function pointer to conver rawdata to powerlog: (ex) rawdata_to_powerlog_1
@@ -379,6 +382,8 @@ void register_rawdata
 
     // Register to info: the number of rawdata
     ++(info->num_rawdata);
+
+    drop_root_privilege_temp();
 
 #ifdef DEBUG
     printf("\nregister_rawdata()   FINISHED");

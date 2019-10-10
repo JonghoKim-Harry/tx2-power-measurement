@@ -23,6 +23,7 @@
 #include "constants.h"
 #include "default_values.h"
 #include "governor/governor.h"
+#include "privilege.h"
 
 #define HELP_FIRST_COLWIDTH         30
 #define AVAILABLE_OPTIONS   "-"   "c:f:g:hi:"
@@ -74,6 +75,8 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
 #ifdef DEBUG
     printf("\nprepare_measurement()   START");
 #endif   // DEBUG
+
+    drop_root_privilege_temp();
 
     init_info(info);
 
@@ -641,11 +644,13 @@ void finish_measurement(measurement_info_struct *info) {
 
     if(info->flag_mkdir) {
 
+        /*
         printf("\nchown -R %s", info->result_dirname);
 
         // $ chown -R
         if(chown_R(info->result_dirname, DEFAULT_UID, DEFAULT_GID) == -1)
             perror("chown_R() fail");
+        */
     }
 
     if(info->userspace_gpugovernor)
