@@ -657,6 +657,10 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
         summary->max_gpu_freq = powerlog_ptr->gpu_freq;
     if(summary->max_gpu_power < powerlog_ptr->gpu_power)
         summary->max_gpu_power = powerlog_ptr->gpu_power;
+#ifdef TRACE_MEM
+    if(summary->max_emc_util < powerlog_ptr->emc_util)
+        summary->max_emc_util = powerlog_ptr->emc_util;
+#endif   // TRACE_MEM
 
     // Update minimum values.
     // Note that we initialized minimum values to maximum possitive number.
@@ -667,6 +671,10 @@ void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr
         summary->min_gpu_freq = powerlog_ptr->gpu_freq;
     if(summary->min_gpu_power > powerlog_ptr->gpu_power)
         summary->min_gpu_power = powerlog_ptr->gpu_power;
+#ifdef TRACE_MEM
+    if(summary->min_emc_util > powerlog_ptr->emc_util)
+        summary->min_emc_util = powerlog_ptr->emc_util;
+#endif   // TRACE_MEM
 
     update_system_energy(summary, powerlog_ptr);
     update_gpuenergy(summary, powerlog_ptr);
@@ -776,7 +784,7 @@ void print_summary_emc_util_range(int fd, const summary_struct *summary) {
     char buff[MAX_BUFFLEN];
     ssize_t buff_len;
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * EMC-utilization range: %*d.%0*d %c - %*d.%0*d %c", (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->min_emc_util / 10000), 4, (summary->min_emc_util % 10000), '%', (TX2_SYSFS_GPU_UTIL_MAX_STRLEN - 4), (summary->max_emc_util / 10000), 4, (summary->max_emc_util % 10000), '%');
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * EMC-utilization range: %*d.%0*d %c - %*d.%0*d %c", (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->min_emc_util / 10000), 4, (summary->min_emc_util % 10000), '%', (TX2_SYSFS_EMC_UTIL_MAX_STRLEN - 4), (summary->max_emc_util / 10000), 4, (summary->max_emc_util % 10000), '%');
     write(fd, buff, buff_len);
 
 #endif   // TRACE_MEM
