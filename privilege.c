@@ -24,12 +24,12 @@ int restore_root_privilege() {
 int drop_root_privilege_temp() {
 
     if (setegid(getgid()) != 0) {
-        perror("setgid() failed");
+        perror("setegid() failed");
         return -1;
     }
 
     if (seteuid(getuid()) != 0) {
-        perror("setuid() failed");
+        perror("seteuid() failed");
         return -1;
     }
 
