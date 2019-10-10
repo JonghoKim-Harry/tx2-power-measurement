@@ -166,6 +166,11 @@ void finish_gpugovernor() {
     int fd;
     ssize_t num_written_bytes;
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    close(fd_write_gpufreq);
     close(fd_read_gpufreq);
     close(fd_gpuutil);
     close(fd_gpupower);
@@ -183,8 +188,18 @@ void finish_gpugovernor() {
         perror("write() fail");
     close(fd);
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   fd: %d", __func__, __FILE__, __LINE__, fd);
+    printf("\n%s() in %s:%d   orig_gpugov_name: %s", __func__, __FILE__, __LINE__, orig_gpugov_name);
+    printf("\n%s() in %s:%d   num_written_bytes: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
     pop_uid();
     pop_gid();
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   FINISHED", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
 }
 
 int32_t get_gpufreq() {
@@ -461,7 +476,7 @@ int32_t scale_up_by_n_of_max(const int32_t gpufreq, int n) {
     }
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
-            printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   RETURNED: -1", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
     return -1;
 }
