@@ -23,7 +23,7 @@ void init_summary(summary_struct *summary, const char *_name) {
     summary->max_gpu_util        = INIT_MAX;
     summary->max_gpu_freq        = INIT_MAX;
     summary->max_gpu_power       = INIT_MAX;
-    summary->max_board_power       = INIT_MAX;
+    summary->max_board_power     = INIT_MAX;
 
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
@@ -43,7 +43,7 @@ void init_summary(summary_struct *summary, const char *_name) {
     summary->min_gpu_util        = INIT_MIN;
     summary->min_gpu_freq        = INIT_MIN;
     summary->min_gpu_power       = INIT_MIN;
-    summary->min_board_power       = INIT_MIN;
+    summary->min_board_power     = INIT_MIN;
 
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
@@ -227,7 +227,6 @@ static void update_system_energy(summary_struct *summary, const powerlog_struct 
 
     return;
 }
-
 
 static inline void print_gpuenergy(summary_struct summary) {
 
@@ -727,7 +726,7 @@ void print_summary(int fd, const summary_struct *summary) {
     write(fd, buff, buff_len);
 }
 
-struct timespec elapsed_time(const summary_struct summary) {
+struct timespec summary_runtime(const summary_struct summary) {
 
     struct timespec ret;
     time_t diff_sec;
@@ -747,7 +746,6 @@ struct timespec elapsed_time(const summary_struct summary) {
     return ret;
 }
 
-
 /* Print functions */
 void print_summary_name(int fd, const summary_struct *summary) {
 
@@ -765,7 +763,7 @@ void print_summary_runtime(int fd, const summary_struct *summary) {
     char buff[MAX_BUFFLEN];
     ssize_t buff_len;
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Runtime: %*ld.%09ld seconds", 9, elapsed_time(*summary).tv_sec, elapsed_time(*summary).tv_nsec);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * Runtime: %*ld.%09ld seconds", 9, summary_runtime(*summary).tv_sec, summary_runtime(*summary).tv_nsec);
     write(fd, buff, buff_len);
 }
 
@@ -807,5 +805,3 @@ void print_summary_gpu_power_range(int fd, const summary_struct *summary) {
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n   * GPU-power range:       %*d mW - %*d mW", TX2_SYSFS_GPU_POWER_MAX_STRLEN, summary->min_gpu_power, TX2_SYSFS_GPU_UTIL_MAX_STRLEN, summary->max_gpu_power);
     write(fd, buff, buff_len);
 }
-
-

@@ -95,7 +95,7 @@ typedef struct summary_struct {
 void init_summary(summary_struct *summary, const char *_name);
 void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr);
 void print_summary(int fd, const summary_struct *summary);
-struct timespec elapsed_time(const summary_struct summary);
+struct timespec summary_runtime(const summary_struct summary);
 
 /* Print functions */
 void print_summary_name(int fd, const summary_struct *summary);
