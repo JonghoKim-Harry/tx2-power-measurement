@@ -42,23 +42,23 @@ void init_summary(summary_struct *summary, const char *_name) {
 #endif   // TRACE_MEM
 
     // Minimum values are initialized to INIT_MIN
-    summary->min_gpu_util           = INIT_MIN;
-    summary->min_gpu_freq           = INIT_MIN;
-    summary->min_gpu_power          = INIT_MIN;
-    summary->min_board_power        = INIT_MIN;
+    summary->min_gpu_util           = INIT_INT16_MIN;
+    summary->min_gpu_freq           = INIT_INT16_MIN;
+    summary->min_gpu_power          = INIT_INT16_MIN;
+    summary->min_board_power        = INIT_INT32_MIN;
 
 #ifdef TRACE_CPU
     for(i=0; i<NUM_CPUS; ++i) {
-        summary->min_cpu_util[i]    = INIT_MIN;
-        summary->min_cpu_freq[i]    = INIT_MIN;
+        summary->min_cpu_util[i]    = INIT_INT16_MIN;
+        summary->min_cpu_freq[i]    = INIT_INT32_MIN;
     }
-    summary->min_allcpu_power       = INIT_MIN;
+    summary->min_allcpu_power       = INIT_INT16_MIN;
 #endif   // TRACE_CPU
 
 #ifdef TRACE_MEM
-    summary->min_emc_util           = INIT_MIN;
-    summary->min_emc_freq           = INIT_MIN;
-    summary->min_mem_power          = INIT_MIN;
+    summary->min_emc_util           = INIT_INT32_MIN;
+    summary->min_emc_freq           = INIT_INT16_MIN;
+    summary->min_mem_power          = INIT_INT16_MIN;
 #endif   // TRACE_MEM
 
     // Summation values are initialized to INIT_SUM

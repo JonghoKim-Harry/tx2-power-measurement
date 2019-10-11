@@ -12,9 +12,11 @@
 #define GPU_GOVERNOR_NAME_LEN   64
 
 // For initialization
-#define INIT_MAX            -1   // Maximum values are simply initialized to (-1)
-#define INIT_MIN     INT16_MAX   // Minimum values are initialized to maximum possitive numbers
-#define INIT_SUM             0   // Summation values should be initialized to 0
+#define INIT_MAX                -1   // Maximum values are simply initialized to (-1)
+#define INIT_INT16_MIN   INT16_MAX   // Minimum values are initialized to maximum possitive numbers
+#define INIT_INT32_MIN   INT32_MAX   // Minimum values are initialized to maximum possitive numbers
+#define INIT_INT64_MIN   INT64_MAX   // Minimum values are initialized to maximum possitive numbers
+#define INIT_SUM                 0   // Summation values should be initialized to 0
 
 // For MS Excel
 #define INFINITE       1000000
