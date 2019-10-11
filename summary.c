@@ -62,6 +62,8 @@ void init_summary(summary_struct *summary, const char *_name) {
 #endif   // TRACE_MEM
 
     // Summation values are initialized to INIT_SUM
+    summary->psum_gpu_freq_sec      = INIT_SUM;
+    summary->psum_gpu_freq_ns       = INIT_SUM;
     summary->psum_gpu_util_e2ms     = INIT_SUM;
     summary->psum_gpu_util_e2ps     = INIT_SUM;
     summary->system_energy_J        = INIT_SUM;

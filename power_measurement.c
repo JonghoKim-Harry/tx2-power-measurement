@@ -29,7 +29,7 @@
 #define AVAILABLE_OPTIONS   "-"   "c:f:g:hi:"
 
  
-static summary_struct   summary_caffe, summary_cnn;
+static summary_struct   summary_caffe, summary_cnn, summary_batch;
 
 void help() {
 
@@ -247,6 +247,13 @@ end_arg_processing:
     caffelog_fd = open(caffelog_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     info->caffelog_fd = caffelog_fd;
 
+    // Summary File: OOO.summary.txt
+    strcpy(filename_buff, given_dirname);
+    strcat(filename_buff, "/");
+    strcat(filename_buff, filename_prefix);
+    strcat(filename_buff, ".summary.txt");
+    strcpy(info->summary_filename, filename_buff);
+
     // Statistics File: OOO.txt
     stat_fd = open(stat_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
     printf("\nCreated statistic file: %s", stat_filename);
@@ -438,7 +445,9 @@ void calculate_2ndstat(const measurement_info_struct info) {
     int rawdata_fd;
     int caffelog_fd;
     off_t caffelog_offset;
+    int summary_fd;
     int stat_fd;
+    int batch_idx;
     int i, j;
 
     int flag_powerlog;
@@ -461,6 +470,12 @@ void calculate_2ndstat(const measurement_info_struct info) {
     caffelog_offset = 0;
     lseek(caffelog_fd, 0, SEEK_SET);
 
+    // Summary
+    summary_fd = open(info.summary_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+    lseek(summary_fd, 0, SEEK_SET);
+    write(summary_fd, "BATCH SUMMARY", 13);
+    batch_idx = 1;
+
     // Statistics
     stat_fd = open(info.stat_filename, O_WRONLY);
     lseek(stat_fd, info.metadata_end, SEEK_SET);
@@ -471,6 +486,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
 #endif   // DEBUG
     init_summary(&summary_caffe, "GPU statistics summary during Caffe");
     init_summary(&summary_cnn, "GPU statistics summary during CNN");
+    init_summary(&summary_batch, "BATCH 1");
     flag_cnnstart  = 0;
     flag_cnnfinish = 0;
 
@@ -534,8 +550,11 @@ compare_timestamp:
             flag_powerlog = 0;
 
         // Update summary for CNN inference
-        if(flag_powerlog & flag_cnnstart & (!flag_cnnfinish))
+        if(flag_powerlog & flag_cnnstart & (!flag_cnnfinish)) {
             update_summary(&summary_cnn, &powerlog);
+            update_summary(&summary_batch, &powerlog);
+        }
+
 
         // Convert rawdata to stat and write to statfile
         write(stat_fd, "\n", 1);
@@ -597,6 +616,22 @@ compare_timestamp:
                 printf("\n%s() in %s:%d   Iterate to next caffelog: %p -> ", __func__, __FILE__, __LINE__, caffelog);
 #endif   // DEBUG
 
+                // Batch finish
+                if(caffelog->batch_finish == INFINITE) {
+                    print_summary_name(summary_fd, &summary_batch);
+                    print_summary_runtime(summary_fd, &summary_batch);
+                    print_summary_gpu_util_range(summary_fd, &summary_batch);
+                    print_summary_emc_util_range(summary_fd, &summary_batch);
+                    print_summary_gpu_freq_range(summary_fd, &summary_batch);
+                    print_summary_gpu_power_range(summary_fd, &summary_batch);
+
+                    // New batch summary
+                    ++batch_idx;
+                    snprintf(buff, MAX_BUFFLEN, "BATCH %d", batch_idx);
+                    init_summary(&summary_batch, buff);
+                }
+
+                // Delete from list and deallocate
                 list_del(&caffelog->list);
                 free(caffelog);
                 caffelog = list_entry(list_caffelog.list.next, struct caffelog_struct, list);
@@ -653,6 +688,7 @@ rawdata_eof_found:
 
     // Close and remove rawdata.bin file
     close(rawdata_fd);
+    close(summary_fd);
     close(stat_fd);
 
 #ifdef DEBUG

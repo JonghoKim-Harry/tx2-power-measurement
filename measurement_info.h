@@ -160,10 +160,10 @@ typedef struct measurement_info_struct {
     size_t summary_len;
     off_t metadata_end;
 
-    // Statistics
+    // Statistics and summary
     struct stat_info_struct stat_info[MAX_NUM_STAT];
     int num_stat;
-    char stat_filename[MAX_BUFFLEN];
+    char stat_filename[MAX_BUFFLEN], summary_filename[MAX_BUFFLEN];
 
 } measurement_info_struct;
 
