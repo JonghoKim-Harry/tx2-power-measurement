@@ -8,6 +8,7 @@
 typedef struct summary_struct {
 
     struct timespec          start_timestamp, finish_timestamp;
+    //struct powerlog_struct   *last_powerlog;
     struct powerlog_struct   last_powerlog;
     int                      num_powerlog;
     char                     name[MAX_BUFFLEN];
@@ -21,6 +22,8 @@ typedef struct summary_struct {
     // GPU frequency
     int16_t min_gpu_freq;              // MHz
     int16_t max_gpu_freq;              // MHz
+    int64_t psum_gpu_freq_sec;         // MHz * sec
+    int64_t psum_gpu_freq_ns;          // MHz * ns
 
     // System power and energy
     int32_t min_system_power;          // mW
@@ -51,7 +54,7 @@ typedef struct summary_struct {
 
 #ifdef TRACE_CPU
     // Note that CPUs can be power-gated; therefore,
-    // avgerage utilization/frequency should be calculated carefully
+    // average utilization/frequency should be calculated carefully
     int16_t min_cpu_util[NUM_CPUS];    // x0.1%
     int16_t max_cpu_util[NUM_CPUS];    // x0.1%
     int32_t min_cpu_freq[NUM_CPUS];    // MHz
@@ -92,6 +95,7 @@ typedef struct summary_struct {
 } summary_struct;
 
 /**/
+//void init_summary(summary_struct *summary, const struct timespec _start_timestamp, const char *_name);
 void init_summary(summary_struct *summary, const char *_name);
 void update_summary(summary_struct *summary, const powerlog_struct *powerlog_ptr);
 void print_summary(int fd, const summary_struct *summary);

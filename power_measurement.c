@@ -345,54 +345,78 @@ end_arg_processing:
                      ONE_SYSFS_FILE,  TX2_SYSFS_GPU_TEMP);
 
     // Register statistics
-    register_stat(info,  "Time(s)",            18,
-                  LOGTYPE_TIME,                elapsedtime_to_stat);
-    register_stat(info,  "BOARD-power(mW)",    15,
-                  LOGTYPE_POWERLOG,            boardpower_to_stat);
-    register_stat(info,  "SYSTEM-power(mW)",   16,
-                  LOGTYPE_POWERLOG,            system_power_to_stat);
-    register_stat(info,  "GPU-power(mW)",      13,
-                  LOGTYPE_POWERLOG,            gpupower_to_stat);
-    register_stat(info,  "All-CPU-power(mW)",  17,
-                  LOGTYPE_POWERLOG,            allcpu_power_to_stat);
-    register_stat(info,  "MEM-power(mW)",      13,
-                  LOGTYPE_POWERLOG,            mempower_to_stat);
-    register_stat(info,  "MiscCore-power(mW)", 18,
-                  LOGTYPE_POWERLOG,            socpower_to_stat);
-    register_stat(info,  "Wifi-power(mW)",     14,
-                  LOGTYPE_POWERLOG,            wifipower_to_stat);
-    register_stat(info,  "SYSTEM-energy(J)",   19,
-                  LOGTYPE_SUMMARY,             system_energy_to_stat);
-    register_stat(info,  "GPU-energy(J)",      19,
-                  LOGTYPE_SUMMARY,             gpuenergy_to_stat);
-    register_stat(info,  "MEM-energy(J)",      19,
-                  LOGTYPE_SUMMARY,             memenergy_to_stat);
-    register_stat(info,  "GPU-freq(MHz)",      13,
-                  LOGTYPE_POWERLOG,            gpufreq_to_stat);
-    register_stat(info,  "GPU-util(%)",        11,
-                  LOGTYPE_POWERLOG,            gpuutil_to_stat);
-    register_stat(info,  "GPU-psum_util(s*%)", 18,
-                  LOGTYPE_SUMMARY,             psum_gpuutil_to_stat);
-    register_stat(info,  "EMC-freq(MHz)",      13,
-                  LOGTYPE_POWERLOG,            emcfreq_to_stat);
-    register_stat(info,  "EMC-util(%)",        11,
-                  LOGTYPE_POWERLOG,            emcutil_to_stat);
-
-    register_stat(info,  "GPU-temp(\xB0""C)",  12,
-                  LOGTYPE_POWERLOG,            gputemp_to_stat);
-
-    register_stat(info,  "Timestamp",          19,
-                  LOGTYPE_TIMESTAMP,           timestamp_to_stat);
-    register_stat(info,  "Caffe-start",        11,
-                  LOGTYPE_CAFFELOG,            caffe_start_to_stat);
-    register_stat(info,  "CNN-start/finish",   16,
-                  LOGTYPE_CAFFELOG,            cnn_event_to_stat);
-    register_stat(info,  "Batch-idx",           9,
-                  LOGTYPE_CAFFELOG,            batch_idx_to_stat);
-    register_stat(info,  "Batch-finish",       13,
-                  LOGTYPE_CAFFELOG,            batch_finish_to_stat);
-    register_stat(info,  "Caffe-Event",        35,
-                  LOGTYPE_CAFFELOG,            caffeevent_to_stat);
+    register_stat(info, "Time(s)", 18,
+                  LOGTYPE_TIME,
+                  elapsedtime_to_stat);
+    register_stat(info, "BOARD-power(mW)", 15,
+                  LOGTYPE_POWERLOG,
+                  boardpower_to_stat);
+    register_stat(info, "SYSTEM-power(mW)", 16,
+                  LOGTYPE_POWERLOG,
+                  system_power_to_stat);
+    register_stat(info, "GPU-power(mW)", 13,
+                  LOGTYPE_POWERLOG,
+                  gpupower_to_stat);
+    register_stat(info, "All-CPU-power(mW)", 17,
+                  LOGTYPE_POWERLOG,
+                  allcpu_power_to_stat);
+    register_stat(info, "MEM-power(mW)", 13,
+                  LOGTYPE_POWERLOG,
+                  mempower_to_stat);
+    register_stat(info, "MiscCore-power(mW)", 18,
+                  LOGTYPE_POWERLOG,
+                  socpower_to_stat);
+    register_stat(info, "Wifi-power(mW)", 14,
+                  LOGTYPE_POWERLOG,
+                  wifipower_to_stat);
+    register_stat(info, "SYSTEM-energy(J)", 19,
+                  LOGTYPE_SUMMARY,
+                  system_energy_to_stat);
+    register_stat(info, "GPU-energy(J)", 19,
+                  LOGTYPE_SUMMARY,
+                  gpuenergy_to_stat);
+    register_stat(info, "MEM-energy(J)", 19,
+                  LOGTYPE_SUMMARY,
+                  memenergy_to_stat);
+    register_stat(info, "GPU-freq(MHz)", 13,
+                  LOGTYPE_POWERLOG,
+                  gpufreq_to_stat);
+    register_stat(info, "psum_GPU-freq(s*MHz)", 19,
+                  LOGTYPE_SUMMARY,
+                  psum_gpufreq_to_stat);
+    register_stat(info, "GPU-util(%)", 11,
+                  LOGTYPE_POWERLOG,
+                  gpuutil_to_stat);
+    register_stat(info, "psum_GPU-util(s*%)", 18,
+                  LOGTYPE_SUMMARY,
+                  psum_gpuutil_to_stat);
+    register_stat(info, "EMC-freq(MHz)", 13,
+                  LOGTYPE_POWERLOG,
+                  emcfreq_to_stat);
+    register_stat(info, "EMC-util(%)", 11,
+                  LOGTYPE_POWERLOG,
+                  emcutil_to_stat);
+    register_stat(info, "GPU-temp(degree-C)", 18,
+                  LOGTYPE_POWERLOG,
+                  gputemp_to_stat);
+    register_stat(info, "Timestamp", 19,
+                  LOGTYPE_TIMESTAMP,
+                  timestamp_to_stat);
+    register_stat(info, "Caffe-start", 11,
+                  LOGTYPE_CAFFELOG,
+                  caffe_start_to_stat);
+    register_stat(info, "CNN-start/finish", 16,
+                  LOGTYPE_CAFFELOG,
+                  cnn_event_to_stat);
+    register_stat(info, "Batch-idx", 9,
+                  LOGTYPE_CAFFELOG,
+                  batch_idx_to_stat);
+    register_stat(info, "Batch-finish", 13,
+                  LOGTYPE_CAFFELOG,
+                  batch_finish_to_stat);
+    register_stat(info, "Caffe-Event", 35,
+                  LOGTYPE_CAFFELOG,
+                  caffeevent_to_stat);
 
     init_caffelog_parser();
 
@@ -446,7 +470,7 @@ void calculate_2ndstat(const measurement_info_struct info) {
     printf("\n%s() in %s:%d   Start initializing summary", __func__, __FILE__, __LINE__);
 #endif   // DEBUG
     init_summary(&summary_caffe, "GPU statistics summary during Caffe");
-    init_summary(&summary_cnn,   "GPU statistics summary during CNN");
+    init_summary(&summary_cnn, "GPU statistics summary during CNN");
     flag_cnnstart  = 0;
     flag_cnnfinish = 0;
 

@@ -357,7 +357,7 @@ ssize_t gputemp_to_stat  (const int stat_fd, const int colwidth, const powerlog_
 }
 #endif   // TRACE_TEMP
 
-// Powerlog Summary to Statistics
+// Summary to Statistics
 ssize_t system_energy_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {
 
     // return value
@@ -378,6 +378,30 @@ ssize_t system_energy_to_stat(const int stat_fd, const int colwidth, const summa
     if(num_written_bytes < 0)
         perror("Error while write()");
 #endif   // DEBUG or DEBUG_LOG_TO_STAT
+    return num_written_bytes;
+}
+
+ssize_t psum_gpufreq_to_stat (const int stat_fd, const int colwidth, const summary_struct summary) {
+
+    // Return value
+    ssize_t num_written_bytes;
+    char buff[MAX_COLWIDTH], buff2[MAX_COLWIDTH];
+    size_t buff_len;
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
+    snprintf(buff, MAX_COLWIDTH, "%ld.%09ld%", summary.psum_gpu_freq_sec, summary.psum_gpu_freq_ns);
+    buff_len = snprintf(buff2, MAX_COLWIDTH, "%*s", colwidth, buff);
+    num_written_bytes = write(stat_fd, buff2, buff_len);
+
+#if defined(DEBUG) || defined(DEBUG_LOG_TO_STAT)
+    printf("\n%s() in %s:%d   returned: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    if(num_written_bytes < 0)
+        perror("Error while write()");
+#endif   // DEBUG or DEBUG_LOG_TO_STAT
+
     return num_written_bytes;
 }
 
@@ -584,8 +608,6 @@ ssize_t memenergy_to_stat  (const int stat_fd, const int colwidth, const summary
     return num_written_bytes;
 }
 
-// TODO
-// ssize_t powerevent_to_stat(const int stat_fd, const int colwidth, const summary_struct summary) {}
 
 // Caffelog to Statistics
 ssize_t caffeevent_to_stat(const int stat_fd, const int colwidth, const caffelog_struct caffelog) {
