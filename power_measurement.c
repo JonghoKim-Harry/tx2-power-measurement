@@ -56,17 +56,17 @@ void prepare_measurement(const int argc, char *argv[], measurement_info_struct *
     int cflag = 0, fflag = 0, gflag = 0, iflag = 0;
     int interval_us;
     char component_str[16];
-    char given_dirname[128], filename_prefix[128], stat_filename_buff[128];
+    char given_dirname[MAX_BUFFLEN], filename_prefix[MAX_BUFFLEN], stat_filename_buff[MAX_BUFFLEN];
     const char *stat_filename, *basename_ptr;
     int stat_fd;
-    char rawdata_filename[128];
+    char rawdata_filename[MAX_BUFFLEN];
     int rawdata_fd;
-    char caffelog_filename[128];
+    char caffelog_filename[MAX_BUFFLEN];
     int caffelog_fd;
-    char powerlog_filename[128];
+    char powerlog_filename[MAX_BUFFLEN];
     int powerlog_fd;
-    char token[128], *next_token;
-    char **child_cmd, child_cmd_str[256];
+    char token[MAX_BUFFLEN], *next_token;
+    char **child_cmd, child_cmd_str[MAX_BUFFLEN];
 
     char buff[MAX_BUFFLEN], filename_buff[MAX_BUFFLEN];
     struct timeval walltime;

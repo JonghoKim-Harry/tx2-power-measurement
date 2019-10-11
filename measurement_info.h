@@ -121,14 +121,14 @@ typedef struct measurement_info_struct {
 
     // Result Directory
     int flag_mkdir;
-    char result_dirname[128];
+    char result_dirname[MAX_BUFFLEN];
 
     // GPU Governor
     int userspace_gpugovernor;
     char gpugov_name[GPU_GOVERNOR_NAME_LEN];
 
     // Powerlog
-    char powerlog_filename[128];
+    char powerlog_filename[MAX_BUFFLEN];
     int powerlog_fd;
 
     //  I will use execve() to run child command.
@@ -138,7 +138,7 @@ typedef struct measurement_info_struct {
     char **child_cmd;
 
     // Caffelog
-    char caffelog_filename[128];
+    char caffelog_filename[MAX_BUFFLEN];
     int caffelog_fd;
 
     // Informations used by measure_rawdata()
@@ -149,7 +149,7 @@ typedef struct measurement_info_struct {
     //  See addsysfs(), read_sysfs(), rawdata_to_stat()
     struct rawdata_info_struct rawdata_info[MAX_NUM_RAWDATA];
     int num_rawdata;
-    char rawdata_filename[128];
+    char rawdata_filename[MAX_BUFFLEN];
     int rawdata_fd;
     int rawdata_linesize;
 
@@ -163,7 +163,7 @@ typedef struct measurement_info_struct {
     // Statistics
     struct stat_info_struct stat_info[MAX_NUM_STAT];
     int num_stat;
-    char stat_filename[128];
+    char stat_filename[MAX_BUFFLEN];
 
 } measurement_info_struct;
 

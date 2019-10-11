@@ -343,7 +343,7 @@ void register_rawdata
     rawdata_info_struct *rawdata_info = &info->rawdata_info[idx];
     va_list sysfs_file_list;
     int i;
-    char buff[128];
+    char buff[MAX_BUFFLEN];
 
 #ifdef DEBUG
     printf("\nregister_rawdata()   START");

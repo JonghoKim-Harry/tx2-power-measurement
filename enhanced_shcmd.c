@@ -5,6 +5,7 @@
 #include <errno.h>
 
 #include "enhanced_shcmd.h"
+#include "default_values.h"
 
 #define MAX_DEPTH   10
 
@@ -52,10 +53,10 @@ int chown_R(const char *pathname, uid_t owner, gid_t group) {
      *   $ chown -R <owner>:<group>
      */
     DIR *dirptr;
-    char curr_dirname[128], filename[128];
+    char curr_dirname[MAX_BUFFLEN], filename[MAX_BUFFLEN];
     DIR *dirptr_stack[MAX_DEPTH];
     off_t offset_stack[MAX_DEPTH];
-    char dirname_stack[MAX_DEPTH][128];
+    char dirname_stack[MAX_DEPTH][MAX_BUFFLEN];
     struct dirent *entry;
     struct stat status;
     int depth;
