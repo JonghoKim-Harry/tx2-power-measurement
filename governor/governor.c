@@ -143,6 +143,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &cnngov_20190919;
     else if(!strcmp(gpugov_name, "cnngov_20190920"))
         curr_gpugov = &cnngov_20190920;
+    else if(!strcmp(gpugov_name, "cnngov_dyn_th"))
+        curr_gpugov = &cnngov_dyn_th;
     else if(!strcmp(gpugov_name, "slow_scale"))
         curr_gpugov = &slow_scale;
     else if(!strcmp(gpugov_name, "cnngov_e"))
@@ -236,7 +238,7 @@ int16_t get_gpuutil() {
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     ssize_t num_read_bytes;
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
     lseek(fd_gpuutil, 0, SEEK_SET);
@@ -248,6 +250,12 @@ int16_t get_gpuutil() {
 
     ret = atoi(buff);
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    if(num_read_bytes < 0)
+        perror("read() fail");
+    printf("\n%s() in %s:%d   RETURN: %ld\n---", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
     return ret;
 }
 
@@ -258,7 +266,7 @@ int16_t get_gpupower() {
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     ssize_t num_read_bytes;
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
     lseek(fd_gpupower, 0, SEEK_SET);
@@ -270,27 +278,33 @@ int16_t get_gpupower() {
 
     ret = atoi(buff);
 
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    if(num_read_bytes < 0)
+        perror("read() fail");
+    printf("\n%s() in %s:%d   RETURN: %ld\n---", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
     return ret;
 }
 
-ssize_t set_gpufreq(int32_t gpufreq) {
+ssize_t set_gpufreq(int32_t nextfreq) {
 
     ssize_t num_written_bytes;   // return value
     char buff[TX2_SYSFS_GPU_FREQ_MAX_STRLEN];
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
-    printf("\n%s() in %s:%d   gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   @nextfreq: %d", __func__, __FILE__, __LINE__, nextfreq);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
-    lseek(fd_read_gpufreq, 0, SEEK_SET);
-    snprintf(buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN, "%d", gpufreq);
+    lseek(fd_write_gpufreq, 0, SEEK_SET);
+    snprintf(buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN, "%d", nextfreq);
     num_written_bytes = write(fd_write_gpufreq, buff, TX2_SYSFS_GPU_FREQ_MAX_STRLEN);
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     if(num_written_bytes < 0)
         perror("write() fail");
-    printf("\n%s() in %s:%d   RETURN: %ld", __func__, __FILE__, __LINE__, num_written_bytes);
+    printf("\n%s() in %s:%d   RETURN: %ld\n---", __func__, __FILE__, __LINE__, num_written_bytes);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
     return num_written_bytes;
@@ -303,7 +317,7 @@ int64_t get_emcutil() {
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     ssize_t num_read_bytes;
-    printf("\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
 
     lseek(fd_emcutil, 0, SEEK_SET);
@@ -314,6 +328,12 @@ int64_t get_emcutil() {
     read(fd_emcutil, buff, TX2_SYSFS_EMC_UTIL_MAX_STRLEN);
 
     ret = atoi(buff);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    if(num_read_bytes < 0)
+        perror("write() fail");
+    printf("\n%s() in %s:%d   RETURN: %ld\n---", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
 
     return ret;
 }
@@ -328,14 +348,26 @@ int32_t gpufreq_level_to_hz(int level) {
 
 int gpufreq_hz_to_level(int32_t gpufreq) {
 
-    int ret;
+    int ret = -1;
+    int level;
 
-    for(ret=0; ret<gpugov_info.num_available_gpufreq; ++ret) {
-        if(gpufreq == gpugov_info.available_gpufreq[ret])
-            return ret;
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+    printf("\n%s() in %s:%d   gpufreq: %d", __func__, __FILE__, __LINE__, gpufreq);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    for(level=0; level<gpugov_info.num_available_gpufreq; ++level) {
+        if(gpufreq == gpugov_info.available_gpufreq[level]) {
+            ret = level;
+            break;
+        }
     }
 
-    return -1;
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    printf("\n%s() in %s:%d   Returned: %d\n___", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    return ret;
 }
 
 /**
