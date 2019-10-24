@@ -59,6 +59,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 				  governor/cnngov_20190919.o \
 				  governor/cnngov_20190920.o \
 				  governor/cnngov_dyn_th.o \
+				  governor/cnngov_dyn_th2_th3.o \
 				  governor/slow_scale.o \
 				  governor/cnngov_e.o \
 				  governor/hilo.o \
