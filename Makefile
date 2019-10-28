@@ -61,6 +61,7 @@ SUBDIR_OBJECTS := governor/governor.o \
 				  governor/cnngov_dyn_th.o \
 				  governor/cnngov_dyn_th2_th3.o \
 				  governor/slow_scale.o \
+				  governor/feas_test.o \
 				  governor/cnngov_e.o \
 				  governor/hilo.o \
 				  governor/pingpong.o \

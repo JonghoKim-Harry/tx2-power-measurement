@@ -149,6 +149,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &cnngov_dyn_th2_th3;
     else if(!strcmp(gpugov_name, "slow_scale"))
         curr_gpugov = &slow_scale;
+    else if(!strcmp(gpugov_name, "feas_test"))
+        curr_gpugov = &feas_test;
     else if(!strcmp(gpugov_name, "cnngov_e"))
         curr_gpugov = &cnngov_e;
     else if(!strcmp(gpugov_name, "hilo"))
