@@ -20,15 +20,16 @@ struct gpugov slow_scale = {
 /**
  *  Governor parameters
  */
-// Scale-down when GPU UTIL < TH1 and EMC UTIL > TH2
-static int TH1                        = 600;      // 60% (unit: x0.1%)
-static int TH2                        = 200000;   // 20% (unit: x0.0001%)
+// Scale-down when GPU UTIL < TH1 and EMC UTIL > TH4
+static int TH1                        = 962;      // 60% (unit: x0.1%)
+static int TH4                        = 800000;   // 40% (unit: x0.0001%)
+
+// Scale-up when GPU UTIL > TH1 and EMC UTIL < TH2
+static int TH2                        = 495000;   // 20% (unit: x0.0001%)
 
 // Scale-down when GPU UTIL > TH1 and EMC UTIL > TH3
-static int TH3                        = 550000;   // 55% (unit: x0.0001%)
+static int TH3                        = 540000;   // 55% (unit: x0.0001%)
 
-// Scale-up when GPU UTIL > TH1 and EMC UTIL < TH4
-static int TH4                        = 400000;   // 40% (unit: x0.0001%)
 static int scale_up_factor            = 9;        // 9% (unit: %)
 static int scale_down_factor          = 9;        // 9% (unit: %)
 static const int SAMPLING_DOWN_FACTOR = 5;
@@ -66,15 +67,15 @@ static int32_t slow_scale_get_target_freq() {
     ++sampling_up_counter;
 
     if(gpuutil < TH1) {
-        if(sampling_down_counter >= SAMPLING_DOWN_FACTOR && emcutil > TH2)
-            next_freq = scale_down_by_n_of_max(freq, scale_up_factor);
+        if(sampling_down_counter >= SAMPLING_DOWN_FACTOR && emcutil > TH4)
+            next_freq = scale_down_by_n_of_max(freq, scale_down_factor);
         else
             next_freq = freq;
     }
     else {
         if(sampling_down_counter >= SAMPLING_DOWN_FACTOR && emcutil > TH3)
             next_freq = scale_down_by_n_of_max(freq, scale_down_factor);
-        else if(sampling_up_counter >= SAMPLING_UP_FACTOR && emcutil < TH4)
+        else if(sampling_up_counter >= SAMPLING_UP_FACTOR && emcutil < TH2)
             next_freq = scale_up_by_n_of_max(freq, scale_up_factor);
         else
             next_freq = freq;

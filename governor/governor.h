@@ -63,6 +63,7 @@ extern struct gpugov   cnngov_dyn_th;
 extern struct gpugov   cnngov_dyn_th2_th3;
 extern struct gpugov   slow_scale;
 extern struct gpugov   feas_test;
+extern struct gpugov   feas_test_2stepdown;
 extern struct gpugov   cnngov_e;
 extern struct gpugov   hilo;
 extern struct gpugov   pingpong;

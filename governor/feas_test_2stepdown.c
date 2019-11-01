@@ -4,17 +4,17 @@
 #include "governor.h"
 #include "../default_values.h"
 
-static void feas_test_init(void *data);
-static int32_t feas_test_get_target_freq();
-static void feas_test_print_gpugov(int fd);
+static void feas_test_2stepdown_init(void *data);
+static int32_t feas_test_2stepdown_get_target_freq();
+static void feas_test_2stepdown_print_gpugov(int fd);
 
 // Interface
-struct gpugov feas_test = {
+struct gpugov feas_test_2stepdown = {
 
-    .name = "gpugov-feas_test",
-    .init = feas_test_init,
-    .get_target_freq = feas_test_get_target_freq,
-    .print_gpugov = feas_test_print_gpugov
+    .name = "gpugov-feas_test_2stepdown",
+    .init = feas_test_2stepdown_init,
+    .get_target_freq = feas_test_2stepdown_get_target_freq,
+    .print_gpugov = feas_test_2stepdown_print_gpugov
 };
 
 /**
@@ -30,8 +30,8 @@ static int TH3                        = 750000;   // 45.0% (unit: x0.0001%)
 // Scale-up when GPU UTIL > TH1 and EMC UTIL < TH2
 static int TH2                        = 650000;   // 35.0% (unit: x0.0001%)
 
-static int scale_up_factor            = 9;        // 9% (unit: %)
-static int scale_down_factor          = 9;        // 9% (unit: %)
+static int scale_up_factor            = 9;        //  9% (unit: %)
+static int scale_down_factor          = 18;       // 18% (unit: %)
 static const int SAMPLING_DOWN_FACTOR = 7;
 static const int SAMPLING_UP_FACTOR   = 7;
 static int sampling_down_counter      = 0;
@@ -39,7 +39,7 @@ static int sampling_up_counter        = 0;
 
 static int32_t max_freq, min_freq;
 
-static void feas_test_init(void *data) {
+static void feas_test_2stepdown_init(void *data) {
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
     printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
 #endif   // DEBUG or DEBUG_GOVERNOR
@@ -55,7 +55,7 @@ static void feas_test_init(void *data) {
 #endif   // DEBUG or DEBUG_GOVERNOR
 }
 
-static int32_t feas_test_get_target_freq() {
+static int32_t feas_test_2stepdown_get_target_freq() {
 
     int64_t emcutil = get_emcutil();
     int16_t gpuutil = get_gpuutil();
@@ -73,7 +73,7 @@ static int32_t feas_test_get_target_freq() {
 
     if(gpuutil < TH1) {
         if(sampling_down_counter >= SAMPLING_DOWN_FACTOR && emcutil > TH4)
-            next_freq = scale_down_by_n_of_max(freq, scale_up_factor);
+            next_freq = scale_down_by_n_of_max(freq, scale_down_factor);
         else
             next_freq = freq;
     }
@@ -104,7 +104,7 @@ static int32_t feas_test_get_target_freq() {
     return next_freq;
 }
 
-static void feas_test_print_gpugov(int fd) {
+static void feas_test_2stepdown_print_gpugov(int fd) {
 
     char buff[MAX_BUFFLEN];
     size_t buff_len;
@@ -112,7 +112,7 @@ static void feas_test_print_gpugov(int fd) {
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n\nGOVERNOR INFORMATION");
     write(fd, buff, buff_len);
 
-    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - name: %s", feas_test.name);
+    buff_len = snprintf(buff, MAX_BUFFLEN, "\n - name: %s", feas_test_2stepdown.name);
     write(fd, buff, buff_len);
 
     buff_len = snprintf(buff, MAX_BUFFLEN, "\n - TH1: %d.%d", (TH1 / 10), (TH1 % 10));
