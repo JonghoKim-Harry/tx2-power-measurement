@@ -66,21 +66,47 @@
 #define TX2_SYSFS_PMIC_TEMP   "/sys/devices/virtual/thermal/thermal_zone6/temp"
 #define TX2_SYSFS_FAN_TEMP    "/sys/devices/virtual/thermal/thermal_zone7/temp"
 
-// Power Measurement I (mW, integer)
+// Power Measurement (mW, integer)
 #define TX2_SYSFS_GPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power0_input"
 #define TX2_SYSFS_SOC_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power1_input"
 #define TX2_SYSFS_WIFI_POWER   \
     "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_power2_input"
-
-// Power Measurement II (mW, integer)
 #define TX2_SYSFS_BOARD_POWER  \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power0_input"
 #define TX2_SYSFS_CPU_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power1_input"
 #define TX2_SYSFS_MEM_POWER    \
     "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_power2_input"
+
+// Voltage informations (mV)
+#define TX2_SYSFS_GPU_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_voltage0_input"
+#define TX2_SYSFS_SOC_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_voltage1_input"
+#define TX2_SYSFS_WIFI_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_voltage2_input"
+#define TX2_SYSFS_BOARD_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_voltage0_input"
+#define TX2_SYSFS_CPU_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_voltage1_input"
+#define TX2_SYSFS_MEM_VOLTAGE  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_voltage2_input"
+
+// Current informations (mA)
+#define TX2_SYSFS_GPU_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_current0_input"
+#define TX2_SYSFS_SOC_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_current1_input"
+#define TX2_SYSFS_WIFI_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0040/iio_device/in_current2_input"
+#define TX2_SYSFS_BOARD_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_current0_input"
+#define TX2_SYSFS_CPU_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_current1_input"
+#define TX2_SYSFS_MEM_CURRENT  \
+    "/sys/devices/3160000.i2c/i2c-0/0-0041/iio_device/in_current2_input"
 
 // CPU Governor Informations
 #define TX2_SYSFS_CPUFREQ_GROUP(n)   \
