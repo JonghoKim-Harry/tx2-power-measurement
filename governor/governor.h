@@ -86,6 +86,10 @@ int16_t get_gpuutil();   // Returns in x0.1%
 extern int fd_gpupower;
 int16_t get_gpupower();
 
+// MEM Power
+extern int fd_mempower;
+int16_t get_mempower();
+
 // EMC Utilization
 extern int fd_emcutil;
 int64_t get_emcutil();   // Returns in x0.0001%

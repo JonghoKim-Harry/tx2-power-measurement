@@ -17,6 +17,7 @@ int fd_write_gpufreq;
 int fd_read_gpufreq;
 int fd_gpuutil;
 int fd_gpupower;
+int fd_mempower;
 int fd_emcutil;
 
 static const size_t buffsize = TX2_SYSFS_GPU_FREQ_MAX_STRLEN;
@@ -99,6 +100,7 @@ void init_gpugovernor() {
         perror("open() fail");
     fd_gpuutil = open(TX2_SYSFS_GPU_UTIL, O_RDONLY);
     fd_gpupower = open(TX2_SYSFS_GPU_POWER, O_RDONLY);
+    fd_mempower = open(TX2_SYSFS_MEM_POWER, O_RDONLY);
     fd_emcutil = open(TX2_SYSFS_EMC_UTIL, O_RDONLY);
 
 #if defined(DEBUG) || defined(DEBUG_GOVERNOR)
@@ -182,6 +184,7 @@ void finish_gpugovernor() {
     close(fd_read_gpufreq);
     close(fd_gpuutil);
     close(fd_gpupower);
+    close(fd_mempower);
     close(fd_emcutil);
 
     // Restore original gpu governor
@@ -281,6 +284,34 @@ int16_t get_gpupower() {
     num_read_bytes =
 #endif   // DEBUG or DEBUG_GOVERNOR
     read(fd_gpupower, buff, TX2_SYSFS_GPU_POWER_MAX_STRLEN);
+
+    ret = atoi(buff);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    if(num_read_bytes < 0)
+        perror("read() fail");
+    printf("\n%s() in %s:%d   RETURN: %ld\n---", __func__, __FILE__, __LINE__, ret);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    return ret;
+}
+
+int16_t get_mempower() {
+
+    int16_t ret;
+    char buff[TX2_SYSFS_MEM_POWER_MAX_STRLEN];
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    ssize_t num_read_bytes;
+    printf("\n___\n%s() in %s:%d   START", __func__, __FILE__, __LINE__);
+#endif   // DEBUG or DEBUG_GOVERNOR
+
+    lseek(fd_mempower, 0, SEEK_SET);
+
+#if defined(DEBUG) || defined(DEBUG_GOVERNOR)
+    num_read_bytes =
+#endif   // DEBUG or DEBUG_GOVERNOR
+    read(fd_mempower, buff, TX2_SYSFS_MEM_POWER_MAX_STRLEN);
 
     ret = atoi(buff);
 
