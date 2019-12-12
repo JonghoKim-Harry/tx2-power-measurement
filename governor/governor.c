@@ -145,6 +145,8 @@ void select_gpugovernor(const char *gpugov_name, void *data) {
         curr_gpugov = &cnngov_20190919;
     else if(!strcmp(gpugov_name, "cnngov_20190920"))
         curr_gpugov = &cnngov_20190920;
+    else if(!strcmp(gpugov_name, "cnngov_20191211"))
+        curr_gpugov = &cnngov_20191211;
     else if(!strcmp(gpugov_name, "cnngov_dyn_th"))
         curr_gpugov = &cnngov_dyn_th;
     else if(!strcmp(gpugov_name, "cnngov_dyn_th2_th3"))
